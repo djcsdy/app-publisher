@@ -478,7 +478,7 @@ export async function getTags(context: IContext)
                     {
                         const pathObj = p.path[0],
                               regex = !options.versionPreReleaseId ? new RegExp(".*/tags/(v[0-9\.]+$)") :
-                                            new RegExp(`.*/tags/(v[0-9\.]+\-${options.versionPreReleaseId}\.[0-9]+)`),
+                                            new RegExp(`.*/tags/(v[0-9\.]+(?:\-${options.versionPreReleaseId}\.[0-9]+)*)`),
                               match = regex.exec(pathObj._);
                         if (pathObj.$ && pathObj.$.action === "A" && pathObj.$.kind === "dir" && match)
                         {
@@ -493,10 +493,13 @@ export async function getTags(context: IContext)
                 }
             });
             logger.info("Found " + tags.length + " version tags");
+            if (options.verbose) {
+                context.stdout.write("   " + tags.join(EOL + "   ") + EOL);
+            }
             return tags;
         }
         catch (e) {
-            logger.error("Response could not be parsed, invalid module, no commits found, or no version tag exists");
+            logger.error("Response could not be parsed");
             throw e;
         }
     }

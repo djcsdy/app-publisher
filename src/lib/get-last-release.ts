@@ -51,7 +51,7 @@ async function getLastRelease(context: IContext, lastVersionInfo: IVersionInfo):
     // so it's guaranteed to not be present in the `tagFormat`.
     //
     const tagRegexp = `^${escapeRegExp(template(options.tagFormat)({ version: " " })).replace(" ", "(.+)")}`,
-          tagsRaw = await getTags({ env, options, logger } as IContext),
+          tagsRaw = await getTags(context),
           tags = tagsRaw
                  .map((tag: any) => ({ tag, version: (tag.match(tagRegexp) || new Array(2))[1] }))
                  .filter((tag: any) => isValid(tag.version))
