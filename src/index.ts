@@ -146,7 +146,8 @@ async function runStart(context: IContext)
                              options.taskChangelogHdrPrintVersion || options.taskVersionPreReleaseId;
     if (!isCi && !options.dryRun && !options.noCi && !tasksPassCiCheck)
     {
-        logger.error("This run was not triggered in a known CI environment, use --no-ci flag for local publish.");
+        logger.error("This run was not triggered in a known CI environment");
+        logger.error("   Use the '--no-ci' option to run locally");
         return 1;
     }
     else
@@ -177,7 +178,7 @@ async function runStart(context: IContext)
         }
     }
 
-    if (isCi && isPr && !options.noCi)
+    if (options.repoType === "git" && isCi && isPr && !options.noCi)
     {
         logger.error("This run was triggered by a pull request and therefore a new version won't be published.");
         return 1;
@@ -186,10 +187,15 @@ async function runStart(context: IContext)
     if (ciBranch !== options.branch)
     {
         const ciMsg = `This ${runTxt} was triggered on the branch '${ciBranch}', but is configured to ` +
-                      `publish from '${options.branch}'`;
+                      `run from '${options.branch}'`;
         if (isCi) {
             logger.error(ciMsg);
-            logger.error("A new version won’t be published");
+            logger.error("   Ensure that the 'branch' property in .publishrc matches the source branch");
+            logger.error("   Git Example:");
+            logger.error("      \"branch\": \"my_branch_name\"");
+            logger.error("   SVN Example:");
+            logger.error("      \"branch\": \"branches/my_branch_name\"");
+            logger.error("A new version will not be published");
             return 1;
         }
         else if (!options.taskModeStdOut) {
