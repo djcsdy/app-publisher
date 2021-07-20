@@ -24,14 +24,12 @@ export function getNextVersion(context: IContext)
             }
             else {
             // if (options.versionPreReleaseId) {
-                // const isAlreadyPre = semver.prerelease(version) !== null;
+                let lvl: "prepatch" | "preminor" | "premajor" | "prerelease" = "prerelease";
+                if (semver.prerelease(lastRelease.version) === null) {
+                    lvl = ("pre" + nextRelease.level) as "prepatch" | "preminor" | "premajor"; // | "prerelease"
+                }
                 logger.log("   Pre Id : " + options.versionPreReleaseId);
-                // if (isAlreadyPre) {
-                    version = semver.inc(lastRelease.version, "prerelease", options.versionPreReleaseId);
-                // }
-                // else {
-                //     version += "-pre.0";
-                // }
+                version = semver.inc(lastRelease.version, lvl, options.versionPreReleaseId);
             }
             logger.log(`The next version is ${version}`);
         }
