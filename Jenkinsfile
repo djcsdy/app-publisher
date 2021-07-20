@@ -321,7 +321,7 @@ pipeline {
           // Wait for user intervention, approval of new version # and history entry
           //
           echo "Waiting for user approval..."
-          def changelogLoc = "c:\\Users\\administrator.TR\\AppData\\Local\\Jenkins\\.jenkins\\workspace\\${PROJECT_NAME}_${PROJECT_BRANCH}\\doc\\history.txt"
+          def changelogLoc = "d:\\Jenkins\\root\\workspace\\${PROJECT_NAME}_${PROJECT_BRANCH}\\doc\\history.txt"
           def inputMessage = "Approve Version ${env.NEXTVERSION} History File Changelog"
           def userInput = input id: 'history_file_approval',
                                 message: inputMessage,
