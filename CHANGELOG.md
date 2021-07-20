@@ -1,5 +1,15 @@
 # APP-PUBLISHER CHANGE LOG
 
+## Version 3.5.2 (July 19th, 2021)
+
+### Bug Fixes
+
+- **Versioning:** for a pre-release, if an existing pre-release version tag exists whose major, minor, and patch parts match that of the latest production version tag, the latest pre-release version is used when calculating the next version, as opposed to the latest production version.
+
+### Refactoring
+
+- **Logging:** add additional detail to logging during local/ci environment check.
+
 ## Version 3.5.1 (July 13th, 2021)
 
 ### Bug Fixes
