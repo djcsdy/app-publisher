@@ -364,6 +364,17 @@ pipeline {
             // bat "echo Version ${env.NEXTVERSION} >> .\\doc\\history.txt"
             bat "echo Version ${historyHeader} >> .\\doc\\history.txt"
             bat "echo Version ${historyEntry} >> .\\doc\\history.txt"
+          }
+          echo "Retrieve edited history file section"
+          nodejs("Node 12") {
+            historyEntry = bat(returnStdout: true,
+                                script: """
+                                @echo off
+                                app-publisher --config-name pja --task-changelog-print-version ${env.NEXTVERSION}
+                                """)
+            //
+            // Re-set in environment for email template scripts
+            //
             env.VERSION_CHANGELOG = "<font face=\"courier new\">" + historyEntry.replace("\r\n", "<br>").replace(" ", "&nbsp;") + "</font>"
           }
         }
