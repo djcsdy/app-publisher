@@ -146,7 +146,8 @@ pipeline {
           echo "Build Environment:"
           echo "   Project             : ${env.PROJECT_NAME}" 
           echo "   Project branch/teg  : ${env.PROJECT_BRANCH}" 
-          echo "   Skip CI             : ${env.SKIP_CI}" 
+          echo "   Skip CI             : ${env.SKIP_CI}"
+          echo "   Skip Approvals      : ${env.RELEASE_SKIP_APPROVAL}" 
           if (env.BRANCH_NAME != null) {
             echo "   Branch              : ${env.BRANCH_NAME}"
           }
