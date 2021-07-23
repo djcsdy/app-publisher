@@ -75,6 +75,7 @@ pipeline {
           echo "here2"
           env.SKIP_CI = "false"
           env.RELEASE_PRODUCTION = "false"
+          env.RELEASE_SKIP_APPROVAL = "false"
           //
           // Set variables to use throughout build process by examining the commit messages.
           // For SVN, its once commit per changeset (whereas Got could have multiple commits per changeset)
@@ -108,6 +109,12 @@ pipeline {
                     echo "Set build statis to NOT_BUILT"
                     currentBuild.result = 'NOT_BUILT'
                     env.SKIP_CI = "true"
+                  }
+                  //
+                  // Check for skip-approval changelog tag
+                  //
+                  if (entry.msg.indexOf("[release-skip-approval]") != -1) {
+                    env.RELEASE_SKIP_APPROVAL = "true"
                   }
                 }
                 //
@@ -307,75 +314,77 @@ pipeline {
             //
             env.VERSION_CHANGELOG = "<font face=\"courier new\">" + historyEntry.replace("\r\n", "<br>").replace(" ", "&nbsp;") + "</font>"
           }
-          //
-          // Notify of input required
-          //
-          echo "Notify of pending required changelog approval"
-          emailext body: '${SCRIPT,template="changelog-approval.groovy"}',
-                   attachLog: false,
-                   mimeType: 'text/html',
-                   subject: "Changelog Approval Required - App Publisher v${env.NEXTVERSION}: Build : " + env.PROJECT_BRANCH,
-                   to: "cibuild@pjats.com",
-                   recipientProviders: [developers(), requestor()] 
-          //
-          // Wait for user intervention, approval of new version # and history entry
-          //
-          echo "Waiting for user approval..."
-          def changelogLoc = "d:\\Jenkins\\root\\workspace\\${PROJECT_NAME}_${PROJECT_BRANCH}\\doc\\history.txt"
-          def inputMessage = "Approve Version ${env.NEXTVERSION} History File Changelog"
-          def userInput = input id: 'history_file_approval',
-                                message: inputMessage,
-                                ok: 'Approve', 
-                                submitter: 'smeesseman,mnast',
-                                submitterParameter: 'UserID',
-                                parameters: [
-                                  string(defaultValue: 'smeesseman', description: 'Network User ID of approver', name: 'UserID', trim: true),
-                                  string(defaultValue: env.NEXTVERSION, description: 'Next version #', name: 'Version', trim: true),
-                                  choice(choices: ['No', 'Yes'], description: 'Append changelog to history file (if not, manually edit and save)', name: 'Append'),
-                                  string(defaultValue: changelogLoc, description: 'History File Location (Read Only)', name: 'File', trim: true),
-                                  text(defaultValue: historyEntry, description: 'History File Entry', name: 'Changelog')
-                                ]
-          //
-          // Save user input to variables. Default to empty string if not found.
-          //
-          def inputUserID = userInput.UserID?:''
-          def inputAppend = userInput.Append?:''
-          def inputChangelog = userInput.Changelog?:''
-          def inputVersion = userInput.Version?:''
-          echo "Verified history.txt, proceeding"
-          echo "   User    : ${inputUserID}"
-          echo "   Append  : ${inputAppend}"
-          echo "   Version : ${inputVersion}"
-          env.NEXTVERSION = inputVersion
-          if (inputAppend == "Yes") {
-            bat "svn revert doc\\history.txt"
-            nodejs("Node 12") {
-              historyHeader = bat(returnStdout: true,
-                                    script: """
-                                    @echo off
-                                    app-publisher --config-name pja --task-changelog-hdr-print-version ${env.NEXTVERSION}
-                                  """)
+          if (env.RELEASE_SKIP_APPROVAL != "true") {
+            //
+            // Notify of input required
+            //
+            echo "Notify of pending required changelog approval"
+            emailext body: '${SCRIPT,template="changelog-approval.groovy"}',
+                    attachLog: false,
+                    mimeType: 'text/html',
+                    subject: "Changelog Approval Required - App Publisher v${env.NEXTVERSION}: Build : " + env.PROJECT_BRANCH,
+                    to: "cibuild@pjats.com",
+                    recipientProviders: [developers(), requestor()] 
+            //
+            // Wait for user intervention, approval of new version # and history entry
+            //
+            echo "Waiting for user approval..."
+            def changelogLoc = "d:\\Jenkins\\root\\workspace\\${PROJECT_NAME}_${PROJECT_BRANCH}\\doc\\history.txt"
+            def inputMessage = "Approve Version ${env.NEXTVERSION} History File Changelog"
+            def userInput = input id: 'history_file_approval',
+                                  message: inputMessage,
+                                  ok: 'Approve', 
+                                  submitter: 'smeesseman,mnast',
+                                  submitterParameter: 'UserID',
+                                  parameters: [
+                                    string(defaultValue: 'smeesseman', description: 'Network User ID of approver', name: 'UserID', trim: true),
+                                    string(defaultValue: env.NEXTVERSION, description: 'Next version #', name: 'Version', trim: true),
+                                    choice(choices: ['No', 'Yes'], description: 'Append changelog to history file (if not, manually edit and save)', name: 'Append'),
+                                    string(defaultValue: changelogLoc, description: 'History File Location (Read Only)', name: 'File', trim: true),
+                                    text(defaultValue: historyEntry, description: 'History File Entry', name: 'Changelog')
+                                  ]
+            //
+            // Save user input to variables. Default to empty string if not found.
+            //
+            def inputUserID = userInput.UserID?:''
+            def inputAppend = userInput.Append?:''
+            def inputChangelog = userInput.Changelog?:''
+            def inputVersion = userInput.Version?:''
+            echo "Verified history.txt, proceeding"
+            echo "   User    : ${inputUserID}"
+            echo "   Append  : ${inputAppend}"
+            echo "   Version : ${inputVersion}"
+            env.NEXTVERSION = inputVersion
+            if (inputAppend == "Yes") {
+              bat "svn revert doc\\history.txt"
+              nodejs("Node 12") {
+                historyHeader = bat(returnStdout: true,
+                                      script: """
+                                      @echo off
+                                      app-publisher --config-name pja --task-changelog-hdr-print-version ${env.NEXTVERSION}
+                                    """)
+              }
+              // def status = powershell(returnStatus: true,
+              //                         script: 'out-file -filepath doc/history.txt -Append -inputobject historyEntry')
+              // if (status != 0) {
+              //   error("Could not find history file entry")
+              // }
+              // bat "echo Version ${env.NEXTVERSION} >> .\\doc\\history.txt"
+              bat "echo Version ${historyHeader} >> .\\doc\\history.txt"
+              bat "echo Version ${historyEntry} >> .\\doc\\history.txt"
             }
-            // def status = powershell(returnStatus: true,
-            //                         script: 'out-file -filepath doc/history.txt -Append -inputobject historyEntry')
-            // if (status != 0) {
-            //   error("Could not find history file entry")
-            // }
-            // bat "echo Version ${env.NEXTVERSION} >> .\\doc\\history.txt"
-            bat "echo Version ${historyHeader} >> .\\doc\\history.txt"
-            bat "echo Version ${historyEntry} >> .\\doc\\history.txt"
-          }
-          echo "Retrieve edited history file section"
-          nodejs("Node 12") {
-            historyEntry = bat(returnStdout: true,
-                                script: """
-                                @echo off
-                                app-publisher --config-name pja --task-changelog-print-version ${env.NEXTVERSION}
-                                """)
-            //
-            // Re-set in environment for email template scripts
-            //
-            env.VERSION_CHANGELOG = "<font face=\"courier new\">" + historyEntry.replace("\r\n", "<br>").replace(" ", "&nbsp;") + "</font>"
+            echo "Retrieve edited history file section"
+            nodejs("Node 12") {
+              historyEntry = bat(returnStdout: true,
+                                  script: """
+                                  @echo off
+                                  app-publisher --config-name pja --task-changelog-print-version ${env.NEXTVERSION}
+                                  """)
+              //
+              // Re-set in environment for email template scripts
+              //
+              env.VERSION_CHANGELOG = "<font face=\"courier new\">" + historyEntry.replace("\r\n", "<br>").replace(" ", "&nbsp;") + "</font>"
+            }
           }
         }
       }
