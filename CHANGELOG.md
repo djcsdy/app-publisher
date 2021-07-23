@@ -1,5 +1,11 @@
 # APP-PUBLISHER CHANGE LOG
 
+## Version 3.5.3 (July 23rd, 2021)
+
+### Refactoring
+
+- **Changelog:** remove the following release control tags from any changelog commit messages when constructing the notes for a changelog file entry: [release-*][*-release]
+
 ## Version 3.5.2 (July 19th, 2021)
 
 ### Bug Fixes
