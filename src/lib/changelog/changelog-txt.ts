@@ -144,7 +144,7 @@ export class ChangelogTxt extends Changelog
                 //
                 let newText,
                     match: RegExpExecArray;
-                const regex = new RegExp(/(?<=[^ ])[\(][a-z0-9\- ]*[\)]\s*[:][ ]{0,}/gmi);
+                const regex = new RegExp(/(?<=[^ ])[\(][a-z0-9\- .]*[\)]\s*[:][ ]{0,}/gmi);
                 while ((match = regex.exec(msg)) !== null) // subject - all lower case, or numbers
                 {
                     newText = match[0].replace("(", "");
