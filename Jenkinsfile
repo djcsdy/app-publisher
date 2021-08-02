@@ -15,8 +15,15 @@ pipeline {
 
   parameters {
     booleanParam(defaultValue: false,
+                 description: 'Force Build',
+                 name: 'RELEASE_FORCE')
+    booleanParam(defaultValue: false,
                  description: 'Production Release',
                  name: 'RELEASE_PRODUCTION')
+    string(defaultValue: '',
+           description: 'Force Next Version',
+           name: 'RELEASE_VERSION',
+           trim: true)
   }
 
   stages {
@@ -68,14 +75,13 @@ pipeline {
         // Check for [skip ci] tag on last commit
         //
         script {
-          echo "here"
           def allJob = env.JOB_NAME.replace("%2F", "/").tokenize('/') as String[]
           env.PROJECT_NAME = allJob[0]    // required for email template
           env.PROJECT_BRANCH = allJob[1]  // required for email template - [1] assumes /trunk
-          echo "here2"
           env.SKIP_CI = "false"
           env.RELEASE_PRODUCTION = "false"
           env.RELEASE_SKIP_APPROVAL = "false"
+          env.RELEASE_VERSION = ""
           //
           // Set variables to use throughout build process by examining the commit messages.
           // For SVN, its once commit per changeset (whereas Got could have multiple commits per changeset)
@@ -133,6 +139,14 @@ pipeline {
           //
           if (params.RELEASE_PRODUCTION == true) {
             env.RELEASE_PRODUCTION = params.RELEASE_PRODUCTION
+          }
+          if (params.RELEASE_VERSION != "") {
+            echo "Build parameter RELEASE_VERSION is set: ${params.RELEASE_VERSION}"
+            env.RELEASE_VERSION = params.RELEASE_VERSION
+          }
+          if (params.RELEASE_FORCE == true) {
+            echo "Build parameter RELEASE_FORCE is set, reset SKIP_CI"
+            env.SKIP_CI = "false"
           }
           if (env.BRANCH_NAME != null && env.BRANCH_NAME != "trunk") {
             env.PROJECT_BRANCH = allJob[2]  // [2] is branch name project/branches/branchname
@@ -442,7 +456,7 @@ pipeline {
     //
     stage("Notify") {
       when {
-        expression { env.SKIP_CI == "false" && currentBuild.result != "NOT_BUILT" }
+        expression { env.SKIP_CI == "false" }
       }
       steps {
         //
@@ -499,6 +513,12 @@ pipeline {
     // ALWAYS
     //
     always {
+      script {
+        if (env.SKIP_CI == "true") {
+          echo "Set build status to NOT_BUILT"
+          currentBuild.result = 'NOT_BUILT'
+        }
+      }
       echo "Build finished: Status ${currentBuild.result}" 
     }
     //
@@ -508,10 +528,8 @@ pipeline {
       echo "Build failed" 
       script {
         if (env.SKIP_CI == "false") {
-          if (currentBuild.result != "NOT_BUILT") {
-            echo "Add issue to Mantis"
-            mantisIssueAdd keepTicketPrivate: true, threshold: 'failureOrUnstable'
-          }
+          echo "Add issue to Mantis"
+          mantisIssueAdd keepTicketPrivate: true, threshold: 'failureOrUnstable'
         }
       }
       echo "Send notification email"
