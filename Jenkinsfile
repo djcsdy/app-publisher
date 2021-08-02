@@ -110,10 +110,12 @@ pipeline {
                 // If the [skip ci] tag is found in the last commit, then exit
                 //
                 if (i == 0 && j == 0) {
-                  if (entry.msg.indexOf("[skip-ci]") != -1 || entry.msg.indexOf("[skip ci]") != -1 || entry.msg.indexOf("[skipci]") != -1) {
+                  //
+                  // If the [skip ci] or [ci skip] tag is found in the last commit, then don't build
+                  //
+                  if (entry.msg.indexOf("[skip-ci]") != -1 || entry.msg.indexOf("[skip ci]") != -1 || entry.msg.indexOf("[skipci]") != -1 ||
+                      entry.msg.indexOf("[ci-skip]") != -1 || entry.msg.indexOf("[ci skip]") != -1 || entry.msg.indexOf("[ciskip]") != -1) {
                     echo "The 'skip ci' tag was found in the last commit"
-                    echo "Set build statis to NOT_BUILT"
-                    currentBuild.result = 'NOT_BUILT'
                     env.SKIP_CI = "true"
                   }
                   //
