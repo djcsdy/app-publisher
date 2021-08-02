@@ -89,7 +89,7 @@ pipeline {
           //
           def changeLogSets = currentBuild.changeSets
           if (changeLogSets.size() == 0) {
-            echo "   No commits exist, probably another f*over by this dumb SVN plugin using timestamps"
+            echo "   No commits exist, set skip-ci flag"
             env.SKIP_CI = "true";
           }
           for (int i = 0; i < changeLogSets.size(); i++) {
