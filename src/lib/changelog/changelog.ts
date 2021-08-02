@@ -118,7 +118,7 @@ export abstract class Changelog implements IChangelog
      */
     cleanMessage(msg: string)
     {
-        let fmtMsg = msg.replace(/[ \r\n]*\[[ ]*(?:skip[ \-]*ci|[a-z\-]+\-release|release\-[a-z\-]+)[ ]*\]/gmi, (m): string =>
+        let fmtMsg = msg.replace(/[ \r\n]*\[[ ]*(?:skip[ \-]*ci|ci[ \-]*skip|[a-z\-]+\-release|release\-[a-z\-]+)[ ]*\]/gmi, (m): string =>
         {
             return "";
         })

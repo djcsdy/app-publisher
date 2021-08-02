@@ -63,7 +63,7 @@ export class ChangelogTxt extends Changelog
             {   //
                 // Remove CI related tags
                 //
-                msg = msg.replace(/[ ]*\[skip[\- ]+ci\]/, "");
+                msg = msg.replace(/[ ]*\[skip[\- ]+ci\]/, "").replace(/[ ]*\[ci[\- ]+skip\]/, "");
                 //
                 // Replace commitz tags with full text (non-scoped)
                 //
