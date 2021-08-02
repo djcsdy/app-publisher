@@ -122,6 +122,13 @@ pipeline {
                   if (entry.msg.indexOf("[release-skip-approval]") != -1) {
                     env.RELEASE_SKIP_APPROVAL = "true"
                   }
+                  //
+                  // Check new branch default msg
+                  //
+                  if (entry.msg.indexOf("Created new branch") != -1) {
+                    echo "The 'Created new branch' text was found in the last commit"
+                    env.SKIP_CI = "true"
+                  }
                 }
                 //
                 // List files in this commit
