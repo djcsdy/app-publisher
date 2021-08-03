@@ -16,7 +16,7 @@ export = getCommits;
  */
 async function getCommits(context: IContext): Promise<ICommit[]>
 {
-    let commits: ICommit[] = [];
+    const commits: ICommit[] = [];
     const { cwd, env, options, lastRelease: { head }, logger } = context;
 
     if (head) {
@@ -28,30 +28,28 @@ async function getCommits(context: IContext): Promise<ICommit[]>
 
     if (options.repoType === "git")
     {
-        function processCommits(commit: any)
-        {
-            const c = {
-                author: commit.author,
-                committer: commit.committer,
-                gitTags: commit.gitTags.trim(),
-                hash: commit.hash,
-                message: commit.message.trim(),
-                committerDate: commit.committerDate,
-                scope: undefined,
-                subject: undefined
-            };
-            parseCommitMessage(context, c, commits);
-            return c;
-        }
-
         Object.assign(gitLogParser.fields, { hash: "H", message: "B", gitTags: "d", committerDate: { key: "ci", type: Date } });
 
-        (await getStream.array(
+        const gitCommits: ICommit[] = await getStream.array(
             gitLogParser.parse({
                 _: `${head ? head + ".." : ""}HEAD` }, { cwd, env: { ...process.env, ...env }
             })
-        ))
-        .map(processCommits);
+        );
+
+        gitCommits.forEach((c) => {
+            if (c) {
+                parseCommitMessage(context, {
+                    author: c.author,
+                    committer: c.committer,
+                    gitTags: c.gitTags.trim(),
+                    hash: c.hash,
+                    message: c.message.trim(),
+                    committerDate: c.committerDate,
+                    scope: undefined,
+                    subject: undefined
+                }, commits);
+            }
+        });
     }
     else if (options.repoType === "svn")
     {
@@ -77,7 +75,7 @@ async function getCommits(context: IContext): Promise<ICommit[]>
         //    </logentry>
         // </log>
 
-        let xml;
+        let xml: string;
         const svnUser = env.SVN_AUTHOR_NAME,
               svnToken = env.SVN_TOKEN,
               parser = new xml2js.Parser();
@@ -213,7 +211,7 @@ function parseCommitMessage(context: IContext, commit: ICommit, commits: ICommit
     let match: RegExpExecArray,
         nCommit: ICommit;
 
-    while ((match = regex.exec(nCommit.message)) !== null)
+    while ((match = regex.exec(commit.message)) !== null)
     {
         nCommit = { ...commit };
         if (options.verbose) {
