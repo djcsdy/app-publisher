@@ -209,14 +209,14 @@ function sortCommitMessages(context: IContext, commits: ICommit[])
         if (c1subj.startsWith("min") || c1subj.endsWith("min")) {
             c1subj = c1subj.replace("min", "");
         }
-        if (c2subj.startsWith("min") || c1subj.endsWith("min")) {
+        if (c2subj.startsWith("min") || c2subj.endsWith("min")) {
             c2subj = c2subj.replace("min", "");
         }
 
         if (c1subj === "build") {
             return 1;
         }
-        else if (c1subj === "build") {
+        else if (c2subj === "build") {
             return -1;
         }
         else if (c1subj === "ci") {
