@@ -147,54 +147,13 @@ async function getCommits(context: IContext): Promise<ICommit[]>
     }
 
     //
-    // Sort
+    // Sort by subject
     //
-    if (options.verbose) {
-        logger.info("Sorting commit messages");
-    }
-    commits.sort((c1: ICommit, c2: ICommit) =>
-    {
-        const c1subj = c1.subject !== "fix" ? c1.subject : "bug fix",
-              c2subj = c2.subject !== "fix" ? c2.subject : "bug fix";
-        if (c1subj === "build") {
-            return 1;
-        }
-        else if (c1subj === "build") {
-            return -1;
-        }
-        else if (c1subj === "ci") {
-            return c2subj === "build" ? -1 : 1;
-        }
-        else if (c2subj === "ci") {
-            return c1subj === "build" ? 1 : -1;
-        }
-        else if (c1subj && c2subj) {
-            return c1subj.localeCompare(c2subj);
-        }
-        else if (c1subj) {
-            return -1;
-        }
-        else if (c2subj) {
-            return 1;
-        }
-        const a = c1.message,
-              b = c2.message;
-        if (a && b) {
-            if (/^[a-z]+\([a-z0-9\- ]*\)\s*: *|^[a-z]+\s*: */g.test(a) && /^[a-z]+\([a-z0-9\- ]*\)\s*: *|^[a-z]+\s*: */g.test(b)) {
-                return a.localeCompare(b);
-            }
-            else if (/^[a-z]+\([a-z0-9\- ]*\)\s*: *|^[a-z]+\s*: */g.test(a)) {
-                return -1;
-            }
-            else if (/^[a-z]+\([a-z0-9\- ]*\)\s*: *|^[a-z]+\s*: */g.test(b)) {
-                return 1;
-            }
-        }
-        if (!a) return 1;
-        if (!b) return -1;
-        return 0;
-    });
+    sortCommitMessages(context, commits);
 
+    //
+    // Done
+    //
     logger.info(`Found ${commits.length} commits since last release`);
     if (options.verbose) {
         context.stdout.write(`Parsed commits:${EOL}${commits.map((c) => c.message).join(EOL)}${EOL}`);
@@ -233,4 +192,64 @@ function parseCommitMessage(context: IContext, commit: ICommit, commits: ICommit
         nCommit.subject = match[1];
         commits.push(nCommit);
     }
+}
+
+
+function sortCommitMessages(context: IContext, commits: ICommit[])
+{
+    const { options, logger } = context;
+
+    logger.info("Sorting commit messages");
+
+    commits.sort((c1: ICommit, c2: ICommit) =>
+    {
+        let c1subj = c1.subject !== "fix" ? c1.subject : "bug fix",
+            c2subj = c2.subject !== "fix" ? c2.subject : "bug fix";
+
+        if (c1subj.startsWith("min") || c1subj.endsWith("min")) {
+            c1subj = c1subj.replace("min", "");
+        }
+        if (c2subj.startsWith("min") || c1subj.endsWith("min")) {
+            c2subj = c2subj.replace("min", "");
+        }
+
+        if (c1subj === "build") {
+            return 1;
+        }
+        else if (c1subj === "build") {
+            return -1;
+        }
+        else if (c1subj === "ci") {
+            return c2subj === "build" ? -1 : 1;
+        }
+        else if (c2subj === "ci") {
+            return c1subj === "build" ? 1 : -1;
+        }
+        else if (c1subj && c2subj) {
+            return c1subj.localeCompare(c2subj);
+        }
+        else if (c1subj) {
+            return -1;
+        }
+        else if (c2subj) {
+            return 1;
+        }
+
+        const a = c1.message,
+              b = c2.message;
+        if (a && b) {
+            if (/^[a-z]+\([a-z0-9\- ]*\)\s*: *|^[a-z]+\s*: */g.test(a) && /^[a-z]+\([a-z0-9\- ]*\)\s*: *|^[a-z]+\s*: */g.test(b)) {
+                return a.localeCompare(b);
+            }
+            else if (/^[a-z]+\([a-z0-9\- ]*\)\s*: *|^[a-z]+\s*: */g.test(a)) {
+                return -1;
+            }
+            else if (/^[a-z]+\([a-z0-9\- ]*\)\s*: *|^[a-z]+\s*: */g.test(b)) {
+                return 1;
+            }
+        }
+        if (!a) return 1;
+        if (!b) return -1;
+        return 0;
+    });
 }
