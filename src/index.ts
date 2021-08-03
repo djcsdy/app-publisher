@@ -477,7 +477,10 @@ async function runRelease(context: IContext)
     //
     if (!options.versionForceCurrent && !needNoCommits)
     {   //
-        // Get version using release level bump.  Sets to FIRST_RELEASE if no previous release.
+        // Get version using release level bump.  Sets to FIRST_RELEASE if no previous release and a
+        // version was not extracted from local files.  Technically that latter case should never happen,
+        // there should always be a version file that the current/last version has been extracted from,
+        // and will be set to lastRelease.versionInfo.version.
         //
         nextRelease.versionInfo = getNextVersion(context);
         //
@@ -498,10 +501,12 @@ async function runRelease(context: IContext)
         else {
             nextRelease.version = nextRelease.versionInfo.version;
             //
-            // Note that in the case of firstRelease == true, nextRelease.version == FIRST_RELEASE,
-            // lastRelease.version == undefined, and lastRelease.versionInfo.version == current_file_version
+            // Note that in the case of firstRelease == true, nextRelease.version == FIRST_RELEASE
+            // if no version was extracted from the local files, lastRelease.version == undefined,
+            // and lastRelease.versionInfo.version == current_file_version
             //
-            const firstReleaseMismatch = firstRelease && semver.gt(semver.coerce(lastRelease.versionInfo.version), semver.coerce(nextRelease.version));
+            const firstReleaseMismatch = firstRelease && semver.gt(semver.coerce(lastRelease.versionInfo.version),
+                                                                   semver.coerce(nextRelease.version));
             if (options.promptVersion === "Y" || (options.noCi && firstReleaseMismatch))
             {
                 if (firstRelease && options.promptVersion !== "Y") {
@@ -509,7 +514,8 @@ async function runRelease(context: IContext)
                     logger.log("    1. The 'no-ci' and 'first-release' flags are set");
                     logger.log(`    2. The version extracted from local files ${lastRelease.versionInfo.version} > ${FIRST_RELEASE}`);
                 }
-                nextRelease.version = await promptForVersion(lastRelease.version, lastRelease.versionInfo.system, nextRelease.version || FIRST_RELEASE, logger);
+                nextRelease.version = await promptForVersion(lastRelease.version, lastRelease.versionInfo.system,
+                                                             nextRelease.version || FIRST_RELEASE, logger);
                 if (!nextRelease.version) {
                     return false;
                 }

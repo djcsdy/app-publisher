@@ -73,6 +73,6 @@ async function getLastRelease(context: IContext, lastVersionInfo: IVersionInfo):
         head: undefined,
         tag: undefined,
         version: undefined,
-        versionInfo: undefined
+        versionInfo: lastVersionInfo
     };
 }
