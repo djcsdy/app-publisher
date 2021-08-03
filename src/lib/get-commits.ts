@@ -1,9 +1,10 @@
 import gitLogParser from "git-log-parser";
 import getStream from "get-stream";
-import { EOL } from "os";
-import { IChangelogEntry, ICommit, IContext } from "../interface";
 const execa = require("execa");
 const xml2js = require("xml2js");
+import regexes from "./definitions/regexes";
+import { EOL } from "os";
+import { IChangelogEntry, ICommit, IContext } from "../interface";
 
 export = getCommits;
 
@@ -37,18 +38,16 @@ async function getCommits(context: IContext): Promise<ICommit[]>
         );
 
         gitCommits.forEach((c) => {
-            if (c) {
-                parseCommitMessage(context, {
-                    author: c.author,
-                    committer: c.committer,
-                    gitTags: c.gitTags.trim(),
-                    hash: c.hash,
-                    message: c.message.trim(),
-                    committerDate: c.committerDate,
-                    scope: undefined,
-                    subject: undefined
-                }, commits);
-            }
+            commits.push(...parseCommitMessage(context, {
+                author: c.author,
+                committer: c.committer,
+                gitTags: c.gitTags.trim(),
+                hash: c.hash,
+                message: c.message.trim(),
+                committerDate: c.committerDate,
+                scope: undefined,
+                subject: undefined
+            }));
         });
     }
     else if (options.repoType === "svn")
@@ -120,7 +119,7 @@ async function getCommits(context: IContext): Promise<ICommit[]>
                         scope: undefined,
                         subject: undefined
                     };
-                    parseCommitMessage(context, commit, commits);
+                    commits.push(...parseCommitMessage(context, commit));
                 }
                 if (logEntry.logentry) { // merged commit list?
                     parseCommits(logEntry.logentry);
@@ -154,7 +153,7 @@ async function getCommits(context: IContext): Promise<ICommit[]>
     //
     // Done
     //
-    logger.info(`Found ${commits.length} commits since last release`);
+    logger.info(`Found ${commits.length} messages in commits since last release`);
     if (options.verbose) {
         context.stdout.write(`Parsed commits:${EOL}${commits.map((c) => c.message).join(EOL)}${EOL}`);
     }
@@ -163,35 +162,40 @@ async function getCommits(context: IContext): Promise<ICommit[]>
 }
 
 
-function parseCommitMessage(context: IContext, commit: ICommit, commits: ICommit[])
+function parseCommitMessage(context: IContext, commit: ICommit)
 {
-    const { options, logger } = context;
-    let regex = /^([a-z]+)\(([a-z0-9\- ]*)\)\s*: */gmi;
+    const { options, logger } = context,
+          commits: ICommit[] = [];
+    let regex = new RegExp(regexes.CHANGELOG_MULTI_SUBJECT_SCOPE);
     let match: RegExpExecArray,
         nCommit: ICommit;
 
-    while ((match = regex.exec(commit.message)) !== null)
+    while ((match = regex.exec(commit.message + "ENDMESSAGE")) !== null)
     {
         nCommit = { ...commit };
         if (options.verbose) {
             logger.log(`   Extracted subject ${match[1]} from commit message`);
             logger.log(`   Extracted scope ${match[2]} from commit message`);
         }
+        nCommit.message = match[0];
         nCommit.subject = match[1];
         nCommit.scope = match[2];
         commits.push(nCommit);
     }
 
-    regex = /^([a-z]+)\s*: */gmi;
+    regex = new RegExp(regexes.CHANGELOG_MULTI_SUBJECT);
     while ((match = regex.exec(commit.message)) !== null)
     {
         nCommit = { ...commit };
         if (options.verbose) {
             logger.log(`   Extracted subject ${match[1]} from commit message`);
         }
+        nCommit.message = match[0];
         nCommit.subject = match[1];
         commits.push(nCommit);
     }
+
+    return commits;
 }
 
 

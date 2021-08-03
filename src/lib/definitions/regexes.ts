@@ -17,6 +17,8 @@ const ISSUES = /\[{0,1}(?:&nbsp;| )*((?:bugs?|issues?|closed?s?|fixe?d?s?|resolv
 const ISSUE_TAG = /(?:bugs?|issues?|closed?s?|fixe?d?s?|resolved?s?|refs?|references?)/gmi;
 const CHANGELOG_SKIPPED_COMMIT = / *(?:chore?|progress?|style?|project?|ci|tests?) ?[:(]{1}/i;
 const CHANGELOG_SUBJECT_SCOPE = /(?:^[0-9]{1,2}\. +([\w ]+)+(?::  ([\w -_]+))*([^]*?))(?=^[0-9]{1,2}\.|###END###)/gmi;
+const CHANGELOG_MULTI_SUBJECT_SCOPE = /^([a-z]+)\(([a-z0-9\- ]*)\)[ ]*:[ ]*([^]*?)((?=[\r\n]+(?:[a-z]+)\((?:[a-z0-9\- ]*)\)[ ]*:[ ]*|ENDMESSAGE))/gmi;
+const CHANGELOG_MULTI_SUBJECT = /^([a-z]+)[ ]*:[ ]*([^]*?)((?=[\r\n]+(?:[a-z]+)[ ]*:[ ]*|ENDMESSAGE))/gmi;
 
 const CHANGELOG_TXT_VERSION_SECTION = (versionText: string) => {
     return new RegExp(`(?:^${versionText} ([0-9a-zA-Z\\-\\.]{3,})[\r\n]+.+[\r\n]+[\\-]{20,}[\r\n]+[\\*]{20,}[^]+?(?=[\\*]{20,})[\\*]{20,}[\r\n]+)([^]*?)(?=^${versionText}|###END###)`, "gm");
@@ -42,6 +44,8 @@ const HELP_LINK = /\[([\w _-]+)\]\(((?:#|http)[\w\:\.\/\-\_]+)\)/gmi;
 
 const regexes = {
   CHANGELOG_MD_VERSION_SECTION,
+  CHANGELOG_MULTI_SUBJECT,
+  CHANGELOG_MULTI_SUBJECT_SCOPE,
   CHANGELOG_SKIPPED_COMMIT,
   CHANGELOG_SUBJECT_SCOPE,
   CHANGELOG_TXT_VERSION_SECTION,
