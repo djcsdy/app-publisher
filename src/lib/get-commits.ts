@@ -40,13 +40,13 @@ async function getCommits(context: IContext): Promise<ICommit[]>
                 scope: undefined,
                 subject: undefined
             };
-            parseCommitMessage(context, c);
+            parseCommitMessage(context, c, commits);
             return c;
         }
 
         Object.assign(gitLogParser.fields, { hash: "H", message: "B", gitTags: "d", committerDate: { key: "ci", type: Date } });
 
-        commits = (await getStream.array(
+        (await getStream.array(
             gitLogParser.parse({
                 _: `${head ? head + ".." : ""}HEAD` }, { cwd, env: { ...process.env, ...env }
             })
@@ -122,8 +122,7 @@ async function getCommits(context: IContext): Promise<ICommit[]>
                         scope: undefined,
                         subject: undefined
                     };
-                    parseCommitMessage(context, commit);
-                    commits.push(commit);
+                    parseCommitMessage(context, commit, commits);
                 }
                 if (logEntry.logentry) { // merged commit list?
                     parseCommits(logEntry.logentry);
@@ -207,29 +206,33 @@ async function getCommits(context: IContext): Promise<ICommit[]>
 }
 
 
-function parseCommitMessage(context: IContext, commit: ICommit)
+function parseCommitMessage(context: IContext, commit: ICommit, commits: ICommit[])
 {
     const { options, logger } = context;
     let regex = /^([a-z]+)\(([a-z0-9\- ]*)\)\s*: */gmi;
-    let match: RegExpExecArray;
-    if ((match = regex.exec(commit.message)) !== null)
+    let match: RegExpExecArray,
+        nCommit: ICommit;
+
+    while ((match = regex.exec(nCommit.message)) !== null)
     {
+        nCommit = { ...commit };
         if (options.verbose) {
             logger.log(`   Extracted subject ${match[1]} from commit message`);
             logger.log(`   Extracted scope ${match[2]} from commit message`);
         }
-        commit.subject = match[1];
-        commit.scope = match[2];
+        nCommit.subject = match[1];
+        nCommit.scope = match[2];
+        commits.push(nCommit);
     }
-    else
+
+    regex = /^([a-z]+)\s*: */gmi;
+    while ((match = regex.exec(commit.message)) !== null)
     {
-        regex = /^([a-z]+)\s*: */gmi;
-        if ((match = regex.exec(commit.message)) !== null)
-        {
-            if (options.verbose) {
-                logger.log(`   Extracted subject ${match[1]} from commit message`);
-            }
-            commit.subject = match[1];
+        nCommit = { ...commit };
+        if (options.verbose) {
+            logger.log(`   Extracted subject ${match[1]} from commit message`);
         }
+        nCommit.subject = match[1];
+        commits.push(nCommit);
     }
 }
