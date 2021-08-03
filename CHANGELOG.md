@@ -1,5 +1,20 @@
 # APP-PUBLISHER CHANGE LOG
 
+## Version 3.5.4 (August 3rd, 2021)
+
+### Bug Fixes
+
+- **Changelog:** if a 'build' subject tag is present in a set of commits that a changelog section is being constructed from, some messages are not sorted properly.
+- **Changelog:** the 'min' versions of the commit tags, i.e. 'featmin', 'minfeat', 'perfmin', etc, are not being grouped correctly when sorted.
+- **Changelog:** commit messages that include more than one subject/scope do not get numbered correctly in a text type changelog.
+- **Changelog:** commit messages that include more than one subject/scope do not get listed separately in a markdown type changelog.
+- **General:** the publish run fails if there is no previous version tag in the repository.
+- **Changelog:** including a '.' character in the commit message's scope causes it to not be formatted correctly when building a changelog section.
+
+### Refactoring
+
+- **Changelog:** add additional variations of the ci skip tags that are to be removed from commit messages when building a changelog section: 'ci-skip', 'ciskip', and 'ci skip'.
+
 ## Version 3.5.3 (July 23rd, 2021)
 
 ### Refactoring
