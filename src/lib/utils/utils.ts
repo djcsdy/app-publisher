@@ -407,6 +407,16 @@ export async function runScripts(context: IContext, scriptType: string, scripts:
 }
 
 
+export function textWithElipses(text: string, maxlength?: number)
+{
+    if (text && maxlength && text.length > maxlength)
+    {
+        text = text.substring(0, maxlength - 3) + "...";
+    }
+    return text;
+}
+
+
 export function validateVersion(version: string, system?: "auto" | "incremental" | "semver", lastVersion?: string, logger?: any)
 {
     if (logger) {
