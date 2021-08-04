@@ -33,7 +33,7 @@
     "emailSender":       "Scott Meesseman <scott@spmeesseman.com>",
     "emailServer":       "mail.spmeesseman.com",
     "emailHrefs":        [
-        "<a href=\"https://github.com/spmeesseman/app-publisher/blob/master/CHANGELOG.md\">Changelog</a>"
+        "https://github.com/spmeesseman/code-package/blob/master/CHANGELOG.md|Changelog|Changelog"
     ],
     "githubRelease":     "Y",
     "githubAssets":      [
