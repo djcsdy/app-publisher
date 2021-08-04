@@ -1,5 +1,12 @@
 # APP-PUBLISHER CHANGE LOG
 
+## Version 3.5.5 (August 4th, 2021)
+
+### Bug Fixes
+
+- **Versioning:** a 'visual' commit subject does not increment the patch version.
+- **Changelog:** v3.5.4 regression - commit messages without a scope are no longer added when constructing a changelog section.
+
 ## Version 3.5.4 (August 3rd, 2021)
 
 ### Bug Fixes
