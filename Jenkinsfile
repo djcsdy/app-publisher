@@ -229,11 +229,17 @@ pipeline {
                                      """)
             if (env.TAG_NAME == null) {
               echo "This is not /tags - update version files"
-              env.NEXTVERSION = bat(returnStdout: true,
-                                    script: """
-                                      @echo off
-                                      app-publisher --config-name pja --task-version-next
-                                    """)
+              if (env.RELEASE_VERSION != "") {
+                echo "Next version is set by build parameter"
+                env.NEXTVERSION = env.RELEASE_VERSION
+              }
+              else {
+                env.NEXTVERSION = bat(returnStdout: true,
+                                      script: """
+                                        @echo off
+                                        app-publisher --config-name pja --task-version-next
+                                      """)
+              }
               if (env.CURRENTVERSION != env.NEXTVERSION) {
                 echo "Version bumped, a release will be performed"
                 env.RELEASE_PRODUCTION = "true"
@@ -261,7 +267,12 @@ pipeline {
                   // Update version files
                 //
                 echo "Update version files"
-                bat "app-publisher --config-name pja --task-version-update"
+                if (env.RELEASE_VERSION == "") {
+                  bat "app-publisher --config-name pja --task-version-update"
+                }
+                else {
+                  bat "app-publisher --config-name pja --task-version-update --version-force-next ${env.RELEASE_VERSION}"
+                }
             }
           }
         }
@@ -438,7 +449,12 @@ pipeline {
               // NPM and MantisBT Release
               //
               echo "Perform NPM and MantisBT Releases"
-              bat "app-publisher --config-name pja --task-mantisbt-release --task-npm-release --version-force-next ${env.NEXTVERSION}"
+              if (env.RELEASE_VERSION == "") {
+                bat "app-publisher --config-name pja --task-mantisbt-release --task-npm-release"
+              }
+              else {
+                bat "app-publisher --config-name pja --task-mantisbt-release --task-npm-release --version-force-next ${env.RELEASE_VERSION}"
+              }
             }
           }
         }
