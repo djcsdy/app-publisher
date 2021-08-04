@@ -214,10 +214,6 @@ pipeline {
               error(".publishrc.pja.json not found, cannot run app-publisher")
             }
             //
-            // Display AppPublisher version
-            //
-            bat "app-publisher --version"
-            //
             // Get version info
             //
             //env.CURRENTVERSION = stdout.split("|")[0]
