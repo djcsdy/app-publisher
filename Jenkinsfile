@@ -427,8 +427,14 @@ pipeline {
               //
               // Re-set in environment for email template scripts
               //
-              env.ARTIFACT_CHANGELOG_FILE = historyEntry
+              def tmpDir = "${WORKSPACE_TMP}\\doc"
+              def tmpDirExists = fileExists tmpDir
+              if (tmpDirExists == false) {
+                bat "mkdir ${tmpDir}"
+              }
+              env.ARTIFACT_CHANGELOG_FILE = "${tmpDir}\\history-v${NEXTVERSION}.txt"
               env.VERSION_CHANGELOG = "<font face=\"courier new\">" + historyEntry.replace("\r\n", "<br>").replace(" ", "&nbsp;") + "</font>"
+              writeFile file: env.ARTIFACT_CHANGELOG_FILE, text: historyEntry
             }
           }
         }
