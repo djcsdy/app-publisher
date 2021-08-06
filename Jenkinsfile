@@ -329,13 +329,6 @@ pipeline {
           def historyHeader = ""
           echo "Approval needed for Version ${env.NEXTVERSION} History File Changelog"
           //
-          // Open history.txt file in notepad using utility server listening on 4322
-          //
-          echo "Jenkins-utility-server: Send request to open history.txt in Notepad"
-          def jsonEncWs = WORKSPACE.replace("\\", "\\\\") as String
-          def bodyJson = "{\"path\": \"${jsonEncWs}\\\\doc\\\\history.txt\", \"token\": \"${env.JENKINS_UTILITY_SERVER_TOKEN}\"}"
-          httpRequest acceptType: 'APPLICATION_JSON', contentType: 'APPLICATION_JSON', httpMode: 'POST', requestBody: bodyJson, url: "http://localhost:4322/openfile"
-          //
           // Populate and open history.txt in Notepad, then will wait for user intervention
           //
           nodejs("Node 12") {
@@ -353,6 +346,13 @@ pipeline {
             env.VERSION_CHANGELOG = "<font face=\"courier new\">" + historyEntry.replace("\r\n", "<br>").replace(" ", "&nbsp;") + "</font>"
           }
           if (env.RELEASE_SKIP_APPROVAL != "true") {
+            //
+            // Open history.txt file in notepad using utility server listening on 4322
+            //
+            echo "Jenkins-utility-server: Send request to open history.txt in Notepad"
+            def jsonEncWs = WORKSPACE.replace("\\", "\\\\") as String
+            def bodyJson = "{\"path\": \"${jsonEncWs}\\\\doc\\\\history.txt\", \"token\": \"${env.JENKINS_UTILITY_SERVER_TOKEN}\"}"
+            httpRequest acceptType: 'APPLICATION_JSON', contentType: 'APPLICATION_JSON', httpMode: 'POST', requestBody: bodyJson, url: "http://localhost:4322/openfile"
             //
             // Notify of input required
             //
