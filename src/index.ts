@@ -661,19 +661,13 @@ async function runRelease(context: IContext)
     //
     // Build scripts
     //
-    if (options.buildCommand && options.buildCommand.length > 0 && (!options.taskMode || options.taskBuild))
+    if (options.buildCommand && options.buildCommand.length > 0 && !options.taskMode)
     {
         await util.runScripts(context, "build", options.buildCommand, options.taskBuild, true);
         //
         // Post-build scripts (.publishrc)
         //
         await util.runScripts(context, "postBuild", options.postBuildCommand, options.taskBuild);
-        //
-        // If this is task mode, log it
-        //
-        if (options.taskBuild) {
-            logTaskResult(true, "build", logger);
-        }
     }
 
     //
@@ -971,6 +965,22 @@ async function processTasksLevel1(context: IContext): Promise<string | boolean>
     {
         const hdr = await context.changelog.getHeader(context, options.taskChangelogHdrPrintVersion);
         context.stdout.write(hdr ?? "Error");
+        return true;
+    }
+
+    //
+    // Run build scripts
+    //
+    if (options.taskBuild)
+    {
+        if (options.buildCommand && options.buildCommand.length > 0)
+        {
+            await util.runScripts(context, "build", options.buildCommand, options.taskBuild, true);
+            //
+            // Post-build scripts (.publishrc)
+            //
+            await util.runScripts(context, "postBuild", options.postBuildCommand, options.taskBuild);
+        }
         return true;
     }
 
