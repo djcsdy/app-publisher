@@ -1,5 +1,12 @@
 # APP-PUBLISHER CHANGE LOG
 
+## Version 3.5.6 (August 5th, 2021)
+
+### Bug Fixes
+
+- **Tasks:** the --task-version-next task fails for an SVN project if no previous release has been made.
+- **Tasks:** the --task-version-current task returns 1.0.0 if no previous release has been made and disregards a validated version extracted from the local version files.
+
 ## Version 3.5.5 (August 4th, 2021)
 
 ### Bug Fixes
