@@ -84,15 +84,27 @@ async function getCommits(context: IContext): Promise<ICommit[]>
         //
         // Retrieve commits since last version tag
         //
-        logger.info(`Retrieving commits since last version (revision ${head})`);
+        logger.info(`Retrieving commits since last version (revision ${head ?? "n/a"})`);
 
         if (svnUser && svnToken) {
-            xml = await execa.stdout("svn", ["log", "--use-merge-history", "--xml", `${options.repo}`, "--verbose", "--limit", "250", "-r", `${head}:HEAD`,
-                                             "--non-interactive", "--no-auth-cache", "--username", svnUser, "--password", `${svnToken}`]);
+            if (head) {
+                xml = await execa.stdout("svn", ["log", "--use-merge-history", "--xml", `${options.repo}`, "--verbose", "--limit", "250", "-r", `${head}:HEAD`,
+                                                 "--non-interactive", "--no-auth-cache", "--username", svnUser, "--password", `${svnToken}`]);
+            }
+            else {
+                xml = await execa.stdout("svn", ["log", "--use-merge-history", "--xml", `${options.repo}`, "--verbose", "--limit", "250",
+                                                 "--non-interactive", "--no-auth-cache", "--username", svnUser, "--password", `${svnToken}`]);
+            }
         }
         else {
-            xml = await execa.stdout("svn", ["log", "--use-merge-history", "--xml", `${options.repo}`, "--verbose", "--limit", "250", "-r", `${head}:HEAD`,
-                                             "--non-interactive", "--no-auth-cache"]);
+            if (head) {
+                xml = await execa.stdout("svn", ["log", "--use-merge-history", "--xml", `${options.repo}`, "--verbose", "--limit", "250",
+                                                 "-r", `${head}:HEAD`, "--non-interactive", "--no-auth-cache"]);
+            }
+            else {
+                xml = await execa.stdout("svn", ["log", "--use-merge-history", "--xml", `${options.repo}`, "--verbose",
+                                                 "--limit", "250", "--non-interactive", "--no-auth-cache"]);
+            }
         }
         //
         // TODO - check execa rtn code?
