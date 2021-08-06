@@ -216,13 +216,17 @@ function parseCommitMessage(context: IContext, commit: ICommit)
         commits.push(nCommit);
     }
 
+    if (commits.length === 0) {
+        commits.push(commit);
+    }
+
     return commits;
 }
 
 
 function sortCommitMessages(context: IContext, commits: ICommit[])
 {
-    const { options, logger } = context;
+    const { logger } = context;
 
     logger.info("Sorting commit messages");
 
@@ -231,10 +235,10 @@ function sortCommitMessages(context: IContext, commits: ICommit[])
         let c1subj = c1.subject !== "fix" ? c1.subject : "bug fix",
             c2subj = c2.subject !== "fix" ? c2.subject : "bug fix";
 
-        if (c1subj.startsWith("min") || c1subj.endsWith("min")) {
+        if (c1subj && (c1subj.startsWith("min") || c1subj.endsWith("min"))) {
             c1subj = c1subj.replace("min", "");
         }
-        if (c2subj.startsWith("min") || c2subj.endsWith("min")) {
+        if (c2subj && (c2subj.startsWith("min") || c2subj.endsWith("min"))) {
             c2subj = c2subj.replace("min", "");
         }
 

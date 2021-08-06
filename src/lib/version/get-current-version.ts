@@ -74,9 +74,7 @@ async function getCurrentVersion(context: IContext): Promise<IVersionInfo>
             else {
                 versionInfo.version = v.version;
                 versionInfo.info = v.info;
-                if (!versionInfo.system || versionInfo.system === "auto") {
-                    versionInfo.system = v.system;
-                }
+                versionInfo.system = v.system;
             }
 
             lastType = type;
