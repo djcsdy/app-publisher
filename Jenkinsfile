@@ -288,6 +288,7 @@ pipeline {
       }
       steps {
         nodejs("Node 12") {
+          echo "Build project"
           bat "npm run clean-build"
           bat "npm run build"
         }
