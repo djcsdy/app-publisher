@@ -164,27 +164,31 @@ pipeline {
             env.RELEASE_PRODUCTION = "false"
             env.PROJECT_BRANCH = allJob[2]  // [2] is branch name project/branches/branchname
           }
-          echo "Release Parameters:"
-          echo "   Production release  : ${env.RELEASE_PRODUCTION} (tbd)"
-          echo "Build Environment:"
-          echo "   Project             : ${env.PROJECT_NAME}" 
-          echo "   Project branch/teg  : ${env.PROJECT_BRANCH}" 
-          echo "   Skip CI             : ${env.SKIP_CI}"
-          echo "   Skip Approvals      : ${env.RELEASE_SKIP_APPROVAL}" 
+          echo "Job Properties:"
+          echo "   Project               : ${currentBuild.projectName}"
+          echo "   Name                  : ${env.JOB_NAME}"
+          echo "   Branch Project        : ${env.PROJECT_NAME}"  
+          echo "   Branch                : ${env.PROJECT_BRANCH}"
           if (env.BRANCH_NAME != null) {
-            echo "   Branch              : ${env.BRANCH_NAME}"
+            echo "   Branch Path           : ${env.BRANCH_NAME}"
           }
           else {
-            echo "   Branch              : N/A"
+            echo "   Branch Path           : N/A"
           }
           if (env.TAG_NAME != null ) {
-            echo "   Tag                 : ${env.TAG_NAME}"
+            echo "   Tag Path              : ${env.TAG_NAME}"
           }
           else {
-            echo "   Tag                 : N/A"
+            echo "   Tag Path              : N/A"
           }
+          echo "Build Environment:"
+          echo "   Production release  : ${env.RELEASE_PRODUCTION} (tbd)"
+          echo "   Force Release       : ${env.RELEASE_FORCE}"
+          echo "   Force Version       : ${env.RELEASE_VERSION}"
+          echo "   Skip CI             : ${env.SKIP_CI}"
+          echo "   Skip Approvals      : ${env.RELEASE_SKIP_APPROVAL}"
         }
-      } 
+      }
     }
 
     //
