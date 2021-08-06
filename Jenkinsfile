@@ -329,14 +329,12 @@ pipeline {
           def historyHeader = ""
           echo "Approval needed for Version ${env.NEXTVERSION} History File Changelog"
           //
-          // Open hitory.txt file in notepad using utility server listening on 4322
+          // Open history.txt file in notepad using utility server listening on 4322
           //
-          echo "Send request to jenkins-utility-server to open history.txt in Notepad"
+          echo "Jenkins-utility-server: Send request to open history.txt in Notepad"
           def jsonEncWs = WORKSPACE.replace("\\", "\\\\") as String
-          def bodyJson = "{ \"path\": \"${jsonEncWs}\\\\doc\\\\history.txt\" }"
-          def response = httpRequest acceptType: 'APPLICATION_JSON', contentType: 'APPLICATION_JSON', httpMode: 'POST', requestBody: bodyJson, url: "http://localhost:4322/openfile"
-          echo "   Response code: ${response.status}"
-          echo "   Response body: ${response.content}"
+          def bodyJson = "{\"path\": \"${jsonEncWs}\\\\doc\\\\history.txt\", \"token\": \"${env.JENKINS_UTILITY_SERVER_TOKEN}\"}"
+          httpRequest acceptType: 'APPLICATION_JSON', contentType: 'APPLICATION_JSON', httpMode: 'POST', requestBody: bodyJson, url: "http://localhost:4322/openfile"
           //
           // Populate and open history.txt in Notepad, then will wait for user intervention
           //
