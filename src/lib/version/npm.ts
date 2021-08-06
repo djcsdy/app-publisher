@@ -1,5 +1,6 @@
 
 import glob from "glob";
+import { EOL } from "os";
 import * as path from "path";
 import { IContext, IVersionInfo } from "../../interface";
 import { addEdit } from "../repo";
@@ -118,11 +119,11 @@ export async function setNpmVersion(context: IContext, recordEditOnly: boolean)
         }
 
         if (modified) {
-            await writeFile(file, JSON.stringify(packageJson, undefined, 4));
+            await writeFile(file, JSON.stringify(packageJson, undefined, 4) + EOL);
             logger.log(`   Set version        : ${nextRelease.version} (package.json)`);
             if (packageLockFileExists)
             {
-                await writeFile(packageLockFile, JSON.stringify(packageLockJson, undefined, 4));
+                await writeFile(packageLockFile, JSON.stringify(packageLockJson, undefined, 4) + EOL);
                 logger.log(`   Set version        : ${nextRelease.version} (package-lock.json)`);
             }
         }

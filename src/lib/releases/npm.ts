@@ -6,10 +6,12 @@ import { addEdit, revert } from "../repo";
 import { createDir, pathExists, readFile, writeFile } from "../utils/fs";
 import { checkExitCode } from "../utils/utils";
 import { getNpmFile, setNpmVersion } from "../version/npm";
+import { EOL } from "os";
 const execa = require("execa");
 
 
 export let defaultBugs: string;
+export let defaultBugsEmail: string;
 export let defaultHomePage: string;
 export let defaultName: string;
 export let defaultRepo: string;
@@ -138,10 +140,16 @@ export async function setPackageJson(context: IContext)
           packageLockJson = packageLockFileExists ? JSON.parse(await readFile(packageLockFile)) : undefined;
 
     //
-    // A full publish run can modify the npm configs at runtime and have them restored to
-    // the defaults when finished.  In task mode, this isn't possible.
+    // Check for properties that have to exist in package.json in order to proceed
     //
-    if (options.repo && options.repo !== packageJson.repository.url)
+    if (!packageJson.name) {
+        return modified;
+    }
+
+    //
+    // Repository
+    //
+    if (options.repo && packageJson.repository && packageJson.repository.url && options.repo !== packageJson.repository.url)
     {
         logger.log("Setting repository in package.json");
         defaultRepo = packageJson.repository.url;
@@ -151,7 +159,10 @@ export async function setPackageJson(context: IContext)
         modified = true;
     }
 
-    if (options.repoType && options.repoType !== packageJson.repository.type)
+    //
+    // Repository Type
+    //
+    if (options.repoType && packageJson.repository && packageJson.repository.type && options.repoType !== packageJson.repository.type)
     {
         logger.log("Setting repository type in package.json");
         defaultRepoType = packageJson.repository.type;
@@ -161,7 +172,10 @@ export async function setPackageJson(context: IContext)
         modified = true;
     }
 
-    if (options.homePage && options.homePage !== packageJson.homepage)
+    //
+    // Home Page
+    //
+    if (options.homePage && packageJson.homepage && options.homePage !== packageJson.homepage)
     {
         logger.log("Setting homepage in package.json");
         defaultHomePage = packageJson.homepage;
@@ -171,13 +185,29 @@ export async function setPackageJson(context: IContext)
         modified = true;
     }
 
-    if (options.bugs && options.bugs !== packageJson.bugs.url)
+    //
+    // Bugs Page
+    //
+    if (options.bugs && packageJson.bugs && packageJson.bugs.url && options.bugs !== packageJson.bugs.url)
     {
         logger.log("Setting bugs page in package.json");
         defaultBugs = packageJson.bugs.url;
         logger.log("Bugs page: " + defaultBugs);
         logger.log("Setting bugs page in package.json: " + options.bugs);
         packageJson.bugs.url = options.bugs;
+        modified = true;
+    }
+
+    //
+    // Bugs Email
+    //
+    if (options.testEmailRecip && packageJson.bugs && packageJson.bugs.email && options.testEmailRecip !== packageJson.bugs.email)
+    {
+        logger.log("Setting bugs email in package.json");
+        defaultBugsEmail = packageJson.bugs.email;
+        logger.log("Bugs email: " + defaultBugsEmail);
+        logger.log("Setting bugs email in package.json: " + options.testEmailRecip);
+        packageJson.bugs.email = options.testEmailRecip;
         modified = true;
     }
 
@@ -213,11 +243,11 @@ export async function setPackageJson(context: IContext)
     }
 
     if (modified) {
-        await writeFile(file, JSON.stringify(packageJson, undefined, 4));
+        await writeFile(file, JSON.stringify(packageJson, undefined, 4) + EOL);
         await addEdit(context, file);
         if (packageLockFileExists)
         {
-            await writeFile(packageLockFile, JSON.stringify(packageLockJson, undefined, 4));
+            await writeFile(packageLockFile, JSON.stringify(packageLockJson, undefined, 4) + EOL);
             await addEdit(context, packageLockFile);
         }
     }
@@ -286,12 +316,22 @@ export async function restorePackageJson(context: IContext)
     }
 
     //
-    // Set bugs
+    // Set bugs page
     //
     if (defaultBugs)
     {
         logger.log(`Reset default bugs page in package.json: ${defaultBugs}`);
         packageJson.bugs.url = defaultBugs;
+        modified = true;
+    }
+
+    //
+    // Set bugs email
+    //
+    if (defaultBugsEmail)
+    {
+        logger.log(`Reset default bugs email in package.json: ${defaultBugsEmail}`);
+        packageJson.bugs.email = defaultBugsEmail;
         modified = true;
     }
 
@@ -325,11 +365,11 @@ export async function restorePackageJson(context: IContext)
     }
 
     if (modified) {
-        await writeFile(file, JSON.stringify(packageJson, undefined, 4));
+        await writeFile(file, JSON.stringify(packageJson, undefined, 4) + EOL);
         // await addEdit(context, file);
         if (packageLockFileExists)
         {
-            await writeFile(packageLockFile, JSON.stringify(packageLockJson, undefined, 4));
+            await writeFile(packageLockFile, JSON.stringify(packageLockJson, undefined, 4) + EOL);
             // await addEdit(context, packageLockFile);
         }
     }
