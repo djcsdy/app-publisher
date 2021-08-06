@@ -993,7 +993,7 @@ async function processTasksLevel2(context: IContext): Promise<string | boolean>
     //
     if (options.taskVersionCurrent)
     {
-        context.stdout.write(lastRelease.version || FIRST_RELEASE);
+        context.stdout.write(lastRelease.version || lastRelease.versionInfo.version ||  FIRST_RELEASE);
         // logTaskResult(true, "task version current", logger);
         return true;
     }
