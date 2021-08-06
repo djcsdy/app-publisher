@@ -434,6 +434,7 @@ pipeline {
               }
               env.ARTIFACT_CHANGELOG_FILE = "${tmpDir}\\history-v${NEXTVERSION}.txt"
               env.VERSION_CHANGELOG = "<font face=\"courier new\">" + historyEntry.replace("\r\n", "<br>").replace(" ", "&nbsp;") + "</font>"
+              echo "Write version-only history file artifact to '${env.ARTIFACT_CHANGELOG_FILE}'"
               writeFile file: env.ARTIFACT_CHANGELOG_FILE, text: historyEntry
             }
           }
