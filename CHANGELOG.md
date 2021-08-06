@@ -1,5 +1,16 @@
 # APP-PUBLISHER CHANGE LOG
 
+## Version 3.5.7 (August 6th, 2021)
+
+### Bug Fixes
+
+- **General:** regression - v3.5.4 breaks the publish run for projects using incremental type versioning.
+- **Tasks:** running the --task-build task should build the project in it's current state, without performing SCM verification and version calculation.
+
+### Refactoring
+
+- **Releases:** include a trailing EOL when modifying the package.json file, to give the same EOF format as that of when npm itself makes modifications to it.
+
 ## Version 3.5.6 (August 5th, 2021)
 
 ### Bug Fixes
