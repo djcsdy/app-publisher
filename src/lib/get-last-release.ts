@@ -38,11 +38,12 @@ async function getLastRelease(context: IContext, lastVersionInfo: IVersionInfo):
         }
         return isNumeric(v);
     };
+
     const doSort = (a: any, b: any) => {
         if (lastVersionInfo.system !== "incremental") {
             return semver.rcompare(a.version, b.version);
         }
-        return a === b ? 0 : (parseInt(a) > parseInt(b) ? -1 : 1);
+        return a.version === b.version ? 0 : (parseInt(a.version) > parseInt(b.version) ? -1 : 1);
     };
     //
     // Generate a regex to parse tags formatted with `tagFormat`
@@ -62,13 +63,13 @@ async function getLastRelease(context: IContext, lastVersionInfo: IVersionInfo):
 
     const tag: any = await pLocate(tags, (tag: any) => isRefInHistory(context, tag.tag, true), { preserveOrder: true });
 
-    if (tag)
+    if (tag && tag.version === lastVersionInfo.version)
     {
         logger.info(`Found ${options.repoType} tag ${tag.tag} associated with version ${tag.version}`);
         return { head: await getTagHead(context, tag.tag), versionInfo: lastVersionInfo, ...tag };
     }
 
-    logger.info(`No ${options.repoType} tag version found`);
+    logger.info(`No ${options.repoType} tag found that matches v${lastVersionInfo.version} extracted from local files`);
     return {
         head: undefined,
         tag: undefined,
