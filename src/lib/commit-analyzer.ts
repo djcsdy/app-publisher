@@ -57,7 +57,7 @@ async function getReleaseLevel(context: IContext)
         }
         else if (/^visual[:\(]{1}/.test(msg)) // bump patch on visual enhancement
         {
-            logger.log("   Patch (refactoring)");
+            logger.log("   Visual Enhancement (refactoring)");
             if (!level) { level = "patch"; }
         }
         else if (options.commitMsgMap)

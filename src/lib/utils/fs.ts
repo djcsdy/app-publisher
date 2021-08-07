@@ -275,11 +275,11 @@ export async function replaceInFile(file: string, old: string, nu: string | ((m:
           regex = new RegExp(old, caseSensitive ? "gm" : "gmi");
     let contentNew = "";
     if (isString(nu)) {
-        if (!caseSensitive) {
+        if (caseSensitive) {
             contentNew = content.replace(regex, nu);
         }
         else {
-            contentNew = content.replace(regex, nu);
+            contentNew = content.replace(new RegExp(regex, "i"), nu);
         }
     }
     else {

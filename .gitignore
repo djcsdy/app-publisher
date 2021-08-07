@@ -10,3 +10,4 @@ install/disthistory.txt
 install/dist/app-publisher-pja.tgz
 .nyc_output
 .coverage
+target
