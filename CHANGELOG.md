@@ -1,5 +1,11 @@
 # APP-PUBLISHER CHANGE LOG
 
+## Version 3.5.8 (August 6th, 2021)
+
+### Bug Fixes
+
+- **General:** tags are randomly sorted incorrectly for projects using incremental type versioning, causing the publish run to fail.
+
 ## Version 3.5.7 (August 6th, 2021)
 
 ### Bug Fixes
