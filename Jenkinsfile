@@ -83,6 +83,7 @@ pipeline {
           env.RELEASE_SKIP_APPROVAL = "false"
           env.RELEASE_VERSION = ""
           env.ARTIFACT_CHANGELOG_FILE = ""
+          env.IS_NPM_PACKAGE = "true"
           //
           // Set variables to use throughout build process by examining the commit messages.
           // For SVN, its once commit per changeset (whereas Got could have multiple commits per changeset)
