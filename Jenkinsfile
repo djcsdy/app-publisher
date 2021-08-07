@@ -408,12 +408,6 @@ pipeline {
                                       app-publisher --config-name pja --task-changelog-hdr-print-version ${env.NEXTVERSION}
                                     """)
               }
-              // def status = powershell(returnStatus: true,
-              //                         script: 'out-file -filepath doc/history.txt -Append -inputobject historyEntry')
-              // if (status != 0) {
-              //   error("Could not find history file entry")
-              // }
-              // bat "echo Version ${env.NEXTVERSION} >> .\\doc\\history.txt"
               bat "echo Version ${historyHeader} >> .\\doc\\history.txt"
               bat "echo Version ${historyEntry} >> .\\doc\\history.txt"
             }
