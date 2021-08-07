@@ -274,6 +274,16 @@ export async function getPsScriptLocation(scriptFile: string, execaOpts: any): P
 }
 
 
+export function getVersionSystem(version: string)
+{
+    if (!version || semver.valid(semver.clean(version)))
+    {
+        return "semver";
+    }
+    return "incremental";
+}
+
+
 export function isNumeric(value: string | number): boolean
 {
     try {

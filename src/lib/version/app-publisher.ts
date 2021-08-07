@@ -6,7 +6,7 @@ import semver from "semver";
 import { IContext, IVersionInfo } from "../../interface";
 import { addEdit, isIgnored } from "../repo";
 import { replaceInFile, pathExists } from "../utils/fs";
-import { editFile } from "../utils/utils";
+import { editFile, getVersionSystem } from "../utils/utils";
 
 
 async function getFiles(cwd: string, logger: any)
@@ -29,30 +29,14 @@ async function getFiles(cwd: string, logger: any)
 
 export function getAppPublisherVersion({options, logger}: IContext): IVersionInfo
 {
-    let versionSystem: "auto" | "semver" | "incremental";
     const version = options.projectVersion;
-
     if (version)
     {
         logger.log("Retrieving version from .publishrc");
-
-        if (!version)
-        {
-            versionSystem = "semver";
-        }
-        else if (semver.valid(semver.clean(version)))
-        {
-            versionSystem = "semver";
-        }
-        else {
-            versionSystem = "incremental";
-        }
-
         if (version) { logger.log("   Found version      : " + version); }
         else { logger.warn("   Not found"); }
     }
-
-    return { version, system: versionSystem, info: undefined };
+    return { version, system: getVersionSystem(version), info: undefined };
 }
 
 

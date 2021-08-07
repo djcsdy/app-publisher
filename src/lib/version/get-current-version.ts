@@ -10,6 +10,7 @@ import { getNpmVersion } from "./npm";
 import { getAppPublisherVersion } from "./app-publisher";
 import { getExtJsVersion } from "./extjs";
 import { pathExists, readFile } from "../utils/fs";
+import { getVersionSystem } from "../utils/utils";
 import { FIRST_RELEASE } from "../definitions/constants";
 import json5 from "json5";
 
@@ -183,14 +184,19 @@ async function getCurrentVersion(context: IContext): Promise<IVersionInfo>
                     let match: RegExpExecArray;
                     const content = await readFile(tvFile),
                         rgxStr = versionFileDef.regex.replace(new RegExp("\\$\\(VERSION\\)", "g"), `(${versionFileDef.regexVersion})`)
-                                                    .replace(new RegExp(`\\(\\(${versionFileDef.regexVersion.replace(/\./g, "\\.")}\\)\\)`, "g"),
-                                                                `(${versionFileDef.regexVersion})`),
+                                                     .replace(new RegExp(`\\(\\(${versionFileDef.regexVersion.replace(/\./g, "\\.")}\\)\\)`, "g"),
+                                                              `(${versionFileDef.regexVersion})`),
                         regex = new RegExp(rgxStr, "gm");
                     while ((match = regex.exec(content)) !== null)
                     {
                         if (match[1]) {
                             logger.log("   Found version      : " + match[1]);
                             matched = true;
+                            doCheck({
+                                version: match[1],
+                                info: undefined,
+                                system: getVersionSystem(match[1])
+                            }, "custom - " + path.basename(tvFile));
                         }
                     }
                 }
