@@ -1,5 +1,11 @@
 # APP-PUBLISHER CHANGE LOG
 
+## Version 3.5.10 (August 7th, 2021)
+
+### Bug Fixes
+
+- **Parser:** commit messages with two or more levels of indentation causes parser to fail
+
 ## Version 3.5.9 (August 6th, 2021)
 
 ### Bug Fixes
