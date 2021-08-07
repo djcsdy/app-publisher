@@ -1,5 +1,11 @@
 # APP-PUBLISHER CHANGE LOG
 
+## Version 3.5.9 (August 6th, 2021)
+
+### Bug Fixes
+
+- **Versioning:** if a custom defined version file from the publishrc property 'versionFiles' is a project's only versioned file, the publish run fails.
+
 ## Version 3.5.8 (August 6th, 2021)
 
 ### Bug Fixes
