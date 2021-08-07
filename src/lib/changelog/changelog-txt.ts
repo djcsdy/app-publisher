@@ -144,7 +144,7 @@ export class ChangelogTxt extends Changelog
                 //
                 let newText,
                     match: RegExpExecArray;
-                const regex = new RegExp(/(?<=[^ ])[\(][a-z0-9\- .]*[\)]\s*[:][ ]{0,}/gmi);
+                let regex = new RegExp(/(?<=[^ ])[\(][a-z0-9\- .]*[\)]\s*[:][ ]{0,}/gmi);
                 while ((match = regex.exec(msg)) !== null) // subject - all lower case, or numbers
                 {
                     newText = match[0].replace("(", "");
@@ -161,12 +161,11 @@ export class ChangelogTxt extends Changelog
 
                 //
                 // Typically when writing the commit messages all lowercase is used.  Capitalize the first
-                // letter following the commit message subject
+                // letter following the commit message subject, and any paragraph beginnings.
                 //
-                while ((match = /[\r\n]{2}\s*[a-z]/gm.exec(msg)) !== null) {
-                    if (match[0].includes(`${EOL}${EOL}`)) { // ps regex is buggy on [\r\n]{2}
-                        msg = msg.replace(match[0], match[0].toUpperCase());
-                    }
+                regex = new RegExp(/(?:\r\n|\n){2}[a-z]/gm);
+                while ((match = regex.exec(msg)) !== null) {
+                    msg = msg.replace(match[0], match[0].toUpperCase());
                 }
 
                 //
