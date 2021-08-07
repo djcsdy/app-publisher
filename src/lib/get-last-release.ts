@@ -63,7 +63,7 @@ async function getLastRelease(context: IContext, lastVersionInfo: IVersionInfo):
 
     const tag: any = await pLocate(tags, (tag: any) => isRefInHistory(context, tag.tag, true), { preserveOrder: true });
 
-    if (tag && tag.version === lastVersionInfo.version)
+    if (tag)
     {
         logger.info(`Found ${options.repoType} tag ${tag.tag} associated with version ${tag.version}`);
         return { head: await getTagHead(context, tag.tag), versionInfo: lastVersionInfo, ...tag };
