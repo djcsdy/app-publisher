@@ -288,7 +288,7 @@ async function runRelease(context: IContext)
     // Get the IChangelog for thus run
     //
     // The changelog object can have 3 parts, 'fileNotes' that are read from the changelog file
-    // itself, 'notes' with are buiilt from the commit messages, and htmlNotes which are built
+    // itself, 'notes' with are built from the commit messages, and htmlNotes which are built
     // from the changelog file itself and converted to html style changelog for GitHub and
     // MantisBT releases.
     //
@@ -302,7 +302,7 @@ async function runRelease(context: IContext)
     //
     // STDOUT TASKS
     // If a level-1 stdout task is processed, we'll be done.  taskDone returns `true` if
-    // a task ran auccessfully, `false` if no task ran, and a `string` if there was an error
+    // a task ran successfully, `false` if no task ran, and a `string` if there was an error
     //
     let taskDone = await processTasksLevel1(context);
     if (taskDone) {
@@ -328,7 +328,7 @@ async function runRelease(context: IContext)
     // validateOptions() will have attempted to set repo
     //
     if (!options.repo) {
-        logger.error("Repository tmust be specified on cmd line, package.json or publishrc");
+        logger.error("Repository must be specified on cmd line, package.json or publishrc");
     }
 
     //
@@ -356,7 +356,7 @@ async function runRelease(context: IContext)
     //
     //    version (should be same as context.lastRelease.version)
     //    versionSystem (semver or incremental)
-    //    versionInfo (for mavn builds and auto constructing version #)
+    //    versionInfo (for maven builds and auto constructing version #)
     //
     const lastVersionInfo = await getCurrentVersion(context);
     //
@@ -452,7 +452,7 @@ async function runRelease(context: IContext)
         // There are certain tasks a user may want to run after a release is made.  e.g. re-send
         // a notification email, or redo a Mantis or GitHub release. In these cases, user must
         // pass the --version-force-current switch on the command line.
-        // validateOptions() willhave made sure that only certin tasks are run with this switch
+        // validateOptions() willhave made sure that only certain tasks are run with this switch
         //
         if (!tasksCanPass && !options.versionForceCurrent)
         {
@@ -547,7 +547,7 @@ async function runRelease(context: IContext)
     //
     // STDOUT TASKS
     // If a level2 stdout/fileout task is processed, we'll be done.  taskDone returns `true` if
-    // a task ran auccessfully, `false` if no task ran, and a `string` if there was an error
+    // a task ran successfully, `false` if no task ran, and a `string` if there was an error
     //
     taskDone = await processTasksLevel3(context);
     if (taskDone) {
@@ -602,13 +602,13 @@ async function runRelease(context: IContext)
     // context.changelog.notes = await plugins.generateNotes(context);
     //
     // TODO - can probably do some more options checking in populateChangelog so that they
-    // arent built under certin task mode conditions
+    // aren't built under certain task mode conditions
     //
     await context.changelog.populate(context, !!doChangelog);
 
     //
-    // Pre-build scipts (.publishrc)
-    // Scripts that are run before manipluation of the verson files and before any build
+    // Pre-build scripts (.publishrc)
+    // Scripts that are run before manipulation of the version files and before any build
     // scripts are ran.
     //
     await util.runScripts(context, "preBuild", options.preBuildCommand, options.taskBuild, true);
@@ -646,7 +646,7 @@ async function runRelease(context: IContext)
     //
     if (!options.versionForceCurrent && (!options.taskMode || options.taskVersionUpdate))
     {   //
-        // Sets next version in all version files.  Includes files spcified in .publishrc
+        // Sets next version in all version files.  Includes files specified in .publishrc
         // by the 'versionFiles' property
         //
         await setVersions(context);
@@ -728,7 +728,7 @@ async function runRelease(context: IContext)
     // the release is updated/patched to a 'released/non-draft' state.
     // If this is a 'taskGithubRelease' task, then we immediately make a 'published/non-draft'
     // release.  In this mode, the repository will be tagged with the version tag vX.Y.Z if it
-    // didnt exist already.
+    // didn't exist already.
     //
     let githubReleaseId;
     if (options.repoType === "git" && options.githubRelease === "Y" && (!options.taskMode || options.taskGithubRelease))
@@ -805,6 +805,13 @@ async function runRelease(context: IContext)
             logger.log("Skipped running custom deploy script");
         }
     }
+
+    //
+    // Post-Release scripts (.publishrc)
+    // Scripts that are run before manipulation of the version files and before any build
+    // scripts are ran.
+    //
+    await util.runScripts(context, "postRelease", options.postReleaseCommand);
 
     //
     // Notification email
@@ -904,7 +911,7 @@ async function commitAndTag(context: IContext, githubReleaseId: string)
     {
         try {
             await tag(context);
-            await push(context); // doesnt do anything for svn
+            await push(context); // doesn't do anything for svn
         }
         catch (e) {
             logger.warn(`Failed to tag v${nextRelease.version}`);
@@ -1010,7 +1017,7 @@ async function processTasksLevel2(context: IContext): Promise<string | boolean>
 
     //
     // Use setVersions() will recognize the task and only populate a list of files that
-    // 'would be' or 'have been' edited by a run.  Files that the run doesnt touch that
+    // 'would be' or 'have been' edited by a run.  Files that the run doesn't touch that
     // have been edited by the user wont get reverted (or someone be in trouble)
     //
     if (options.taskRevert)
