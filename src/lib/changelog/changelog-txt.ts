@@ -385,7 +385,7 @@ export class ChangelogTxt extends Changelog
 
         let match: RegExpExecArray;
         const entries: IChangelogEntry[] = [],
-        regex = new RegExp(regexes.CHANGELOG_SUBJECT_SCOPE);
+        regex = new RegExp(regexes.CHANGELOG_TXT_SUBJECT_SCOPE);
 
         //
         // Process entries with a subject (sorrounded by <b></b>)
