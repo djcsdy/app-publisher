@@ -417,7 +417,7 @@ export async function runScripts(context: IContext, scriptType: string, scripts:
 }
 
 
-export function textWithElipses(text: string, maxlength?: number)
+export function textWithEllipses(text: string, maxlength?: number)
 {
     if (text && maxlength && text.length > maxlength)
     {

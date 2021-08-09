@@ -4,8 +4,8 @@ const execa = require("execa");
 const xml2js = require("xml2js");
 import regexes from "./definitions/regexes";
 import { EOL } from "os";
-import { IChangelogEntry, ICommit, IContext } from "../interface";
-import { textWithElipses } from "./utils/utils";
+import { ICommit, IContext } from "../interface";
+import { textWithEllipses } from "./utils/utils";
 
 export = getCommits;
 
@@ -195,7 +195,7 @@ function parseCommitMessage(context: IContext, commit: ICommit)
         if (options.verbose) {
             logger.log(`   Extracted subject : ${match[1]}`);
             logger.log(`   Extracted scope   : ${match[2]}`);
-            logger.log(`   Extracted message : ${textWithElipses(match[3].replace(/[\r\n]/g, " ").replace(/'/g, ""), 64)}`);
+            logger.log(`   Extracted message : ${textWithEllipses(match[3].replace(/[\r\n]/g, " ").replace(/'/g, ""), 64)}`);
         }
         nCommit.message = match[0];
         nCommit.subject = match[1];
@@ -209,7 +209,7 @@ function parseCommitMessage(context: IContext, commit: ICommit)
         nCommit = { ...commit };
         if (options.verbose) {
             logger.log(`   Extracted subject : ${match[1]}`);
-            logger.log(`   Extracted message : ${textWithElipses(match[2].replace(/[\r\n]/g, " ").replace(/'/g, ""), 64)}`);
+            logger.log(`   Extracted message : ${textWithEllipses(match[2].replace(/[\r\n]/g, " ").replace(/'/g, ""), 64)}`);
         }
         nCommit.message = match[0];
         nCommit.subject = match[1];
