@@ -1,5 +1,12 @@
 # APP-PUBLISHER CHANGE LOG
 
+## Version 3.5.11 (August 9th, 2021)
+
+### Bug Fixes
+
+- **Changelog:** commit messages with a subject 'chore' and a scope containing a '.' character are being included when constructing a changelog section.
+- **Hooks:** the defined 'postReleaseCommand' script(s) are not ran.
+
 ## Version 3.5.10 (August 7th, 2021)
 
 ### Bug Fixes
