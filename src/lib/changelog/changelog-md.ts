@@ -109,52 +109,10 @@ export class ChangelogMd extends Changelog
         //
         for (const commit of commits)
         {
-            if (!commit || !commit.message) {
+            if (!commit || !commit.messageBody) {
                 continue;
             }
-
-            const tmpCommit = commit.message.trim().replace(/\r\n/gm, "\n").replace(/\n/gm, EOL);
-            //
-            // If there is no subject, then store the message in an array to process after
-            // all of the commits with subject headers are processed.
-            //
-            // If the subject contains a scope, for example:
-            //
-            //     docs(readme)
-            //
-            // Then extract "readme" as the scope, and "docs" as the subject
-            //
-            let matched = false,
-                match: RegExpExecArray;
-            let regex = new RegExp(/^([a-z]+)\(([a-z0-9\- ]*)\)\s*: */gmi);
-            while ((match = regex.exec(tmpCommit)) !== null) // subject / scope
-            {
-                matched = true;
-                if (options.verbose) {
-                    logger.log("Format commit message");
-                    logger.log("   Section : " + match[1]);
-                    logger.log("   Scope   : " + match[2]);
-                }
-                tmpCommits += formatCommitPart(match[1], match[2], tmpCommit.replace(match[0], ""));
-            }
-
-            regex = new RegExp(/^([a-z]+)\s*: */gmi);
-            while ((match = regex.exec(tmpCommit)) !== null) // subject
-            {
-                matched = true;
-                if (options.verbose) {
-                    logger.log("Format commit message");
-                    logger.log("   Section : " + match[1]);
-                }
-                tmpCommits += formatCommitPart(match[1], undefined, tmpCommit.replace(match[0], ""));
-            }
-
-            if (!matched) {
-                if (options.verbose) {
-                    logger.log("Unformatted commit message, no section or subject");
-                }
-                sectionless.push(tmpCommit);
-            }
+            tmpCommits += formatCommitPart(commit.subject, commit.scope, commit.messageBody);
         }
 
         //

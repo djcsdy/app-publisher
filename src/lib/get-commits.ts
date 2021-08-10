@@ -47,6 +47,7 @@ async function getCommits(context: IContext): Promise<ICommit[]>
                 gitTags: c.gitTags.trim(),
                 hash: c.hash,
                 message: c.message.trim(),
+                messageBody: c.message.trim(),
                 committerDate: c.committerDate,
                 scope: undefined,
                 subject: undefined
@@ -130,6 +131,7 @@ async function getCommits(context: IContext): Promise<ICommit[]>
                             name: logEntry.author[0]
                         },
                         message: logEntry.msg[0].trim(),
+                        messageBody: logEntry.msg[0].trim(),
                         hash: logEntry.$.revision,
                         committerDate: logEntry.date[0],
                         scope: undefined,
@@ -200,6 +202,7 @@ function parseCommitMessage(context: IContext, commit: ICommit)
         nCommit.message = match[0];
         nCommit.subject = match[1];
         nCommit.scope = match[2];
+        nCommit.messageBody = match[3];
         commits.push(nCommit);
     }
 
@@ -213,6 +216,7 @@ function parseCommitMessage(context: IContext, commit: ICommit)
         }
         nCommit.message = match[0];
         nCommit.subject = match[1];
+        nCommit.messageBody = match[2];
         commits.push(nCommit);
     }
 

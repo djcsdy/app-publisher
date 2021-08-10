@@ -54,6 +54,7 @@ export interface ICommit
     committer: IAuthor;
     gitTags?: string;
     message: string;
+    messageBody: string;
     hash: string;
     scope: string;
     subject: string;
