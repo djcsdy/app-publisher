@@ -1,0 +1,9 @@
+
+Versioning:
+
+    ☐ Add support for bumping pre-release minor version
+    Includes from an already pre-release patch
+
+Miscellaneous:
+
+    ☐ Command line help for one command/option
