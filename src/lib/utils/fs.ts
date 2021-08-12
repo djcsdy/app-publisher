@@ -1,10 +1,7 @@
 
 import * as fs from "fs";
-import { filter } from "lodash";
 import * as path from "path";
-import { addEdit } from "../repo";
-import { getPsScriptLocation, isString, timeout } from "./utils";
-const execa = require("execa");
+import { isString, timeout } from "./utils";
 
 
 let cwd = process.cwd();
@@ -194,6 +191,31 @@ export function readFileBuf(file: string): Promise<Buffer>
 }
 
 
+export function deleteDir(dir: string): Promise<void>
+{
+    return new Promise<void>(async (resolve, reject) =>
+    {
+        try {
+            if (await pathExists(dir))
+            {
+                fs.rmdir(path.resolve(cwd, dir), (e) => {
+                    if (e) {
+                        reject(e);
+                    }
+                    resolve();
+                });
+            }
+            else {
+                resolve();
+            }
+        }
+        catch (e) {
+            reject(e);
+        }
+    });
+}
+
+
 export function deleteFile(file: string): Promise<void>
 {
     return new Promise<void>(async (resolve, reject) =>
@@ -253,6 +275,31 @@ export function appendFile(file: string, data: string): Promise<void>
                 }
                 resolve();
             });
+        }
+        catch (e) {
+            reject(e);
+        }
+    });
+}
+
+
+export function renameFile(fileCurrent: string, fileNew: string): Promise<void>
+{
+    return new Promise<void>(async (resolve, reject) =>
+    {
+        try {
+            if (await pathExists(fileCurrent))
+            {
+                fs.rename(path.resolve(cwd, fileCurrent), path.resolve(cwd, fileNew), (e) => {
+                    if (e) {
+                        reject(e);
+                    }
+                    resolve();
+                });
+            }
+            else {
+                resolve();
+            }
         }
         catch (e) {
             reject(e);
