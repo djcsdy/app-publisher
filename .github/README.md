@@ -13,7 +13,7 @@
 [![codecov](https://codecov.io/gh/spmeesseman/app-publisher/branch/master/graph/badge.svg)](https://codecov.io/gh/spmeesseman/app-publisher)
 [![CodeFactor](https://www.codefactor.io/repository/github/spmeesseman/app-publisher/badge)](https://www.codefactor.io/repository/github/spmeesseman/app-publisher)
 
-![app-publisher-cmdline-banner](../res/readme/cmdline-banner.png?raw=true)
+![app-publisher-cmdline-banner](https://github.com/spmeesseman/app-publisher/blob/master/res/readme/cmdline-banner.png?raw=true)
 
 ## Table of Contents
 
@@ -110,10 +110,12 @@
     - [taskBuild](#taskbuild)
     - [taskChangelog](#taskchangelog)
     - [taskChangelogFile](#taskchangelogfile)
+    - [taskChangelogHdrPrint](#taskchangeloghdrprint)
     - [taskChangelogHtmlFile](#taskchangeloghtmlfile)
+    - [taskChangelogHtmlPrint](#taskchangeloghtmlprint)
+    - [taskChangelogHtmlPrintVersion](#taskchangeloghtmlprintversion)
     - [taskChangelogHtmlView](#taskchangeloghtmlview)
     - [taskChangelogPrint](#taskchangelogprint)
-    - [taskChangelogHdrPrint](#taskchangeloghdrprint)
     - [taskChangelogPrintVersion](#taskchangelogprintversion)
     - [taskChangelogHdrPrintVersion](#taskchangeloghdrprintversion)
     - [taskChangelogView](#taskchangelogview)
@@ -126,7 +128,7 @@
     - [taskDevTest](#taskdevtest)
     - [taskDistRelease](#taskdistrelease)
     - [taskEmail](#taskemail)
-    - [taskGenerateHelp](#taskgeneratehelp)
+    - [taskGenerateCommands](#taskgeneratecommands)
     - [taskGithubRelease](#taskgithubrelease)
     - [taskMantisbtRelease](#taskmantisbtrelease)
     - [taskNpmJsonRestore](#tasknpmjsonrestore)
@@ -163,6 +165,7 @@
     - [versionSystem](#versionsystem)
     - [versionText](#versiontext)
     - [writeLog](#writelog)
+  - [Open Source Projects](#open-source-projects)
 
 ## Description
 
@@ -173,7 +176,7 @@ There are two modes to run app-publisher in:
 1. Publishing Mode
 2. Task Mode
 
-[Publishing Mode](#publishing-mode) is similar to how *semantic-release* works, whereas [Task Mode](#task-mode) allows you to run individual pieces of the enture run, ideal for a multi-stage CI pipeline.
+[Publishing Mode](#publishing-mode) is similar to how *semantic-release* works, whereas [Task Mode](#task-mode) allows you to run individual pieces of the entire run, ideal for a multi-stage CI pipeline.
 
 ## Requirements
 
@@ -409,7 +412,7 @@ An example pipeline script written for Jenkins can be found in the `Jenkinsfile`
 
 ### MantisBT Token
 
-A MantsBT release requires the MANTISBT_API_TOKEN to be set in the system environment.  To create a MantisBT token, perform the following steps:
+A MantisBT release requires the MANTISBT_API_TOKEN to be set in the system environment.  To create a MantisBT token, perform the following steps:
 
 1. Log into the MantisBT website
 2. Go to User Preferences
@@ -423,7 +426,7 @@ A MantsBT release requires the MANTISBT_API_TOKEN to be set in the system enviro
 
 An NPM release may require the NPM_TOKEN to be set in the system environment.  To create an NPM token, perform the following steps:
 
-To create an npm user if you dont have one, run the following command and follow the prompts:
+To create an npm user if you don't have one, run the following command and follow the prompts:
 
     npm login --registry=https://npm.yourregistry.com --scope=@yourscope
 
@@ -437,7 +440,7 @@ This *token* is the base64 encoded version of http basic auth using an API token
 
 ## Command Line and Options
 
-The following command line aguments and publishrc options are supported.
+The following command line arguments and publishrc options are supported.
 
 ### branch
 
@@ -1798,3 +1801,43 @@ The text tag to use in the history file for preceding the version number.  It sh
 |**Command Line Arg**|*__-wr \| --write-log__*  |
 
 In addition to stdout, writes a log to LOCALAPPDATA/app-publisher/log
+
+## Open Source Projects
+
+|Package|Use Case|Repository|Marketplace|
+|-|-|-|-|
+|app-publisher|Release Automation / CI|[GitHub](https://www.npmjs.com/package/@spmeesseman/app-publisher)|[Npmjs.org Registry](https://www.npmjs.com/package/@spmeesseman/app-publisher)|
+|arg-parser|Node Argument Parser|[GitHub](https://github.com/spmeesseman/arg-parser)|[Npmjs.org Registry](https://www.npmjs.com/package/@spmeesseman/arg-parser)|
+|code-package|Code Dev Environment|[GitHub](https://github.com/spmeesseman/code-package)|[GitHub Releases](https://github.com/spmeesseman/code-package/releases)|
+|env-ci|CI ENvironment Detection|[GitHub](https://github.com/spmeesseman/env-ci)|[Npmjs.org Registry](https://www.npmjs.com/package/@spmeesseman/env-ci)|
+|extjs-pkg-filterbar|ExtJS Grid Filter Bar|[GitHub](https://github.com/spmeesseman/extjs-pkg-filterbar)|[Npmjs.org Registry](https://www.npmjs.com/package/@spmeesseman/extjs-pkg-filterbar)|
+|extjs-pkg-fontawesome|ExtJS FontAwesome Integration|[GitHub](https://github.com/spmeesseman/extjs-pkg-fontawesome)|[Npmjs.org Registry](https://www.npmjs.com/package/@spmeesseman/extjs-pkg-fontawesome)|
+|extjs-pkg-fontawesome-pro|ExtJS FontAwesome Pro Integration|[GitHub](https://github.com/spmeesseman/extjs-pkg-fontawesome-pro)|[Npmjs.org Private Registry](https://www.npmjs.com/package/@spmeesseman/@spmeesseman/extjs-pkg-fontawesome-pro)|
+|extjs-pkg-intltelinput|ExtJS IntlTelInput Wrapper|[GitHub](https://github.com/spmeesseman/extjs-pkg-intltelinput)|[Npmjs.org Registry](https://www.npmjs.com/package/@spmeesseman/extjs-pkg-intltelinput)|
+|extjs-pkg-mantis|ExtJS MantisBT Integration|[GitHub](https://github.com/spmeesseman/extjs-pkg-mantis)|[Npmjs.org Registry](https://www.npmjs.com/package/@spmeesseman/extjs-pkg-mantis)|
+|extjs-pkg-plyr|ExtJS Plyr Wrapper|[GitHub](https://github.com/spmeesseman/extjs-pkg-plyr)|[Npmjs.org Registry](https://www.npmjs.com/package/@spmeesseman/extjs-pkg-plyr)|
+|extjs-pkg-tinymce|ExtJS TinyMCE Wrapper|[GitHub](https://github.com/spmeesseman/extjs-pkg-tinymce)|[Npmjs.org Registry](https://www.npmjs.com/package/@spmeesseman/extjs-pkg-tinymce)|
+|extjs-pkg-websocket|ExtJS WebSocket Wrapper|[GitHub](https://github.com/spmeesseman/extjs-pkg-websocket)|[Npmjs.org Registry](https://www.npmjs.com/package/@spmeesseman/extjs-pkg-websocket)|
+|extjs-pkg-webworker|ExtJS WebWorker Wrapper|[GitHub](https://github.com/spmeesseman/extjs-pkg-webworker)|[Npmjs.org Registry](https://www.npmjs.com/package/@spmeesseman/extjs-pkg-webworker)|
+|extjs-theme-graphite-small|ExtJS Dark Theme|[GitHub](https://github.com/spmeesseman/extjs-theme-graphite-small)|[Npmjs.org Private Registry](https://www.npmjs.com/package/@spmeesseman/@spmeesseman/extjs-theme-graphite-small)|
+|extjs-theme-amethyst|ExtJS Purple Theme|[GitHub](https://github.com/spmeesseman/extjs-theme-amethyst)|[Npmjs.org Registry](https://www.npmjs.com/package/@spmeesseman/extjs-theme-amethyst)|
+|extjs-theme-emerald|ExtJS Green Theme|[GitHub](https://github.com/spmeesseman/extjs-theme-emerald)|[Npmjs.org Registry](https://www.npmjs.com/package/@spmeesseman/extjs-theme-emerald)|
+|extjs-theme-ruby|ExtJS Red Theme|[GitHub](https://github.com/spmeesseman/extjs-theme-ruby)|[Npmjs.org Registry](https://www.npmjs.com/package/@spmeesseman/extjs-theme-ruby)|
+|extjs-theme-ruby-dark|ExtJS Dark Theme|[GitHub](https://github.com/spmeesseman/extjs-theme-ruby-dark)|[Npmjs.org Registry](https://www.npmjs.com/package/@spmeesseman/extjs-theme-ruby-dark)|
+|extjs-theme-turquoise|ExtJS Blue Theme|[GitHub](https://github.com/spmeesseman/extjs-theme-turquoise)|[Npmjs.org Registry](https://www.npmjs.com/package/@spmeesseman/extjs-theme-turquoise)|
+|extjs-theme-turquoise-dark|ExtJS Dark Theme|[GitHub](https://github.com/spmeesseman/extjs-theme-turquoise-dark)|[Npmjs.org Registry](https://www.npmjs.com/package/@spmeesseman/extjs-theme-turquoise-dark)|
+|jenkins-mantisbt-plugin|Jenkins MantisBT Integration|[GitHub](https://github.com/spmeesseman/jenkins-mantisbt-plugin)|[Npmjs.org Registry](https://www.npmjs.com/package/@spmeesseman/jenkins-mantisbt-plugin)|
+|jenkins-utility-server|Jenkins Desktop Server|[GitHub](https://github.com/spmeesseman/jenkins-utility-server)|[Npmjs.org Registry](https://www.npmjs.com/package/@spmeesseman/jenkins-utility-server)|
+|mantisbt|MantisBT Custom Site|[GitHub](https://github.com/spmeesseman/mantisbt)|[GitHub Releases](https://github.com/spmeesseman/mantisbt/releases)|
+|ApiExtend|MantisBT API Extensions|[GitHub](https://github.com/mantisbt-plugins/ApiExtend)|[GitHub Releases](https://github.com/mantisbt-plugins/ApiExtend/releases)|
+|CommitReact|MantisBT Post Commit Actions|[GitHub](https://github.com/mantisbt-plugins/CommitReact)|[GitHub Releases](https://github.com/mantisbt-plugins/CommitReact/releases)|
+|GanttChart|MantisBT Gantt Chart|[GitHub](https://github.com/mantisbt-plugins/GanttChart)|[GitHub Releases](https://github.com/mantisbt-plugins/GanttChart/releases)|
+|IFramed|MantisBT IFramed Pages|[GitHub](https://github.com/mantisbt-plugins/IFramed)|[GitHub Releases](https://github.com/mantisbt-plugins/IFramed/releases)|
+|ProjectPages|MantisBT Custom Nav Buttons|[GitHub](https://github.com/mantisbt-plugins/ProjectPages)|[GitHub Releases](https://github.com/mantisbt-plugins/ProjectPages/releases)|
+|Releases|MantisBT Releases Management|[GitHub](https://github.com/mantisbt-plugins/Releases)|[GitHub Releases](https://github.com/mantisbt-plugins/Releases/releases)|
+|SecurityExtend|MantisBT SPAM Filter|[GitHub](https://github.com/mantisbt-plugins/SecurityExtend)|[GitHub Releases](https://github.com/mantisbt-plugins/SecurityExtend/releases)|
+|ServerFiles|MantisBT Server File Editor|[GitHub](https://github.com/mantisbt-plugins/ServerFiles)|[GitHub Releases](https://github.com/mantisbt-plugins/ServerFiles/releases)|
+|svn-scm-ext|VSCode SVN Extension|[GitHub](https://github.com/spmeesseman/svn-scm-ext)|[Visual Studio Marketplace](https://marketplace.visualstudio.com/itemdetails?itemName=spmeesseman.svn-scm-ext)|
+|vscode-extjs|VSCode ExtJS Intellisense|[GitHub](https://github.com/spmeesseman/vscode-extjs)|[Visual Studio Marketplace](https://marketplace.visualstudio.com/itemdetails?itemName=spmeesseman.vscode-extjs)|
+|vscode-taskexplorer|VSCode Tasks Management|[GitHub](https://github.com/spmeesseman/vscode-taskexplorer)|[Visual Studio Marketplace](https://marketplace.visualstudio.com/itemdetails?itemName=spmeesseman.vscode-taskexplorer)|
+|vscode-vslauncher|VSCode VS Project Launcher|[GitHub](https://github.com/spmeesseman/vscode-vslauncher)|[Visual Studio Marketplace](https://marketplace.visualstudio.com/itemdetails?itemName=spmeesseman.vscode-vslauncher)|
