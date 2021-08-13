@@ -101,7 +101,7 @@ async function getReleaseLevel(context: IContext)
     }
 
     if (!level && lastRelease.versionInfo.system === "incremental") {
-        logger.warn("Incremental versining, forcing to 'patch' with 0 release levelcommits found");
+        logger.warn("Incremental versioning, forcing to 'patch' with 0 release level commits found");
         level = "patch";
     }
 

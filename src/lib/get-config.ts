@@ -54,35 +54,36 @@ async function getConfig(context: any, opts: IOptions)
     const pluginsPath = { path: undefined };
     let extendPaths;
     ({ extends: extendPaths, ...options } = options);
+
     if (extendPaths)
-    {
+    {   //
         // If `extends` is defined, load and merge each shareable config with `options`
+        //
         options = {
             ...castArray(extendPaths).reduce((result, extendPath) =>
             {
                 const extendsOpts = require(resolveFrom.silent(__dirname, extendPath) || resolveFrom(cwd, extendPath));
-
-                // For each plugin defined in a shareable config, save in `pluginsPath` the extendable config path,
-                // so those plugin will be loaded relatively to the config file
+                //
+                // For each plugin defined in a shareable config, save in `pluginsPath` the extendable
+                // config path, so those plugin will be loaded relatively to the config file
+                //
                 Object.entries(extendsOpts)
-                    .filter(([, value]) => Boolean(value))
-                    .reduce((pluginsPath, [option, value]) =>
+                .filter(([, value]) => Boolean(value))
+                .reduce((pluginsPath, [option, value]) =>
+                {
+                    castArray(value).forEach(plugin =>
                     {
-                        castArray(value).forEach(plugin =>
+                        if (option === "plugins" && validatePlugin(plugin))
                         {
-                            if (option === "plugins" && validatePlugin(plugin))
-                            {
-                                pluginsPath[parseConfig(plugin)[0]] = extendPath;
-                            } else if (
-                                PLUGINS_DEFINITIONS[option] &&
-                                (isString(plugin) || (isPlainObject(plugin) && isString(plugin["path"])))
-                            )
-                            {
-                                pluginsPath[isString(plugin) ? plugin : plugin["path"]] = extendPath;
-                            }
-                        });
-                        return pluginsPath;
-                    }, pluginsPath);
+                            pluginsPath[parseConfig(plugin)[0]] = extendPath;
+                        }
+                        else if (PLUGINS_DEFINITIONS[option] && (isString(plugin) || (isPlainObject(plugin) && isString(plugin["path"]))))
+                        {
+                            pluginsPath[isString(plugin) ? plugin : plugin["path"]] = extendPath;
+                        }
+                    });
+                    return pluginsPath;
+                }, pluginsPath);
 
                 return { ...result, ...extendsOpts };
             }, {}),
@@ -90,13 +91,15 @@ async function getConfig(context: any, opts: IOptions)
         };
     }
 
+    //
     // Set default options values if not defined yet
+    //
     options = {
         branch: (await defBranch({ normalize: false, cwd })),
         repo: (await pkgRepoUrl({ normalize: false, cwd })), // || (await repoUrl(context)),
         repoType: (await pkgRepoType({ normalize: false, cwd })),
-        // tagFormat: `${options.vcTagPrefix}\${version}`,
-        tagFormat: `v\${version}`,
+        // eslint-disable-next-line no-template-curly-in-string
+        tagFormat: "v${version}",
         plugins: [],
         // Remove `null` and `undefined` options so they can be replaced with default ones
         ...pickBy(options, option => !isNil(option)),
