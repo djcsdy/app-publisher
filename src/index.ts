@@ -260,6 +260,7 @@ async function runRelease(context: IContext)
     const nextRelease: INextRelease = context.nextRelease = {
         level: undefined,
         head: undefined,
+        lastProdVersion: undefined,
         version: undefined,
         tag: undefined,
         edits: [],
@@ -454,7 +455,7 @@ async function runRelease(context: IContext)
         // pass the --version-force-current switch on the command line.
         // validateOptions() willhave made sure that only certain tasks are run with this switch
         //
-        if (!tasksCanPass && !options.versionForceCurrent)
+        if (!tasksCanPass && !options.versionForceCurrent && !options.versionForceNext)
         {
             if (options.taskVersionNext) {
                 context.stdout.write(lastRelease.version);
@@ -475,7 +476,7 @@ async function runRelease(context: IContext)
     //
     // Next version
     //
-    if (!options.versionForceCurrent && !needNoCommits)
+    if (!options.versionForceCurrent && !options.versionForceNext && !needNoCommits)
     {   //
         // Get version using release level bump.  Sets to FIRST_RELEASE if no previous release and a
         // version was not extracted from local files.  Technically that latter case should never happen,
@@ -486,11 +487,44 @@ async function runRelease(context: IContext)
         //
         // Check 'next version' manipulation flags
         //
+        nextRelease.version = nextRelease.versionInfo.version;
+        //
+        // Note that in the case of firstRelease == true, nextRelease.version == FIRST_RELEASE
+        // if no version was extracted from the local files, lastRelease.version == undefined,
+        // and lastRelease.versionInfo.version == current_file_version
+        //
+        const firstReleaseMismatch = firstRelease && semver.gt(semver.coerce(lastRelease.versionInfo.version),
+                                                                semver.coerce(nextRelease.version));
+        if (options.promptVersion === "Y" || (options.noCi && firstReleaseMismatch))
+        {
+            if (firstRelease && options.promptVersion !== "Y") {
+                logger.log("Prompting for version due to:");
+                logger.log("    1. The 'no-ci' and 'first-release' flags are set");
+                logger.log(`    2. The version extracted from local files ${lastRelease.versionInfo.version} > ${FIRST_RELEASE}`);
+            }
+            nextRelease.version = await promptForVersion(lastRelease.version, lastRelease.versionInfo.system,
+                                                            nextRelease.version || FIRST_RELEASE, logger);
+            if (!nextRelease.version) {
+                return false;
+            }
+        }
+        else if (firstReleaseMismatch)
+        {
+            logger.error("There is a conflict with the version extracted from the local version files");
+            logger.error(`   No remote tag was found, but local version > ${FIRST_RELEASE}`);
+            logger.error("   Either use the --force-version-next option, or, publish in a non-ci environment");
+            return false;
+        }
+    }
+    else {
+        if ((options.versionForceCurrent || options.versionForceNext) && firstRelease) {
+            logger.error("Cannot use the --version-force-current switch for a first release");
+            return false;
+        }
         if (options.versionForceNext)
         {
-            logger.log("Forcing next version to " + options.versionForceNext);
-            logger.log("   From version : " + nextRelease.versionInfo.version);
-            logger.log("   Last version : " + lastRelease.version);
+            logger.log("Force next version to specified version " + options.versionForceNext);
+            nextRelease.versionInfo = lastRelease.versionInfo;
             nextRelease.version = options.versionForceNext;
             if (!util.validateVersion(nextRelease.version, nextRelease.versionInfo.system, lastRelease.version, logger))
             {
@@ -498,45 +532,11 @@ async function runRelease(context: IContext)
                 return false;
             }
         }
-        else {
-            nextRelease.version = nextRelease.versionInfo.version;
-            //
-            // Note that in the case of firstRelease == true, nextRelease.version == FIRST_RELEASE
-            // if no version was extracted from the local files, lastRelease.version == undefined,
-            // and lastRelease.versionInfo.version == current_file_version
-            //
-            const firstReleaseMismatch = firstRelease && semver.gt(semver.coerce(lastRelease.versionInfo.version),
-                                                                   semver.coerce(nextRelease.version));
-            if (options.promptVersion === "Y" || (options.noCi && firstReleaseMismatch))
-            {
-                if (firstRelease && options.promptVersion !== "Y") {
-                    logger.log("Prompting for version due to:");
-                    logger.log("    1. The 'no-ci' and 'first-release' flags are set");
-                    logger.log(`    2. The version extracted from local files ${lastRelease.versionInfo.version} > ${FIRST_RELEASE}`);
-                }
-                nextRelease.version = await promptForVersion(lastRelease.version, lastRelease.versionInfo.system,
-                                                             nextRelease.version || FIRST_RELEASE, logger);
-                if (!nextRelease.version) {
-                    return false;
-                }
-            }
-            else if (firstReleaseMismatch)
-            {
-                logger.error("There is a conflict with the version extracted from the local version files");
-                logger.error(`   No remote tag was found, but local version > ${FIRST_RELEASE}`);
-                logger.error("   Either use the --force-version-next option, or, publish in a non-ci environment");
-                return false;
-            }
+        else  {
+            logger.log("Force next version to current version " + lastRelease.version);
+            nextRelease.versionInfo = lastRelease.versionInfo;
+            nextRelease.version = lastRelease.version;
         }
-    }
-    else {
-        if (firstRelease && options.versionForceCurrent) {
-            logger.error("Cannot use the --version-force-current switch for a first release");
-            return false;
-        }
-        logger.log("Force next version to current version " + lastRelease.version);
-        nextRelease.versionInfo = lastRelease.versionInfo;
-        nextRelease.version = lastRelease.version;
     }
 
     //
@@ -618,7 +618,7 @@ async function runRelease(context: IContext)
     //
     // We can manipulate the package.json file for an npm release with various properties
     // on the options object.  Can be used to release the same build to multiple npm
-    // repositories.  THis needs to be done now before any version edits are made and before
+    // repositories.  This needs to be done now before any version edits are made and before
     // any build scripts are ran.
     //
     let packageJsonModified = false;
