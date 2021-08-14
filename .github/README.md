@@ -162,6 +162,7 @@
     - [versionFilesEditAlways](#versionfileseditalways)
     - [versionFilesScrollDown](#versionfilesscrolldown)
     - [versionPreReleaseId](#versionprereleaseid)
+    - [versionPreReleaseLimit](#versionprereleaselimit)
     - [versionSystem](#versionsystem)
     - [versionText](#versiontext)
     - [writeLog](#writelog)
@@ -245,7 +246,7 @@ The steps performed during an app-publisher run are:
 - Upload a MantisBT or GitHub release including changelog and file assets
 - Send release email
 
-Tip: A publishnng mode dry run can be performed with the --dry-run option:
+Tip: A publishing mode dry run can be performed with the --dry-run option:
 
     app-publisher --no-ci --dry-run
 
@@ -253,7 +254,7 @@ All steps are configured via the [.publishrc configuration file](#usage---config
 
 ## Task Mode
 
-Task mode allows you to run pieces of the publishing run separately.  This is ideal for a multi-stage or multi-step CI pipeline, where the run can be broken up between different tages of the CI run, customizable to accomodate most scenarios.
+Task mode allows you to run pieces of the publishing run separately.  This is ideal for a multi-stage or multi-step CI pipeline, where the run can be broken up between different stages of the CI run, customizable to accommodate most scenarios.
 
 All tasks that run in task mode have to following command line switch format, where 'xyz' is the specific task:
 
@@ -286,13 +287,13 @@ Command line options and the .publishrc.* file can be used to define the configu
     app-publisher -h
     app-publisher --help
 
-All options displayed with the exception of the *--task-xyz* switches are availablepublishrc file properties, in camel cased form.
+All options displayed with the exception of the *--task-xyz* switches are available .publishrc file properties, in camel cased form.
 
 To configure app-publisher per project, create a .publishrc.json/js/yml file in the root project directory.
 
 A sample .publishrc.json file can be taken from this project's root directory.  This .publishrc file contains all available options.
 
-Each option in the .publichrc file can be overriden on the command line.  For example, if a publishrc configuration defines the `sendEmail` flag as"Y", a notification email will be sent at the end of the run... it can be overridden / turned off using the following command line argument and positional parameter:
+Each option in the .publishrc file can be overridden on the command line.  For example, if a publishrc configuration defines the `sendEmail` flag as"Y", a notification email will be sent at the end of the run... it can be overridden / turned off using the following command line argument and positional parameter:
 
     app-publisher --send-email N
 
@@ -302,7 +303,7 @@ Environment variables can be used and expanded at runtime using the following sy
 
 ## How the Next Version is Determined
 
-The next version is determined depnding on the versioning system the application uses, and the set of [commit messages](#commit-messages) made since the last version was released.
+The next version is determined depending on the versioning system the application uses, and the set of [commit messages](#commit-messages) made since the last version was released.
 
 Two versioning system are supported:
 
@@ -347,7 +348,7 @@ The "scope" can be anything specific to the commit change, for example:
 
     docs(readme): update info on commit messages
 
-It may also be ommitted, for example:
+It may also be committed, for example:
 
     chore: update dependency for app-publisher to latest version
 
@@ -363,7 +364,7 @@ To reference issues from commit messages, use the "refs", "fixes", or "closes" t
 
     A typo was preventing the end user from being able to create a clerk type user.
 
-    Users hould nw be able to create a clerk type user successfully.
+    Users should nw be able to create a clerk type user successfully.
     Note that non-administrators do not have access to this functionality.
     [fixes #142]
 
@@ -392,7 +393,7 @@ Integrates with the [vscode-taskexplorer](https://github.com/spmeesseman/task-ex
 
 ## CI Integration
 
-Prior to Version 3, App-Publisher was originally intended to be used as a release mechanism to be done from the local development environment, without the need for a CI system.  Version 3 employes a complete pure NodeJS based overhaul, and has been adapted to be used as a tool in a CI environment to perform various tasks or release stages within a pipeline script.  Some useful tasks include:
+Prior to Version 3, App-Publisher was originally intended to be used as a release mechanism to be done from the local development environment, without the need for a CI system.  Version 3 employs a complete pure NodeJS based overhaul, and has been adapted to be used as a tool in a CI environment to perform various tasks or release stages within a pipeline script.  Some useful tasks include:
 
 1. Retrieving the current version number
 2. Retrieving the next version number (based on commit messages since the last release)
@@ -500,7 +501,7 @@ The location of this history header file, should be a path relative to the proje
 |**Value Default**   |80|
 |**Command Line Arg**|*__-cll \| --changelog-line-len__*|
 
-The maximum line lenth to use when parsing commits to populate the changelog file.
+The maximum line length to use when parsing commits to populate the changelog file.
 
 ### commitMsgMap
 
@@ -542,7 +543,7 @@ Displays the configuration object and exits, for debugging.  Note that the defau
 |**Value Default**   ||
 |**Command Line Arg**|*__-cn \| --config-name__*  |
 
-Use config name.  Note that the default publishrc file is '.publishrc.*'.  A config name can dyanimically modify the file used.  For example, a config name of 'cst' will yield a search for the following config files:
+Use config name.  Note that the default publishrc file is '.publishrc.*'.  A config name can dynamically modify the file used.  For example, a config name of 'cst' will yield a search for the following config files:
 
     .publishrc.cst.json
     .publishrc.cst.js
@@ -780,7 +781,7 @@ Ignored if `githubRelease` = "N".
 |**Value Default**   |N|
 |**Command Line Arg**|*__-gr \| --github-release__*|
 
-Perform a Github releas.
+Perform a Github release.
 
 ### githubReleasePostCommand
 
@@ -918,7 +919,7 @@ Ignored if `mantisbtRelease` = "N".
 |**Value Type**      |*__string__*|
 | :----------------- | :--------- |
 |**Value Default**   ||
-|**Command Line Arg**|*__--amntisbt-url__*|
+|**Command Line Arg**|*__--mantisbt-url__*|
 
 The URL to use for creating a MantisBT release.
 
@@ -1247,7 +1248,7 @@ Usage:
 |**Value Type**      |*__boolean__*|
 | :----------------- | :--------- |
 |**Value Default**   |false|
-|**Command Line Arg**|*__-tchp \| --task-changelog-html-print__*|
+|**Command Line Arg**|*__-tchtmp \| --task-changelog-html-print__*|
 
 Export the next release's pending changelog in HTML release format and output to stdout.  Constructed from commits made since the last release.
 
@@ -1603,7 +1604,7 @@ A list of files that should be checked into version control in the commit phase.
 |**Value Default**   |Y|
 |**Command Line Arg**|*__-vr \| --vc-revert__*|
 
-Reverts all file modifications made if a publish failes, or, after a dry run is completed.  Uses version control.
+Reverts all file modifications made if a publish fails, or, after a dry run is completed.  Uses version control.
 
 ### vcRevertFiles
 
@@ -1707,7 +1708,7 @@ Example:
          }]
      }]
 
-The regex must contain the text 'VERSION' which translates to the capturing group used to obtain the actual version number, and it must be the first group if more than one capturing groups exist in the regex.   The 'regexVersion' property is the regex that will match the version, and defaults to the regex `[0-9a-zA-Z\\.\\-]{5,}` if not specified.  This property is optional and defualts to system:semver.
+The regex must contain the text 'VERSION' which translates to the capturing group used to obtain the actual version number, and it must be the first group if more than one capturing groups exist in the regex.   The 'regexVersion' property is the regex that will match the version, and defaults to the regex `[0-9a-zA-Z\\.\\-]{5,}` if not specified.  This property is optional and defaults to system:semver.
 
 ### versionForceCurrent
 
@@ -1716,7 +1717,7 @@ The regex must contain the text 'VERSION' which translates to the capturing grou
 |**Value Default**   |false|
 |**Command Line Arg**|*__-vfc \| --version-force-current__*|
 
-Force current version, for use with post release tasks such as re-sending an email notification or performing a GitHub release if for whever reason it failed on the publish run.
+Force current version, for use with post release tasks such as re-sending an email notification or performing a GitHub release if for whatever reason it failed on the publish run.
 
 Usage:
 
@@ -1729,7 +1730,7 @@ Usage:
 |**Value Default**   ||
 |**Command Line Arg**|*__-vfn \| --version-force-next__*|
 
-A version number to use as the 'next version'.  Version calculation will not be performed other than for reading in the current version, skipping an SCM step.
+A version number to use as the 'next version'.  Version calculation will not be performed other than for reading in the current version from the local version files, skipping an SCM step.
 
 Usage:
 
@@ -1752,7 +1753,7 @@ A file path or list of file paths to always perform version string replacement i
 |**Value Default**   ||
 |**Command Line Arg**|*__n/a__*|
 
-A file path or list of file paths where sroll-down is perfoemed when opened for editing.
+A file path or list of file paths where scroll-down is perfoemed when opened for editing.
 
 ### versionPreReleaseId
 
@@ -1761,12 +1762,31 @@ A file path or list of file paths where sroll-down is perfoemed when opened for 
 |**Value Default**   ||
 |**Command Line Arg**|*__-vpri \| --version-pre-release-id__*|
 
-An identifier denoting a pre-release can to be appenended to the next version number to produce the final version string, e.g. 'alpha' produces the final version string of x.y.z-alpha.
+An identifier denoting a pre-release can to be appended to the next version number to produce the final version string, e.g. 'alpha' produces the final version string of x.y.z-alpha.
+
+See  [versionPreReleaseId](#versionprereleaseid) for details on how pre-release versions are incremented.
 
 Usage:
 
     app-publisher --version-pre-release-id alpha
-    app-publisher --version-pre-release-id pre1
+    app-publisher --version-pre-release-id beta
+    app-publisher --version-pre-release-id pre
+
+### versionPreReleaseLimit
+
+|**Value Type**      |*__boolean__*|
+| :----------------- | :--------- |
+|**Value Default**   |false|
+|**Command Line Arg**|*__-vprl \| --version-pre-release-limit__*|
+
+If set, allows only one level increment away from the last production build during a pre-release development stage when determing the next version from a set of commit messages.  For example, if the last production release is 2.0.2, the pre-release versions will only be allowed to increment to 3.0.0-pre.X, 2.1.0-pre.X, or 2.0.3-pre.X, where *pre* is the pre-release tag, such as `alpha` or `beta` and *X* is the pre-release build number.
+
+The default behavior is to allow normal incrementing for all pre-releases regardless of the last production version.  This means that is the last production version is 2.0.2, the next production version could be 2.5.4, or 3.1.1, depending on the pre-releases made between each production release.
+
+Note that the [versionPreReleaseId](#versionprereleaseid) must also be specified when using this option.
+Usage:
+
+    app-publisher --version-pre-release-id alpha --version-pre-release-limit
 
 ### versionSystem
 

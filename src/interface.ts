@@ -129,6 +129,7 @@ export interface IRelease
     head: string;
     tag: string;
     version: string;
+    lastProdVersion: string;
     versionInfo: IVersionInfo;
 }
 
@@ -257,7 +258,7 @@ export interface IArgs
      */
     changelogHdrFile: string;
     /**
-     * The maximum line lenth to use when parsing commits to populate the changelog file.
+     * The maximum line length to use when parsing commits to populate the changelog file.
      */
     changelogLineLen: number;
     /**
@@ -287,7 +288,7 @@ export interface IArgs
     config: boolean;
     /**
      * Use config name.  Note that the default publishrc file is '.publishrc.*'.  A config name
-     * can dyanimically modify the file used.  For example, a config name of 'cst' will yield a
+     * can dynamically modify the file used.  For example, a config name of 'cst' will yield a
      * search for the following config files:
      *
      *     .publishrc.cst.json
@@ -427,7 +428,7 @@ export interface IArgs
      */
     githubChglogEdit: "Y" | "N";
     /**
-     * Perform a Github releas.
+     * Perform a Github release.
      */
     githubRelease: "Y" | "N";
     /**
@@ -902,8 +903,8 @@ export interface IArgs
      */
     vcFiles: string[];
     /**
-     * Reverts all file modifications made if a publish failes, or, after a dry run is
-     * completed.  Uses version control.
+     * Reverts all file modifications made if a publish fails, or, after a dry run is completed.
+     *  Uses version control.
      */
     vcRevert: "Y" | "N";
     /**
@@ -976,13 +977,13 @@ export interface IArgs
      * obtain the actual version number, and it must be the first group if more than one
      * capturing groups exist in the regex.   The 'regexVersion' property is the regex that will
      * match the version, and defaults to the regex `[0-9a-zA-Z\\.\\-]{5,}` if not specified.
-     * This property is optional and defualts to system:semver.
+     * This property is optional and defaults to system:semver.
      */
     versionFiles: IVersionFile[];
     /**
      * Force current version, for use with post release tasks such as re-sending an email
-     * notification or performing a GitHub release if for whever reason it failed on the publish
-     * run.
+     * notification or performing a GitHub release if for whatever reason it failed on the
+     * publish run.
      *
      * Usage:
      *
@@ -991,7 +992,8 @@ export interface IArgs
     versionForceCurrent: boolean;
     /**
      * A version number to use as the 'next version'.  Version calculation will not be performed
-     * other than for reading in the current version, skipping an SCM step.
+     * other than for reading in the current version from the local version files, skipping an
+     * SCM step.
      *
      * Usage:
      *
@@ -1005,20 +1007,44 @@ export interface IArgs
      */
     versionFilesEditAlways: string | string[];
     /**
-     * A file path or list of file paths where sroll-down is perfoemed when opened for editing.
+     * A file path or list of file paths where scroll-down is perfoemed when opened for editing.
      */
     versionFilesScrollDown: string | string[];
     /**
-     * An identifier denoting a pre-release can to be appenended to the next version number to
+     * An identifier denoting a pre-release can to be appended to the next version number to
      * produce the final version string, e.g. 'alpha' produces the final version string of
      * x.y.z-alpha.
+     *
+     * See  versionPreReleaseId (#versionprereleaseid) for details on how pre-release versions
+     * are incremented.
      *
      * Usage:
      *
      *     app-publisher --version-pre-release-id alpha
-     *     app-publisher --version-pre-release-id pre1
+     *     app-publisher --version-pre-release-id beta
+     *     app-publisher --version-pre-release-id pre
      */
     versionPreReleaseId: string;
+    /**
+     * If set, allows only one level increment away from the last production build during a
+     * pre-release development stage when determing the next version from a set of commit
+     * messages.  For example, if the last production release is 2.0.2, the pre-release versions
+     * will only be allowed to increment to 3.0.0-pre.X, 2.1.0-pre.X, or 2.0.3-pre.X, where
+     * *pre* is the pre-release tag, such as `alpha` or `beta` and *X* is the pre-release build
+     * number.
+     *
+     * The default behavior is to allow normal incrementing for all pre-releases regardless of
+     * the last production version.  This means that is the last production version is 2.0.2,
+     * the next production version could be 2.5.4, or 3.1.1, depending on the pre-releases made
+     * between each production release.
+     *
+     * Note that the versionPreReleaseId (#versionprereleaseid) must also be specified when
+     * using this option.
+     * Usage:
+     *
+     *     app-publisher --version-pre-release-id alpha --version-pre-release-limit
+     */
+    versionPreReleaseLimit: boolean;
     /**
      * Specify the versioning system to be used if it cannot be determined automatically:
      *

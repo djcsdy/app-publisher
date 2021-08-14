@@ -75,7 +75,7 @@ export const publishRcOpts =
         80,
         [ "-cll", "--changelog-line-len" ],
         {
-            help: "The maximum line lenth to use when parsing commits to populate the\n" +
+            help: "The maximum line length to use when parsing commits to populate the\n" +
                   "changelog file.",
             helpPrivate: false
         }
@@ -128,8 +128,8 @@ export const publishRcOpts =
         [ "-cn", "--config-name" ],
         {
             help: "Use config name.  Note that the default publishrc file is\n" +
-                  "'.publishrc.*'.  A config name can dyanimically modify the file used.\n" +
-                  " For example, a config name of 'cst' will yield a search for the\n" +
+                  "'.publishrc.*'.  A config name can dynamically modify the file used.\n" +
+                  "For example, a config name of 'cst' will yield a search for the\n" +
                   "following config files:\n" +
                   "\n" +
                   "    .publishrc.cst.json\n" +
@@ -431,7 +431,7 @@ export const publishRcOpts =
         "N",
         [ "-gr", "--github-release" ],
         {
-            help: "Perform a Github releas.",
+            help: "Perform a Github release.",
             helpPrivate: false
         }
     ],
@@ -611,7 +611,7 @@ export const publishRcOpts =
         true,
         "string",
         "",
-        [ "--amntisbt-url" ],
+        [ "--mantisbt-url" ],
         {
             help: "The URL to use for creating a MantisBT release.\n" +
                   "\n" +
@@ -1034,7 +1034,7 @@ export const publishRcOpts =
         true,
         "boolean",
         false,
-        [ "-tchp", "--task-changelog-html-print" ],
+        [ "-tchtmp", "--task-changelog-html-print" ],
         {
             help: "Export the next release's pending changelog in HTML release format\n" +
                   "and output to stdout.  Constructed from commits made since the last\n" +
@@ -1507,7 +1507,7 @@ export const publishRcOpts =
         "Y",
         [ "-vr", "--vc-revert" ],
         {
-            help: "Reverts all file modifications made if a publish failes, or, after a\n" +
+            help: "Reverts all file modifications made if a publish fails, or, after a\n" +
                   "dry run is completed.  Uses version control.",
             helpPrivate: false
         }
@@ -1643,7 +1643,7 @@ export const publishRcOpts =
                   "be the first group if more than one capturing groups exist in the\n" +
                   "regex.   The 'regexVersion' property is the regex that will match the\n" +
                   "version, and defaults to the regex `[0-9a-zA-Z\\.\\-]{5,}` if not\n" +
-                  "specified.  This property is optional and defualts to system:semver.",
+                  "specified.  This property is optional and defaults to system:semver.",
             helpPrivate: false
         }
     ],
@@ -1656,7 +1656,7 @@ export const publishRcOpts =
         {
             help: "Force current version, for use with post release tasks such as\n" +
                   "re-sending an email notification or performing a GitHub release if\n" +
-                  "for whever reason it failed on the publish run.\n" +
+                  "for whatever reason it failed on the publish run.\n" +
                   "\n" +
                   "Usage:\n" +
                   "\n" +
@@ -1672,8 +1672,8 @@ export const publishRcOpts =
         [ "-vfn", "--version-force-next" ],
         {
             help: "A version number to use as the 'next version'.  Version calculation\n" +
-                  "will not be performed other than for reading in the current version,\n" +
-                  "skipping an SCM step.\n" +
+                  "will not be performed other than for reading in the current version\n" +
+                  "from the local version files, skipping an SCM step.\n" +
                   "\n" +
                   "Usage:\n" +
                   "\n" +
@@ -1702,7 +1702,7 @@ export const publishRcOpts =
         "",
         [],
         {
-            help: "A file path or list of file paths where sroll-down is perfoemed when\n" +
+            help: "A file path or list of file paths where scroll-down is perfoemed when\n" +
                   "opened for editing.",
             helpPrivate: false
         }
@@ -1714,14 +1714,48 @@ export const publishRcOpts =
         "",
         [ "-vpri", "--version-pre-release-id" ],
         {
-            help: "An identifier denoting a pre-release can to be appenended to the next\n" +
+            help: "An identifier denoting a pre-release can to be appended to the next\n" +
                   "version number to produce the final version string, e.g. 'alpha'\n" +
                   "produces the final version string of x.y.z-alpha.\n" +
+                  "\n" +
+                  "See  versionPreReleaseId (#versionprereleaseid) for details on how\n" +
+                  "pre-release versions are incremented.\n" +
                   "\n" +
                   "Usage:\n" +
                   "\n" +
                   "    app-publisher --version-pre-release-id alpha\n" +
-                  "    app-publisher --version-pre-release-id pre1",
+                  "    app-publisher --version-pre-release-id beta\n" +
+                  "    app-publisher --version-pre-release-id pre",
+            helpPrivate: false
+        }
+    ],
+
+    versionPreReleaseLimit: [
+        true,
+        "boolean",
+        false,
+        [ "-vprl", "--version-pre-release-limit" ],
+        {
+            help: "If set, allows only one level increment away from the last production\n" +
+                  "build during a pre-release development stage when determing the next\n" +
+                  "version from a set of commit messages.  For example, if the last\n" +
+                  "production release is 2.0.2, the pre-release versions will only be\n" +
+                  "allowed to increment to 3.0.0-pre.X, 2.1.0-pre.X, or 2.0.3-pre.X,\n" +
+                  "where *pre* is the pre-release tag, such as `alpha` or `beta` and *X*\n" +
+                  "is the pre-release build number.\n" +
+                  "\n" +
+                  "The default behavior is to allow normal incrementing for all\n" +
+                  "pre-releases regardless of the last production version.  This means\n" +
+                  "that is the last production version is 2.0.2, the next production\n" +
+                  "version could be 2.5.4, or 3.1.1, depending on the pre-releases made\n" +
+                  "between each production release.\n" +
+                  "\n" +
+                  "Note that the versionPreReleaseId (#versionprereleaseid) must also be\n" +
+                  "specified when using this option.\n" +
+                  "Usage:\n" +
+                  "\n" +
+                  "    app-publisher --version-pre-release-id alpha\n" +
+                  "--version-pre-release-limit",
             helpPrivate: false
         }
     ],

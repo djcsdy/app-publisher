@@ -13,6 +13,8 @@
         "emailhrefs",
         "emailrecip",
         "execa",
+        "fnames",
+        "keep",
         "mantisbtapitoken",
         "mantisbtassets",
         "mantisbtchglogedit",
@@ -69,6 +71,7 @@
         "verbosex",
         "versionprereleaseid",
         "vpri",
-        "vprl"
+        "vprl",
+        "vslauncher"
     ]
 }

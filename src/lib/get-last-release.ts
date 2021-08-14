@@ -1,4 +1,4 @@
-import { escapeRegExp, template } from "lodash";
+import { escapeRegExp, last, template } from "lodash";
 import semver from "semver";
 import pLocate from "p-locate";
 import { getTags, isRefInHistory, getTagHead } from "./repo";
@@ -30,21 +30,56 @@ export = getLastRelease;
  */
 async function getLastRelease(context: IContext, lastVersionInfo: IVersionInfo): Promise<IRelease>
 {
-    const { env, options, logger } = context;
-    const isValid = (v: string) => {
+    let lastProdVersion: string | undefined;
+    const { options, logger } = context;
+
+    const isValid = (v: string) =>
+    {
         if (!v) { return false; }
-        if (lastVersionInfo.system !== "incremental") {
-            return semver.valid(semver.clean(v)) && (options.versionPreReleaseId || !semver.prerelease(semver.clean(v)));
+
+        if (lastVersionInfo.system !== "incremental")
+        {
+            const cv = semver.clean(v),
+                  isProd = !semver.prerelease(cv);
+            if (isProd)
+            {
+                if (!lastProdVersion)
+                {
+                    lastProdVersion = cv;
+                }
+                else {
+                    if (semver.rcompare(lastProdVersion, cv) < 0) {
+                        lastProdVersion = cv;
+                    }
+                }
+            }
+            return semver.valid(cv) && (options.versionPreReleaseId || isProd);
         }
-        return isNumeric(v);
+        if (isNumeric(v))
+        {
+            if (!lastProdVersion)
+            {
+                lastProdVersion = v;
+            }
+            else {
+                if (parseInt(lastProdVersion) < parseInt(v)) {
+                    lastProdVersion = v;
+                }
+            }
+            return true;
+        }
+
+        return false;
     };
 
-    const doSort = (a: any, b: any) => {
+    const doSort = (a: any, b: any) =>
+    {
         if (lastVersionInfo.system !== "incremental") {
             return semver.rcompare(a.version, b.version);
         }
         return a.version === b.version ? 0 : (parseInt(a.version) > parseInt(b.version) ? -1 : 1);
     };
+
     //
     // Generate a regex to parse tags formatted with `tagFormat`
     // by replacing the `version` variable in the template by `(.+)`.
@@ -57,14 +92,14 @@ async function getLastRelease(context: IContext, lastVersionInfo: IVersionInfo):
                  .map((tag: any) => ({ tag, version: (tag.match(tagRegexp) || new Array(2))[1] }))
                  .filter((tag: any) => isValid(tag.version))
                  .sort(doSort);
+
     if (options.verbose) {
         context.stdout.write("Tags:" + EOL + JSON.stringify(tags, undefined, 2) + EOL);
     }
 
     const tag: any = await pLocate(tags, (tag: any) => isRefInHistory(context, tag.tag, true), { preserveOrder: true });
 
-    if (tag)
-    {
+    if (tag) {
         logger.info(`Found ${options.repoType} tag ${tag.tag} associated with version ${tag.version}`);
         return { head: await getTagHead(context, tag.tag), versionInfo: lastVersionInfo, ...tag };
     }
@@ -74,6 +109,7 @@ async function getLastRelease(context: IContext, lastVersionInfo: IVersionInfo):
         head: undefined,
         tag: undefined,
         version: undefined,
+        lastProdVersion: undefined,
         versionInfo: lastVersionInfo
     };
 }

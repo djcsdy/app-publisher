@@ -27,7 +27,7 @@ import { doGithubRelease, publishGithubRelease } from "./lib/releases/github";
 import { last, template } from "lodash";
 import { COMMIT_NAME, COMMIT_EMAIL, FIRST_RELEASE } from "./lib/definitions/constants";
 import { sendNotificationEmail } from "./lib/email";
-import { pathExists, readFile, writeFile } from "./lib/utils/fs";
+import { writeFile } from "./lib/utils/fs";
 import { commit, fetch, verifyAuth, getHead, tag, push, revert, addEdit } from "./lib/repo";
 import { EOL } from "os";
 import { IContext, INextRelease, IOptions } from "./interface";

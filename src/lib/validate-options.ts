@@ -243,7 +243,7 @@ async function validateOptions({cwd, env, logger, options}: IContext, suppressAr
         }
     }
     //
-    // Loop through all possible arguments, and set efault values if they dont
+    // Loop through all possible arguments, and set efault values if they don't
     // already exist on the options object
     //
     for (const o in publishRcOpts)
@@ -324,7 +324,7 @@ async function validateOptions({cwd, env, logger, options}: IContext, suppressAr
     }
 
     //
-    // Email configuratin
+    // Email configuration
     //
     if (options.taskEmail) {
         options.emailNotification = "Y";
@@ -571,7 +571,7 @@ async function validateOptions({cwd, env, logger, options}: IContext, suppressAr
         if (!options.mantisbtApiToken) {
             logger.error("You must have MANTISBT_API_TOKEN defined for a MantisBT release type");
             logger.error("-or- you must have mantisbtApiToken defined in publishrc");
-            logger.error("Set the envvar MANTISBT_API_TOKEN or the config mantisApiToken with the token value created on the MantisBT website");
+            logger.error("Set the env var MANTISBT_API_TOKEN or the config mantisApiToken with the token value created on the MantisBT website");
             logger.error("To create a token, see the \"Tokens\" section of your Mantis User Preferences page");
             return false;
         }
@@ -730,7 +730,7 @@ async function validateOptions({cwd, env, logger, options}: IContext, suppressAr
     //
 
     //
-    // --repubish  = no tasks
+    // --republish  = no tasks
     //
     if (options.republish && options.taskMode)
     {
@@ -787,13 +787,19 @@ async function validateOptions({cwd, env, logger, options}: IContext, suppressAr
         options.taskTag = true;
     }
 
+    if (options.versionPreReleaseLimit && !options.versionPreReleaseId) {
+        logger.error("Invalid options specified:");
+        logger.error("   The 'versionPreReleaseLimit' option cannot be used w/o 'versionPreReleaseId'");
+        return false;
+    }
+
     if (options.taskCommit || options.taskTag || options.taskTagVersion) {
         for (const o in options) {
             if (o.startsWith("task") && options[o] === true && o !== "taskCommit" && o !== "taskTag" &&
                 o !== "taskTagVersion" && o !== "taskMode" && o !== "taskModeStdOut")
             {
                 logger.error("Invalid options specified:");
-                logger.error(`   The taskCommit and taskTag* switches cannot be used with '${o}'`);
+                logger.error(`   The 'taskCommit' and 'taskTag*' options cannot be used with '${o}'`);
                 logger.error("   They can only be used alone, or together");
                 return false;
             }
@@ -879,8 +885,8 @@ async function validateOptions({cwd, env, logger, options}: IContext, suppressAr
     }
 
     //
-    // Valudate version specified by taskChangelogPrintVersion or taskChangelogViewVersion
-    // Only allow one of theseocmmands at a time.  TODO - allow running both at same time
+    // Validate version specified by taskChangelogPrintVersion or taskChangelogViewVersion
+    // Only allow one of these commands at a time.  TODO - allow running both at same time
     //
     if (options.taskChangelogPrintVersion || options.taskChangelogViewVersion || options.taskChangelogHtmlPrintVersion) {
         if (!validateVersion(options.taskChangelogPrintVersion || options.taskChangelogViewVersion || options.taskChangelogHtmlPrintVersion)) {
