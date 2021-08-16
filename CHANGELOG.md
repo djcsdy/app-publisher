@@ -1,5 +1,19 @@
 # APP-PUBLISHER CHANGE LOG
 
+## Version 3.6.0 (August 15th, 2021)
+
+### Bug Fixes
+
+- **General:** the task run fails when the --version-force next option is used and there are no relevant commits that would normally bump the version.
+
+### Features
+
+- add support for multi-level or one-level pre-release versioning.
+
+### Build System
+
+- move to webpack build
+
 ## Version 3.5.11 (August 9th, 2021)
 
 ### Bug Fixes
