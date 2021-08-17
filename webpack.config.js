@@ -88,7 +88,7 @@ const config =
 					safari10: false,
 				}
 			})
-		],
+		]
 	}
 };
 module.exports = config;
