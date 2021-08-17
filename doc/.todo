@@ -1,9 +1,10 @@
 
 Versioning:
 
-    ☐ Add support for bumping pre-release minor version
+    ✔ Add support for bumping pre-release minor version @done(21-08-15 12:46)
     Includes from an already pre-release patch
 
 Miscellaneous:
 
     ☐ Command line help for one command/option
+    ☐ postBuildCommand and preBuildCommand should be named buildPostCommand and buildPreCommand
