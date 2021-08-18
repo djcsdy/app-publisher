@@ -8,7 +8,7 @@ import { pathExists, readFile, writeFile } from "../utils/fs";
 import { editFile } from "../utils/utils";
 
 
-export async function getNpmFile({logger, options, cwd}: IContext)
+export async function getNpmFile({logger, options, cwd})
 {
     return new Promise<string>(async (resolve, reject) =>
     {

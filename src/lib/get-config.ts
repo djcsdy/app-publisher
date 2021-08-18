@@ -1,8 +1,9 @@
 import { castArray, pickBy, isNil, isString, isPlainObject } from "lodash";
-import { IOptions } from "../interface";
+import { IContext, IOptions } from "../interface";
+import { readFile } from "./utils/fs";
+import { getNpmFile } from "./version/npm";
 const PLUGINS_DEFINITIONS = require("./definitions/plugins");
 const { validatePlugin, parseConfig } = require("./plugins/utils");
-const readPkgUp = require("read-pkg-up");
 const cosmiconfig = require("cosmiconfig");
 const resolveFrom = require("resolve-from");
 const envCi = require("@spmeesseman/env-ci");
@@ -11,7 +12,7 @@ const envCi = require("@spmeesseman/env-ci");
 export = getConfig;
 
 
-async function getConfig(context: any, opts: IOptions)
+async function getConfig(context: IContext, opts: IOptions)
 {
     let configName = "publishrc",
         configFiles: string[];
@@ -95,9 +96,9 @@ async function getConfig(context: any, opts: IOptions)
     // Set default options values if not defined yet
     //
     options = {
-        branch: (await defBranch({ normalize: false, cwd })),
-        repo: (await pkgRepoUrl({ normalize: false, cwd })), // || (await repoUrl(context)),
-        repoType: (await pkgRepoType({ normalize: false, cwd })),
+        branch: (await defBranch(context)),
+        repo: (await pkgRepoUrl(context)), // || (await repoUrl(context)),
+        repoType: (await pkgRepoType(context)),
         // eslint-disable-next-line no-template-curly-in-string
         tagFormat: "v${version}",
         plugins: [],
@@ -129,29 +130,30 @@ async function getConfig(context: any, opts: IOptions)
     // return { options, plugins: await plugins({ ...context, options }, pluginsPath) };
 }
 
-async function pkgRepoUrl(opts)
+
+
+async function pkgRepoUrl(context: IContext)
 {
-    const pkg = await readPkgUp(opts);
-    if (!pkg) {
-        return "";
-    }
-    return pkg.package && (isPlainObject(pkg.package.repository) ? pkg.package.repository.url : pkg.package.repository);
+    const { logger, cwd } = context;
+    let pkg: any = await getNpmFile({ options: { projectFileNpm: undefined, projectName: undefined }, logger, cwd });
+    pkg = JSON.parse(await readFile(pkg));
+    return pkg && pkg.repository ? pkg.repository.url : pkg.repository;
 }
 
-async function pkgRepoType(opts)
+
+async function pkgRepoType(context: IContext)
 {
-    const pkg = await readPkgUp(opts);
-    if (!pkg) {
-        return "";
-    }
-    return pkg.package && (isPlainObject(pkg.package.repository) ? pkg.package.repository.type : "git");
+    const { logger, cwd } = context;
+    let pkg: any = await getNpmFile({ options: { projectFileNpm: undefined, projectName: undefined }, logger, cwd });
+    pkg = JSON.parse(await readFile(pkg));
+    return pkg && pkg.repository ? pkg.repository.type : "";
 }
 
-async function defBranch(opts)
+
+async function defBranch(context: IContext)
 {
-    const pkg = await readPkgUp(opts);
-    if (!pkg) {
-        return "";
-    }
-    return pkg.package && (isPlainObject(pkg.package.repository) ? (pkg.package.repository.type === "git" ? "master" : "trunk") : "trunk");
+    const { logger, cwd } = context;
+    let pkg: any = await getNpmFile({ options: { projectFileNpm: undefined, projectName: undefined }, logger, cwd });
+    pkg = JSON.parse(await readFile(pkg));
+    return pkg && pkg.repository ? (pkg.repository.type === "git" ? "main" : "trunk") : "main";
 }

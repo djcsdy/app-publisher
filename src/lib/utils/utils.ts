@@ -320,16 +320,27 @@ export function isUpperCase(value: string)
 }
 
 
-export function logWarning(context: IContext, msg: string, err: string | Error)
+export function logError(logger: any, e: Error, warning?: boolean)
 {
-    context.logger.warn(msg);
+    const logFn = logger[warning !== true ? "error" : "warn"];
+    logFn("*** " + e.name, undefined, "", true);
+    logFn("*** " + e.message, undefined, "", true);
+    if (e.stack) {
+        const stackFmt = e.stack.replace(/\n/g, "\n                        *** ");
+        logFn("*** " + stackFmt, undefined, "", true);
+    }
+}
+
+
+export function logWarning(logger: any, msg: string, err: string | Error)
+{
+    logger.warn(msg);
     if (err) {
-        const errParts = err.toString().split("\n");
-        context.logger.warn("The non-fatal error encountered was:");
-        for (const errPart of errParts) {
-            if (errPart) {
-                context.logger.warn(errPart.trim());
-            }
+        if (err instanceof Error) {
+            logError(context, err, true);
+        }
+        else {
+            logger.warn(err);
         }
     }
 }

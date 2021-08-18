@@ -1,18 +1,12 @@
 
 import * as path from "path";
 import { publishRcOpts } from "../args";
-import { isNumeric, isObject, isString, validateVersion } from "./utils/utils";
-import { createDir, pathExists } from "./utils/fs";
+import { isNumeric, isObject, isString, logError, validateVersion } from "./utils/utils";
+import { createDir, pathExists, readFile } from "./utils/fs";
 import { IContext, IVersionFile } from "../interface";
 
 export = validateOptions;
 
-
-function error(logger: any, err: string)
-{
-    logger.error(err);
-    return false;
-}
 
 async function validateOptions({cwd, env, logger, options}: IContext, suppressArgErrors?: boolean): Promise<boolean>
 {
@@ -368,23 +362,6 @@ async function validateOptions({cwd, env, logger, options}: IContext, suppressAr
     //
     // Set repository and repository type
     //
-    if (!options.repo || !options.repoType)
-    {
-        if (await pathExists(path.join(cwd, "package.json")))
-        {
-            const packageJson = require(path.join(cwd, "package.json"));
-
-            if (!options.repo && packageJson.repository && packageJson.repository.url)
-            {
-                options.repo = packageJson.repository.url;
-            }
-            if (!options.repoType && packageJson.repository && packageJson.repository.type)
-            {
-                options.repo = packageJson.repository.type;
-            }
-        }
-    }
-
     if (!options.repoType) {
         logger.error("Repository type must be specified on cmd line, package.json or publishrc");
         return false;
@@ -398,19 +375,6 @@ async function validateOptions({cwd, env, logger, options}: IContext, suppressAr
     //
     // Branch
     //
-    if (!options.branch)
-    {
-        if (options.repoType === "git")
-        {
-            logger.warn("Setting branch name to default 'main'");
-            options.branch = "main";
-        }
-        else // if (options.repoType === "svn")
-        {
-            logger.log("Setting branch name to default 'trunk'");
-            options.branch = "trunk";
-        }
-    }
     if (options.branch.startsWith("/")) {
         options.branch = options.branch.substring(1);
     }
@@ -454,7 +418,7 @@ async function validateOptions({cwd, env, logger, options}: IContext, suppressAr
         }
     }
 
-    function setDefaultEditor()
+    const setDefaultEditor = () =>
     {
         if (process.platform === "win32") {
             logger.log("Text editor not found, falling back to 'notepad'");
@@ -464,7 +428,7 @@ async function validateOptions({cwd, env, logger, options}: IContext, suppressAr
             logger.log("Text editor not found, falling back to 'vi'");
             options.textEditor = "vi";
         }
-    }
+    };
 
     //
     // If specified editor doesnt exist, then switch to notepad or pico
@@ -586,10 +550,12 @@ async function validateOptions({cwd, env, logger, options}: IContext, suppressAr
     if (options.mantisbtPlugin)
     {
         if (!options.mantisbtPlugin.includes((".php"))) {
-            return error(logger, "Invalid value for mantisbtPlugin, file must have a php extension");
+            logger.error("Invalid value for mantisbtPlugin, file must have a php extension");
+            return false;
         }
         if (!(await pathExists(options.mantisbtPlugin))) {
-            return error(logger, "Invalid value for mantisbtPlugin, non-existent file specified");
+            logger.error("Invalid value for mantisbtPlugin, non-existent file specified");
+            return false;
         }
     }
 
@@ -810,7 +776,7 @@ async function validateOptions({cwd, env, logger, options}: IContext, suppressAr
         }
     }
 
-    function enforceingleTask(task: string)
+    const enforceingleTask = (task: string) =>
     {
         if (options[task]) {
             for (const o in options) {
@@ -823,7 +789,7 @@ async function validateOptions({cwd, env, logger, options}: IContext, suppressAr
             }
         }
         return true;
-    }
+    };
 
     if (!enforceingleTask("taskChangelogView"))             { return false; };
     if (!enforceingleTask("taskChangelogViewVersion"))      { return false; };
