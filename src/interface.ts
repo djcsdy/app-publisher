@@ -243,6 +243,16 @@ export interface IArgs
      */
     buildCommand: string | string[];
     /**
+     * A script or list of scripts to run for the build stage, after the build process is
+     * started.
+     */
+    buildPostCommand: string | string[];
+    /**
+     * A script or list of scripts to run for the build stage, before the build process is
+     * started.
+     */
+    buildPreCommand: string | string[];
+    /**
      * Overrides the 'bugs' property of package.json when an NPM release is made, which is
      * extracted for display on the project page of the NPM repository.
      */
@@ -276,6 +286,16 @@ export interface IArgs
      */
     commitMsgMap: ICommitMessageMap[];
     /**
+     * A script or list of scripts to run for the commit stage, after the commit process is
+     * started.
+     */
+    commitPostCommand: string | string[];
+    /**
+     * A script or list of scripts to run for the commit stage, before the commit process is
+     * started.
+     */
+    commitPreCommand: string | string[];
+    /**
      * Displays the configuration object and exits, for debugging.  Note that the default
      * publishrc file is '.publishrc.*'.  A config file can be one of four different formats:
      *
@@ -306,6 +326,11 @@ export interface IArgs
      * A script or list of scripts to run for the deploy stage.
      */
     deployCommand: string | string[];
+    /**
+     * A script or list of scripts to run for the final release stage, before the final release
+     * process is started.
+     */
+    deployPostCommand: string | string[];
     /**
      * Add the contents of the directory specified by the 'dist' property to version control, if
      * not already.
@@ -568,31 +593,6 @@ export interface IArgs
      */
     nugetRelease: "Y" | "N";
     /**
-     * A script or list of scripts to run for the build stage, after the build process is
-     * started.
-     */
-    postBuildCommand: string | string[];
-    /**
-     * A script or list of scripts to run for the build stage, before the build process is
-     * started.
-     */
-    preBuildCommand: string | string[];
-    /**
-     * A script or list of scripts to run for the commit stage, after the commit process is
-     * started.
-     */
-    postCommitCommand: string | string[];
-    /**
-     * A script or list of scripts to run for the commit stage, before the commit process is
-     * started.
-     */
-    preCommitCommand: string | string[];
-    /**
-     * A script or list of scripts to run for the final release stage, before the final release
-     * process is started.
-     */
-    postReleaseCommand: string | string[];
-    /**
      * Prompt for version.  The recommended version will be displayed at the prompt.
      */
     promptVersion: "Y" | "N";
@@ -662,7 +662,7 @@ export interface IArgs
      */
     skipVersionEdits: "Y" | "N";
     /**
-     * Runs all scripts defined by the publishrc property buildCommand`.
+     * Runs all scripts defined by the publishrc property buildCommand (#buildcommand).
      */
     taskBuild: boolean;
     /**
@@ -759,7 +759,7 @@ export interface IArgs
      */
     taskCiEnvSet: boolean;
     /**
-     * Commits the changes made when using the --touch-versions option, using the 'chore:
+     * Commits the changes made when using the --task-version-update option, using the 'chore:
      * vX.X.X' format for the commit message.
      */
     taskCommit: boolean;
@@ -845,6 +845,10 @@ export interface IArgs
      */
     taskTagVersion: string;
     /**
+     * Runs all scripts defined by the publishrc property testsCommand (#testscommand).
+     */
+    taskTests: boolean;
+    /**
      * Finds the current/latest version released and outputs that version string to stdout.
      *
      * Ignored if the `--task-version-info` switch is used.
@@ -889,9 +893,17 @@ export interface IArgs
      */
     testEmailRecip: string | string[];
     /**
-     * Runs tests (development use).
+     * Runs tests (development use only).
      */
     tests: boolean;
+    /**
+     * Command(s) to run for *tests* stage, immediately following build stage.  The only
+     * difference between using this command and the  buildPostCommand (#buildpostcommand) is
+     * that this command will fail the publish run if the script returns a non-zero exit code,
+     * whereas [buildPostCommand](#buildpostcommand) will contine with the publish run
+     * regardless of the script's exit code.
+     */
+    testsCommand: string | string[];
     /**
      * The editor program to use when opening version files for manual editing."
      */

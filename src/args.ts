@@ -32,6 +32,30 @@ export const publishRcOpts =
         }
     ],
 
+    buildPostCommand: [
+        true,
+        "string | string[]",
+        "",
+        [],
+        {
+            help: "A script or list of scripts to run for the build stage, after the\n" +
+                  "build process is started.",
+            helpPrivate: false
+        }
+    ],
+
+    buildPreCommand: [
+        true,
+        "string | string[]",
+        "",
+        [],
+        {
+            help: "A script or list of scripts to run for the build stage, before the\n" +
+                  "build process is started.",
+            helpPrivate: false
+        }
+    ],
+
     bugs: [
         true,
         "string",
@@ -102,6 +126,30 @@ export const publishRcOpts =
         }
     ],
 
+    commitPostCommand: [
+        true,
+        "string | string[]",
+        "",
+        [],
+        {
+            help: "A script or list of scripts to run for the commit stage, after the\n" +
+                  "commit process is started.",
+            helpPrivate: false
+        }
+    ],
+
+    commitPreCommand: [
+        true,
+        "string | string[]",
+        "",
+        [],
+        {
+            help: "A script or list of scripts to run for the commit stage, before the\n" +
+                  "commit process is started.",
+            helpPrivate: false
+        }
+    ],
+
     config: [
         true,
         "boolean",
@@ -159,6 +207,18 @@ export const publishRcOpts =
         [],
         {
             help: "A script or list of scripts to run for the deploy stage.",
+            helpPrivate: false
+        }
+    ],
+
+    deployPostCommand: [
+        true,
+        "string | string[]",
+        "",
+        [],
+        {
+            help: "A script or list of scripts to run for the final release stage,\n" +
+                  "before the final release process is started.",
             helpPrivate: false
         }
     ],
@@ -733,66 +793,6 @@ export const publishRcOpts =
         }
     ],
 
-    postBuildCommand: [
-        true,
-        "string | string[]",
-        "",
-        [],
-        {
-            help: "A script or list of scripts to run for the build stage, after the\n" +
-                  "build process is started.",
-            helpPrivate: false
-        }
-    ],
-
-    preBuildCommand: [
-        true,
-        "string | string[]",
-        "",
-        [],
-        {
-            help: "A script or list of scripts to run for the build stage, before the\n" +
-                  "build process is started.",
-            helpPrivate: false
-        }
-    ],
-
-    postCommitCommand: [
-        true,
-        "string | string[]",
-        "",
-        [],
-        {
-            help: "A script or list of scripts to run for the commit stage, after the\n" +
-                  "commit process is started.",
-            helpPrivate: false
-        }
-    ],
-
-    preCommitCommand: [
-        true,
-        "string | string[]",
-        "",
-        [],
-        {
-            help: "A script or list of scripts to run for the commit stage, before the\n" +
-                  "commit process is started.",
-            helpPrivate: false
-        }
-    ],
-
-    postReleaseCommand: [
-        true,
-        "string | string[]",
-        "",
-        [],
-        {
-            help: "A script or list of scripts to run for the final release stage,\n" +
-                  "before the final release process is started.",
-            helpPrivate: false
-        }
-    ],
-
     promptVersion: [
         true,
         "flag",
@@ -963,7 +963,8 @@ export const publishRcOpts =
         false,
         [ "-tb", "--task-build" ],
         {
-            help: "Runs all scripts defined by the publishrc property buildCommand`.",
+            help: "Runs all scripts defined by the publishrc property buildCommand\n" +
+                  "(#buildcommand).",
             helpPrivate: false
         }
     ],
@@ -1177,7 +1178,7 @@ export const publishRcOpts =
         false,
         [ "-tcm", "--task-commit" ],
         {
-            help: "Commits the changes made when using the --touch-versions option,\n" +
+            help: "Commits the changes made when using the --task-version-update option,\n" +
                   "using the 'chore: vX.X.X' format for the commit message.",
             helpPrivate: false
         }
@@ -1375,6 +1376,18 @@ export const publishRcOpts =
         }
     ],
 
+    taskTests: [
+        true,
+        "boolean",
+        false,
+        [ "-tb", "--task-tests" ],
+        {
+            help: "Runs all scripts defined by the publishrc property testsCommand\n" +
+                  "(#testscommand).",
+            helpPrivate: false
+        }
+    ],
+
     taskVersionCurrent: [
         true,
         "boolean",
@@ -1470,7 +1483,23 @@ export const publishRcOpts =
         false,
         [ "-t", "--tests" ],
         {
-            help: "Runs tests (development use).",
+            help: "Runs tests (development use only).",
+            helpPrivate: false
+        }
+    ],
+
+    testsCommand: [
+        true,
+        "string | string[]",
+        "",
+        [],
+        {
+            help: "Command(s) to run for *tests* stage, immediately following build\n" +
+                  "stage.  The only difference between using this command and the\n" +
+                  "buildPostCommand (#buildpostcommand) is that this command will fail\n" +
+                  "the publish run if the script returns a non-zero exit code, whereas\n" +
+                  "[buildPostCommand](#buildpostcommand) will contine with the publish\n" +
+                  "run regardless of the script's exit code.",
             helpPrivate: false
         }
     ],
