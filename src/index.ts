@@ -611,7 +611,7 @@ async function runRelease(context: IContext)
     // Scripts that are run before manipulation of the version files and before any build
     // scripts are ran.
     //
-    await util.runScripts(context, "preBuild", options.preBuildCommand, options.taskBuild, true);
+    await util.runScripts(context, "preBuild", options.buildPreCommand, options.taskBuild, true);
 
     //
     // Pre - NPM release - Package.json manipulation for multi-destination releases.
@@ -667,7 +667,15 @@ async function runRelease(context: IContext)
         //
         // Post-build scripts (.publishrc)
         //
-        await util.runScripts(context, "postBuild", options.postBuildCommand, options.taskBuild);
+        await util.runScripts(context, "postBuild", options.buildPostCommand, options.taskBuild);
+    }
+
+    //
+    // Build scripts
+    //
+    if (options.testsCommand && options.testsCommand.length > 0 && !options.taskMode)
+    {
+        await util.runScripts(context, "tests", options.testsCommand, options.taskTests, true);
     }
 
     //
@@ -800,18 +808,17 @@ async function runRelease(context: IContext)
                 logger.log("Run deployment in dry-run mode to 'deployment task' options");
             }
             await util.runScripts(context, "deploy", options.deployCommand, options.taskDeploy);
+            //
+            // Post-Release scripts (.publishrc)
+            // Scripts that are run before manipulation of the version files and before any build
+            // scripts are ran.
+            //
+            await util.runScripts(context, "postDeploy", options.deployPostCommand);
         }
         else {
             logger.log("Skipped running custom deploy script");
         }
     }
-
-    //
-    // Post-Release scripts (.publishrc)
-    // Scripts that are run before manipulation of the version files and before any build
-    // scripts are ran.
-    //
-    await util.runScripts(context, "postRelease", options.postReleaseCommand);
 
     //
     // Notification email
@@ -892,7 +899,7 @@ async function commitAndTag(context: IContext, githubReleaseId: string)
     {   //
         // Pre-commit scripts
         //
-        await util.runScripts(context, "preCommit", options.preCommitCommand); // (.publishrc)
+        await util.runScripts(context, "preCommit", options.commitPreCommand); // (.publishrc)
         //
         // Commit changes to vcs
         //
@@ -903,6 +910,10 @@ async function commitAndTag(context: IContext, githubReleaseId: string)
             logger.warn(`Failed to commit changes for v${nextRelease.version}`);
             util.logWarning(context, "Manually commit the changes using the commit message format 'chore: vX.X.X'", e);
         }
+        //
+        // Post-commit scripts
+        //
+        await util.runScripts(context, "postCommit", options.commitPostCommand); // (.publishrc)
     }
     //
     // Create the tag before calling the publish plugins as some require the tag to exists
@@ -976,17 +987,36 @@ async function processTasksLevel1(context: IContext): Promise<string | boolean>
     }
 
     //
-    // Run build scripts
+    // Task - Run build scripts
     //
     if (options.taskBuild)
     {
         if (options.buildCommand && options.buildCommand.length > 0)
-        {
-            await util.runScripts(context, "build", options.buildCommand, options.taskBuild, true);
+        {   //
+            // Pre-build scripts (.publishrc).  THis would happen prior to the version file
+            // updates if this wasn't a task distributed run.
+            //
+            await util.runScripts(context, "preBuild", options.buildPreCommand, true, true);
+            //
+            // Build scripts
+            //
+            await util.runScripts(context, "build", options.buildCommand, true, true);
             //
             // Post-build scripts (.publishrc)
             //
-            await util.runScripts(context, "postBuild", options.postBuildCommand, options.taskBuild);
+            await util.runScripts(context, "postBuild", options.buildPostCommand, true);
+        }
+        return true;
+    }
+
+    //
+    // Task - tests scripts
+    //
+    if (options.taskTests)
+    {
+        if (options.testsCommand && options.testsCommand.length > 0)
+        {
+            await util.runScripts(context, "tests", options.testsCommand, true, true);
         }
         return true;
     }

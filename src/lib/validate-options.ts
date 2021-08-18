@@ -73,29 +73,29 @@ async function validateOptions({cwd, env, logger, options}: IContext, suppressAr
     {
         options.deployCommand = [ options.deployCommand ]; // convert to array
     }
+    if (options.deployPostCommand && isString(options.deployPostCommand))
+    {
+        options.deployPostCommand = [ options.deployPostCommand ]; // convert to array
+    }
     if (options.buildCommand && isString(options.buildCommand))
     {
         options.buildCommand = [ options.buildCommand ]; // convert to array
     }
-    if (options.postBuildCommand && isString(options.postBuildCommand))
+    if (options.buildPostCommand && isString(options.buildPostCommand))
     {
-        options.postBuildCommand = [ options.postBuildCommand ]; // convert to array
+        options.buildPostCommand = [ options.buildPostCommand ]; // convert to array
     }
-    if (options.preBuildCommand && isString(options.preBuildCommand))
+    if (options.buildPreCommand && isString(options.buildPreCommand))
     {
-        options.preBuildCommand = [ options.preBuildCommand ]; // convert to array
+        options.buildPreCommand = [ options.buildPreCommand ]; // convert to array
     }
-    if (options.postReleaseCommand && isString(options.postReleaseCommand))
+    if (options.commitPostCommand && isString(options.commitPostCommand))
     {
-        options.postReleaseCommand = [ options.postReleaseCommand ]; // convert to array
+        options.commitPostCommand = [ options.commitPostCommand ]; // convert to array
     }
-    if (options.postCommitCommand && isString(options.postCommitCommand))
+    if (options.commitPreCommand &&  isString(options.commitPreCommand))
     {
-        options.postCommitCommand = [ options.postCommitCommand ]; // convert to array
-    }
-    if (options.preCommitCommand &&  isString(options.preCommitCommand))
-    {
-        options.preCommitCommand = [ options.preCommitCommand ]; // convert to array
+        options.commitPreCommand = [ options.commitPreCommand ]; // convert to array
     }
     if (options.distReleasePreCommand && isString(options.distReleasePreCommand))
     {
@@ -140,6 +140,10 @@ async function validateOptions({cwd, env, logger, options}: IContext, suppressAr
     if (options.npmReleasePostCommand && isString(options.npmReleasePostCommand))
     {
         options.npmReleasePostCommand = [ options.npmReleasePostCommand ]; // convert to array
+    }
+    if (options.testsCommand && isString(options.testsCommand))
+    {
+        options.testsCommand = [ options.testsCommand ]; // convert to array
     }
     if (options.vcFiles && isString(options.vcFiles))
     {
