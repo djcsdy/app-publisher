@@ -1,5 +1,33 @@
 # APP-PUBLISHER CHANGE LOG
 
+## Version 3.7.0 (August 18th, 2021)
+
+### Bug Fixes
+
+- **Hooks:** hook scripts that throw an error or return exit code 0 are not handled and cause the publish run to fail without cleanup.
+
+### Features
+
+- add new publishrc property for a 'tests' stage that follows the 'build'stage, allowing a hook script(s) to be ran for unit testing without using 'buildPostCommand':
+
+    testsCommand
+
+Unlike 'buildPostCommand', failure of the tests hook will result in the publish run failing.
+
+Added new task for a distributed publish run:
+
+    --task-tests
+
+### Refactoring
+
+- the following publishrc preperties have been renamed:
+
+    postBuildCommand   -> buildPostCommand
+    postBuildCommand   -> buildPostCommand
+    postCommitCommand  -> commitPostCommand
+    postCommitCommand  -> commitPostCommand
+    postReleaseCommand -> deployPostCommand
+
 ## Version 3.6.0 (August 15th, 2021)
 
 ### Bug Fixes
