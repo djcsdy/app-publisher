@@ -395,14 +395,26 @@ export async function runScripts(context: IContext, scriptType: string, scripts:
                     logger.log(`   Run script: ${scriptParts.join(" ")}`);
                     procPromise = execa(scriptPrg, scriptParts, {cwd, env});
                     procPromise.stdout.pipe(context.stdout);
-                    proc = await procPromise;
+                    try {
+                        proc = await procPromise;
+                    }
+                    catch (e) {
+                        logger[throwOnError ? "error" : "warn"](e.toString());
+                        checkExitCode(1, logger, throwOnError);
+                    }
                 }
                 else if (scriptParts.length === 1)
                 {
                     logger.log(`   Run script: ${scriptParts[0]}`);
                     procPromise = await execa(scriptParts[0], [], {cwd, env});
                     procPromise.stdout.pipe(context.stdout);
-                    proc = await procPromise;
+                    try {
+                        proc = await procPromise;
+                    }
+                    catch (e) {
+                        logger[throwOnError ? "error" : "warn"](e.toString());
+                        checkExitCode(1, logger, throwOnError);
+                    }
                 }
                 else {
                     logger.warn("Invalid script not processed");
