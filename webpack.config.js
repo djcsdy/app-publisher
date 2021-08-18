@@ -39,13 +39,7 @@ const config =
 	devtool: 'source-map',
 	// externalsPresets: { node: true }, // in order to ignore built-in modules like path, fs, etc.
 	externals: [
-		nodeExternals(),
-		{   //
-			// the vscode-module is created on-the-fly and must be excluded. Add other modules that cannot
-			// be webpack'ed, -> https://webpack.js.org/configuration/externals/
-			//
-			app: 'commonjs'
-		}
+		nodeExternals()
 	],
 	resolve:
 	{   //

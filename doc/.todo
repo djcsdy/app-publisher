@@ -8,3 +8,4 @@ Miscellaneous:
 
     ☐ Command line help for one command/option
     ☐ postBuildCommand and preBuildCommand should be named buildPostCommand and buildPreCommand
+    ☐ check 'vcRevertFiles' property when doing revert and revert those too

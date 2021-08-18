@@ -269,12 +269,7 @@ pipeline {
                   // Update version files
                 //
                 echo "Update version files"
-                if (env.RELEASE_VERSION == "") {
-                  bat "app-publisher --config-name pja --task-version-update"
-                }
-                else {
-                  bat "app-publisher --config-name pja --task-version-update --version-force-next ${env.RELEASE_VERSION}"
-                }
+                bat "app-publisher --config-name pja --task-version-update --version-force-next ${env.NEXTVERSION}"
             }
           }
         }
@@ -442,11 +437,22 @@ pipeline {
     //
     stage("Publish") {
       when {
-        expression { env.SKIP_CI == "false" }
+        expression { env.RELEASE_PRODUCTION == "true" && env.SKIP_CI == "false"  }
       }
       steps {
         script {
           echo "Store Jenkins Artifacts"
+          //
+          // Production or nightly release, or not
+          //
+          nodejs("Node 12") {
+            echo "Publish production release"
+            //
+            // NPM and MantisBT Release
+            //
+            echo "Perform NPM and MantisBT Releases"
+            bat "app-publisher --config-name pja --task-mantisbt-release --task-npm-release --version-force-next ${env.NEXTVERSION}"
+          }
           def artifacts = "doc/history.txt,install/dist/app-publisher.tgz";
           if (env.ARTIFACT_CHANGELOG_FILE != "") {
             artifacts = "${artifacts},${env.ARTIFACT_CHANGELOG_FILE}"
@@ -455,24 +461,6 @@ pipeline {
                            artifacts: artifacts,
                            followSymlinks: false,
                            onlyIfSuccessful: true
-          //
-          // Production or nightly release, or not
-          //
-          if (env.RELEASE_PRODUCTION == "true") {
-            nodejs("Node 12") {
-              echo "Publish production release"
-              //
-              // NPM and MantisBT Release
-              //
-              echo "Perform NPM and MantisBT Releases"
-              if (env.RELEASE_VERSION == "") {
-                bat "app-publisher --config-name pja --task-mantisbt-release --task-npm-release"
-              }
-              else {
-                bat "app-publisher --config-name pja --task-mantisbt-release --task-npm-release --version-force-next ${env.RELEASE_VERSION}"
-              }
-            }
-          }
         }
       }
     }
@@ -487,7 +475,7 @@ pipeline {
       steps {
         echo "Commit modified files and tag version ${env.NEXTVERSION} in SVN."
         nodejs("Node 12") {
-          bat "app-publisher --config-name pja --task-commit --task-tag"
+          bat "app-publisher --config-name pja --task-commit --task-tag --version-force-next ${env.NEXTVERSION}"
         }
       }
     }
@@ -506,17 +494,6 @@ pipeline {
         echo "Send notification email"
         script {
           //
-          // Send build status notification email
-          // Skip on sucess since Success stage will send notification
-          //  
-          emailext body: '${SCRIPT,template="release.groovy"}', 
-                   attachLog: true,
-                   compressLog: true,
-                   mimeType: 'text/html',
-                   subject: "App Publisher Build ${BUILD_NUMBER} : " + currentBuild.currentResult + " : " + env.PROJECT_BRANCH,
-                   to: "cirelease@pjats.com",
-                   recipientProviders: [developers(), requestor()]
-          //
           // Production release only post success tasks
           //
           if (env.RELEASE_PRODUCTION == "true") {
@@ -530,13 +507,19 @@ pipeline {
                      subject: "App Publisher v${env.NEXTVERSION} Has Been Released",
                      to: "productbuild@pjats.com",
                      recipientProviders: [developers(), requestor()]
+          }
+          else {
             //
-            // AP email???
-            //
-            // nodejs("Node 12") {
-            //   // bat "app-publisher --task-email"
-            //   bat "app-publisher --task-email --version-force-current"
-            // }
+            // Send build status notification email
+            // Skip on sucess since Success stage will send notification
+            //  
+            emailext body: '${SCRIPT,template="release.groovy"}', 
+                    attachLog: true,
+                    compressLog: true,
+                    mimeType: 'text/html',
+                    subject: "App Publisher Build ${BUILD_NUMBER} : " + currentBuild.currentResult + " : " + env.PROJECT_BRANCH,
+                    to: "cirelease@pjats.com",
+                    recipientProviders: [developers(), requestor()]
           }
         }
       }
