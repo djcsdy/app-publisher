@@ -1217,7 +1217,7 @@ async function revertChanges(context: IContext)
     // Post NPM release - restore package.json properties if necessary
     // Restore any configured package.json values to the original values
     //
-    if (context.packageJsonModified) {
+    else if (context.packageJsonModified) {
         await npm.restorePackageJson(context);
         context.packageJsonModified = false;
     }
