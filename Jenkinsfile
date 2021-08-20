@@ -222,6 +222,7 @@ pipeline {
             //
             // Get version info
             //
+            echo "Get current version"
             //env.CURRENTVERSION = stdout.split("|")[0]
             //env.NEXTVERSION = stdout.split("|")[1]
             env.CURRENTVERSION = bat(returnStdout: true,
@@ -229,6 +230,7 @@ pipeline {
                                        @echo off
                                        app-publisher --config-name pja --task-version-current
                                      """)
+            echo "Get next version"
             if (env.TAG_NAME == null) {
               echo "This is not /tags - update version files"
               if (env.RELEASE_VERSION != "") {
