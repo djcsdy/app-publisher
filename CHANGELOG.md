@@ -1,5 +1,33 @@
 # APP-PUBLISHER CHANGE LOG
 
+## Version 3.7.1 (August 20th, 2021)
+
+### Bug Fixes
+
+- **Versioning:** the new check to keep a pre-release version within one patch/minor/major version number of the latest production version causes a pre-prelease publish run to fail with the following error:
+
+    Release run threw failure exception
+    TypeError: Invalid Version: null
+- the repository and repository type are incorrectly read from package.json if the 'repo' and 'repoType' properties are missing in .publishrc.json.
+
+### Build System
+
+- update build scripts for new softwareimages share, global jenkinsfile changes, nodeExternals for webpack build
+
+## Version 3.7.1 (August 20th, 2021)
+
+### Bug Fixes
+
+- **Versioning:** the new check to keep a pre-release version within one patch/minor/major version number of the latest production version causes a pre-prelease publish run to fail with the following error:
+
+    Release run threw failure exception
+    TypeError: Invalid Version: null
+- the repository and repository type are incorrectly read from package.json if the 'repo' and 'repoType' properties are missing in .publishrc.json.
+
+### Build System
+
+- update build scripts for new softwareimages share, global jenkinsfile changes, nodeExternals for webpack build
+
 ## Version 3.7.0 (August 18th, 2021)
 
 ### Bug Fixes

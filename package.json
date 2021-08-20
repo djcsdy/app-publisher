@@ -1,6 +1,6 @@
 {
     "name": "@spmeesseman/app-publisher",
-    "version": "3.7.0",
+    "version": "3.7.1",
     "displayName": "App Publisher",
     "description": "App Publisher",
     "license": "MIT",
@@ -30,6 +30,7 @@
         "got": "^11.8.2",
         "gradient-string": "^1.2.0",
         "hook-std": "^2.0.0",
+        "hosted-git-info": "^4.0.2",
         "json5": "^2.2.0",
         "lodash": "^4.17.21",
         "marked": "^0.7.0",
