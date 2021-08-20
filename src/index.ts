@@ -621,14 +621,13 @@ async function runRelease(context: IContext)
     // repositories.  This needs to be done now before any version edits are made and before
     // any build scripts are ran.
     //
-    let packageJsonModified = false;
     if (options.npmRelease === "Y" && (!options.taskMode || options.taskNpmRelease || options.taskNpmJsonUpdate))
     {
-        packageJsonModified = await npm.setPackageJson(context);
+        context.packageJsonModified = await npm.setPackageJson(context);
         // if (options.taskVersionUpdate) { // for taskVersionUpdate, we don't restore
         //     packageJsonModified = false;
         // }
-        if (packageJsonModified)
+        if (context.packageJsonModified)
         {   //
             // If this is task mode, we're done maybe
             //
@@ -834,8 +833,9 @@ async function runRelease(context: IContext)
     // Post NPM release - restore package.json properties if necessary
     // Restore any configured package.json values to the original values
     //
-    if (packageJsonModified || options.taskNpmJsonRestore) {
+    if (context.packageJsonModified || options.taskNpmJsonRestore) {
         await npm.restorePackageJson(context);
+        context.packageJsonModified = false;
     }
 
     //
@@ -1212,6 +1212,14 @@ async function revertChanges(context: IContext)
     if (context.options.dryRun && context.options.vcRevert)
     {
         await revert(context);
+    }
+    //
+    // Post NPM release - restore package.json properties if necessary
+    // Restore any configured package.json values to the original values
+    //
+    if (context.packageJsonModified) {
+        await npm.restorePackageJson(context);
+        context.packageJsonModified = false;
     }
 }
 

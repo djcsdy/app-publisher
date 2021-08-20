@@ -82,6 +82,7 @@ export interface IContext
     logger: any;
     nextRelease: INextRelease;
     options: IOptions;
+    packageJsonModified: boolean;
     plugins: IPlugin[];
     stdout: any;
     stderr: any;
