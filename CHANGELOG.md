@@ -1,5 +1,11 @@
 # APP-PUBLISHER CHANGE LOG
 
+## Version 3.7.3 (August 20th, 2021)
+
+### Bug Fixes
+
+- **General:** for incrementally versioned applications, the publish run fails with the following error: local version file validation failed
+
 ## Version 3.7.2 (August 20th, 2021)
 
 ### Bug Fixes
