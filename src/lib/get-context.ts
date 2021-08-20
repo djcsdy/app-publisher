@@ -16,6 +16,7 @@ async function getContext(opts: IOptions, cwd: string, env: any, stdout: any, st
         options: undefined,
         lastRelease: undefined,
         nextRelease: undefined,
+        packageJsonModified: false,
         plugins: undefined,
         stdout: stdout || process.stdout,
         stderr: stderr || process.stderr
