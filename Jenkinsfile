@@ -354,7 +354,14 @@ pipeline {
             echo "Jenkins-utility-server: Send request to open history.txt in Notepad"
             def jsonEncWs = WORKSPACE.replace("\\", "\\\\") as String
             def bodyJson = "{\"path\": \"${jsonEncWs}\\\\doc\\\\history.txt\", \"token\": \"${env.JENKINS_UTILITY_SERVER_TOKEN}\"}"
-            httpRequest acceptType: 'APPLICATION_JSON', contentType: 'APPLICATION_JSON', httpMode: 'POST', requestBody: bodyJson, url: "http://localhost:4322/openfile"
+            try {
+              httpRequest acceptType: 'APPLICATION_JSON', contentType: 'APPLICATION_JSON', httpMode: 'POST', requestBody: bodyJson, url: "http://localhost:4322/openfile"
+            }
+            catch (e) {
+              echo "Could not contact jenkins-utility-server, ensure it is running"
+              echo "Error:";
+              echo e.toString();
+            }
             //
             // Notify of input required
             //
