@@ -136,8 +136,8 @@ async function pkgRepoUrl(context: IContext)
 {
     const { logger, cwd } = context;
     let pkg: any = await getNpmFile({ options: { projectFileNpm: undefined, projectName: undefined }, logger, cwd });
-    pkg = JSON.parse(await readFile(pkg));
-    return pkg && pkg.repository ? pkg.repository.url : pkg.repository;
+    pkg = pkg ? JSON.parse(await readFile(pkg)) : undefined;
+    return !pkg ? undefined : (pkg && pkg.repository ? pkg.repository.url : pkg.repository);
 }
 
 
@@ -145,8 +145,8 @@ async function pkgRepoType(context: IContext)
 {
     const { logger, cwd } = context;
     let pkg: any = await getNpmFile({ options: { projectFileNpm: undefined, projectName: undefined }, logger, cwd });
-    pkg = JSON.parse(await readFile(pkg));
-    return pkg && pkg.repository ? pkg.repository.type : "";
+    pkg = pkg ? JSON.parse(await readFile(pkg)) : undefined;
+    return !pkg ? "git" : (pkg && pkg.repository ? pkg.repository.type : "git");
 }
 
 
@@ -154,6 +154,6 @@ async function defBranch(context: IContext)
 {
     const { logger, cwd } = context;
     let pkg: any = await getNpmFile({ options: { projectFileNpm: undefined, projectName: undefined }, logger, cwd });
-    pkg = JSON.parse(await readFile(pkg));
-    return pkg && pkg.repository ? (pkg.repository.type === "git" ? "main" : "trunk") : "main";
+    pkg = pkg ? JSON.parse(await readFile(pkg)) : undefined;
+    return !pkg ? "main" : (pkg && pkg.repository ? (pkg.repository.type === "git" ? "main" : "trunk") : "main");
 }

@@ -5,6 +5,7 @@ export = getReleaseLevel;
 
 async function getReleaseLevel(context: IContext)
 {
+    let foundNoSubject = false;
     let level: "major" | "premajor" | "minor" | "preminor" | "patch" | "prepatch" | "prerelease";
     const { options, commits, logger, lastRelease } = context;
 
@@ -13,6 +14,14 @@ async function getReleaseLevel(context: IContext)
     for (const c in commits)
     {
         if (!commits[c] || !commits[c].message) { continue; }
+
+        if (!commits[c].subject) {
+            foundNoSubject = true;
+        }
+
+        //
+        // TODO - update the below code now that 'subject' is parsed when reading in commits
+        //
 
         const msg = commits[c].message.toLowerCase();
         if (msg.includes("breaking change")) // bump major on breaking change
@@ -100,7 +109,11 @@ async function getReleaseLevel(context: IContext)
         }
     }
 
-    if (!level && lastRelease.versionInfo.system === "incremental") {
+    //
+    // For incremental versioning, the dc doesnt uses subject tags, so increment the version
+    // to patch as long as we found a commit message with no subject
+    //
+    if (!level && foundNoSubject && lastRelease.versionInfo.system === "incremental") {
         logger.warn("Incremental versioning, forcing to 'patch' with 0 release level commits found");
         level = "patch";
     }
