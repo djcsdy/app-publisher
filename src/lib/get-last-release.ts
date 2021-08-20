@@ -41,10 +41,6 @@ async function getLastRelease(context: IContext, lastVersionInfo: IVersionInfo):
         {
             const cv = semver.clean(v),
                   isProd = !semver.prerelease(cv);
-console.log("1: " + isProd);
-console.log("2: " + v ?? "na");
-console.log("3: " + cv ?? "na");
-console.log("4: " + lastProdVersion ?? "na");
             if (isProd)
             {
                 if (!lastProdVersion)
