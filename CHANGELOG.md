@@ -1,5 +1,12 @@
 # APP-PUBLISHER CHANGE LOG
 
+## Version 3.7.2 (August 20th, 2021)
+
+### Bug Fixes
+
+- if package.json is modified and a publish run fails, the modifications are not reverted.
+- publish run fails in v3.7.1 with the following error - Cannot find module 'hosted-git-info'
+
 ## Version 3.7.1 (August 20th, 2021)
 
 ### Bug Fixes
