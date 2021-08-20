@@ -972,7 +972,7 @@ async function processTasksLevel1(context: IContext): Promise<string | boolean>
     if (options.taskVersionPreReleaseId && util.isString(options.taskVersionPreReleaseId))
     {
         const rc = semver.prerelease(semver.clean(options.taskVersionPreReleaseId));
-        context.stdout.write(rc !== null ? rc[0] : "error");
+        context.stdout.write(rc !== null ? rc[0] : "error_invalid_prerelease_identifier");
         return true;
     }
 
@@ -982,7 +982,7 @@ async function processTasksLevel1(context: IContext): Promise<string | boolean>
     if (options.taskChangelogHdrPrintVersion)
     {
         const hdr = await context.changelog.getHeader(context, options.taskChangelogHdrPrintVersion);
-        context.stdout.write(hdr ?? "Error");
+        context.stdout.write(hdr ?? "error_cannot_retrieve_header");
         return true;
     }
 
@@ -1156,7 +1156,6 @@ async function processTasksLevel3(context: IContext): Promise<string | boolean>
 }
 
 
-
 async function promptForVersion(lastVersion: string, versionSystem: "auto" | "semver" | "incremental", proposedNextVersion: string, logger: any)
 {
     let version = proposedNextVersion;
@@ -1219,15 +1218,13 @@ async function revertChanges(context: IContext)
 
 async function callFail(context: IContext, err: Error)
 {
-    const eStr = err.toString(),
+    const eStr = err.toString().trim(),
           { logger } = context;
     await revertChanges(context);
     logger.error("Release run threw failure exception");
-    if (eStr.endsWith("\n")) {
-        context.stdout.write(`Exception:  ${eStr}${EOL}`);
-    }
-    else {
-        logger.error(eStr);
+    logger.error(eStr);
+    if (err.stack) {
+        logger.error(err.stack.replace(/\n/g, "\n                                 "));
     }
     // const errors = util.extractErrors(err).filter(err => err.appPublisher);
     // logErrors(context, error);
