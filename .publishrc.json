@@ -22,7 +22,7 @@
         "iconCls": "fa-building"
     }],
     "deployCommand":              "",
-    "deployPostCommand":          "",
+    "deployPostCommand":          "${CODE_HOME}\\git\\bin\\bash.exe tools/codecov.sh -t ${CODECOV_TOKEN_AP}",
     "distRelease":                "N",
     "distReleasePath":            "",
     "distReleasePathSrc":         "install\\dist",
