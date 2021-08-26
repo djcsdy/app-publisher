@@ -48,7 +48,7 @@ async function getLastRelease(context: IContext, lastVersionInfo: IVersionInfo):
                     lastProdVersion = cv;
                 }
                 else {
-                    if (semver.rcompare(lastProdVersion, cv) < 0) {
+                    if (semver.rcompare(lastProdVersion, cv) > 0) {
                         lastProdVersion = cv;
                     }
                 }
@@ -101,6 +101,9 @@ async function getLastRelease(context: IContext, lastVersionInfo: IVersionInfo):
 
     if (tag) {
         logger.info(`Found ${options.repoType} tag ${tag.tag} associated with version ${tag.version}`);
+        if (options.versionPreReleaseId) {
+            logger.info(`   Last production version is ${lastProdVersion}`);
+        }
         return { head: await getTagHead(context, tag.tag), versionInfo: lastVersionInfo, lastProdVersion, ...tag };
     }
 

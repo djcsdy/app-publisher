@@ -50,8 +50,10 @@ export function getNextVersion(context: IContext)
                 // When incrementing pre-release versions, make sure each version level does not exceed one
                 // increment away from the last production version.
                 //
+                lvl = lvl !== "prerelease" ? lvl.replace("pre", "") : "patch";
                 logger.log("   Check pre-release version is within one inc of prod version at all levels");
-                lvl = lvl.replace("pre", "");
+                logger.info(`      Last production version is ${lastProdVersion}`);
+                logger.info(`      Level to check is ${lvl}`);
                 const nextProd = semver.inc(lastProdVersion, lvl as semver.ReleaseType);
                 if (semver.rcompare(nextProd, version) < 0)
                 {
