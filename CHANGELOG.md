@@ -1,5 +1,11 @@
 # APP-PUBLISHER CHANGE LOG
 
+## Version 3.7.4 (August 25th, 2021)
+
+### Bug Fixes
+
+- the check for the latest production version causes the publish run to fail if the latest tagged version is a pre-release version, and the only one existing for it's minor and patch version levels.
+
 ## Version 3.7.3 (August 20th, 2021)
 
 ### Bug Fixes
