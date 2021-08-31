@@ -70,7 +70,7 @@ export = async () =>
         // Check the modules already loaded and warn in case of race condition
         // (ideally, at this point the require cache should only contain one file - this module)
         //
-        const myFilesRegex = /vscode-recall\/dist/;
+        const myFilesRegex = /app-publisher\/build/;
         const filterFn = myFilesRegex.test.bind(myFilesRegex);
         if (Object.keys(require.cache).filter(filterFn).length > 1)
         {
