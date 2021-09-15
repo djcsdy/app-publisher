@@ -1,5 +1,11 @@
 # APP-PUBLISHER CHANGE LOG
 
+## Version 3.7.5 (September 15th, 2021)
+
+### Bug Fixes
+
+- **Tasks:** the --task-version-next task is writing additional output to stdout if there has been a previously existing tag deleted from /tags.
+
 ## Version 3.7.4 (August 25th, 2021)
 
 ### Bug Fixes
