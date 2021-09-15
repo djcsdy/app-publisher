@@ -643,7 +643,9 @@ export async function isRefInHistory(context: IContext, ref: any, isTags = false
         return true;
     }
     catch (error) {
-        logger.error("Exception in isRefInHistory: " + error.toString());
+        if (!context.options.taskModeStdOut) {
+            logger.error("Exception in isRefInHistory: " + error.toString());
+        }
     }
 
     return false;
