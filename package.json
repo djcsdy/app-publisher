@@ -116,7 +116,7 @@
         "test": "npx ./build/test/runTest.js",
         "webpack-watch": "webpack -w --info-verbosity verbose --mode development --config ./webpack.config.js",
         "webpack-build": "webpack --mode production --config ./webpack.config.js",
-        "webpack-rebuild": "rimraf dist && npm run webpack-build",
+        "webpack-rebuild": "rimraf build && npm run webpack-build",
         "webpack-build:test": "webpack --mode production --config ./webpack.config.test.js"
     },
     "main": "./build/app-publisher.js",

@@ -52,10 +52,12 @@ export function getNextVersion(context: IContext)
                 //
                 lvl = lvl !== "prerelease" ? lvl.replace("pre", "") : "patch";
                 logger.log("   Check pre-release version is within one inc of prod version at all levels");
+                logger.info(`      Proposed pre-release version is ${version}`);
                 logger.info(`      Last production version is ${lastProdVersion}`);
                 logger.info(`      Level to check is ${lvl}`);
                 const nextProd = semver.inc(lastProdVersion, lvl as semver.ReleaseType);
-                if (semver.rcompare(nextProd, version) < 0)
+                logger.info(`      Next production version will be ${nextProd}`);
+                if (semver.compare(nextProd, version) < 0)
                 {
                     logger.log("      Reset release type to 'prerelease'");
                     version = semver.inc(lastVersion, "prerelease", options.versionPreReleaseId);
