@@ -1,5 +1,11 @@
 # APP-PUBLISHER CHANGE LOG
 
+## Version 3.7.6 (September 17th, 2021)
+
+### Bug Fixes
+
+- **Versioning:** The 'minor' and 'major' version bump does not work for pre-releases, the version bump is always 'patch' level regardless of the commit message subjects.  Note that for pre-releases, the version bump will not be allowed to exceed the next proposed production version.
+
 ## Version 3.7.5 (September 15th, 2021)
 
 ### Bug Fixes
