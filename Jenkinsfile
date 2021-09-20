@@ -514,7 +514,7 @@ pipeline {
                      compressLog: true,
                      mimeType: 'text/html',
                      subject: "App Publisher v${env.NEXTVERSION} Has Been Released",
-                     to: "productbuild@pjats.com",
+                     to: "productrelease@pjats.com",
                      recipientProviders: [developers(), requestor()]
           }
           else {
