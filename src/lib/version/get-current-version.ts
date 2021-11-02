@@ -90,19 +90,29 @@ async function getCurrentVersion(context: IContext): Promise<IVersionInfo>
     if (!options.versionPreReleaseId && !options.taskTag && !options.taskCommit && !options.taskChangelog && !options.tests) {
         doCheck(await getChangelogVersion(context), "changelog", false);
     }
-    else if (options.verbose) {
-        if (options.tests) {
-            logger.log("This is a tests run, the changelog file will not be checked for version");
+    else
+    {
+        if (options.verbose)
+        {
+            if (options.tests) {
+                logger.log("This is a tests run, the changelog file will not be checked for version");
+            }
+            else if (options.versionPreReleaseId) {
+                logger.log("This is a pre-release, the changelog file will not be checked for version");
+            }
+            else if (options.taskChangelog) {
+                logger.log("This is --task-changelog, the changelog file will not be checked for version");
+            }
+            else {
+                logger.log("This is a commit/tag task, the changelog file will not be checked for version");
+            }
         }
-        else if (options.versionPreReleaseId) {
-            logger.log("This is a pre-release, the changelog file will not be checked for version");
-        }
-        else if (options.taskChangelog) {
-            logger.log("This is --task-changelog, the changelog file will not be checked for version");
-        }
-        else {
-            logger.log("This is a commit/tag task, the changelog file will not be checked for version");
-        }
+        //
+        // We need to at least check if this is non-semantic versioning
+        //
+        const vInfo = await getChangelogVersion(context);
+        versionInfo.system = vInfo.system;
+        logger.log(`Set versioning to '${versionInfo.system}'`);
     }
     //
     // If node_modules dir exists, use package.json to obtain cur version

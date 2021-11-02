@@ -60,7 +60,7 @@ export async function getDotNetVersion(context: IContext): Promise<IVersionInfo>
 {
     let version = "";
     const file = await getDotNetFile(context);
-    const {logger, options} = context;
+    const {logger} = context;
 
     if (file)
     {
@@ -76,7 +76,6 @@ export async function getDotNetVersion(context: IContext): Promise<IVersionInfo>
             version = version.replace(" ", "");
             version = version.replace("(", "");
             version = version.replace("\"", "");
-            // version = version.substring(0, version.lastIndexOf(".")); // Rid build number
         }
         if (version) { logger.log("   Found version      : " + version); }
         else { logger.warn("   Not found"); }
@@ -89,7 +88,7 @@ export async function getDotNetVersion(context: IContext): Promise<IVersionInfo>
 export async function setDotNetVersion(context: IContext, recordEditOnly: boolean)
 {
     let semVersion = "";
-    const {lastRelease, nextRelease, options, logger, cwd, env} = context,
+    const {lastRelease, nextRelease} = context,
           file = await getDotNetFile(context);
 
     if (file)
