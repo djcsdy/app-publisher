@@ -27,7 +27,7 @@ async function getCurrentVersion(context: IContext): Promise<IVersionInfo>
 
     const versionInfo: IVersionInfo = {
         version: undefined,
-        system: options.versionSystem || "semver",
+        system: undefined,
         info: undefined
     };
 
@@ -45,6 +45,7 @@ async function getCurrentVersion(context: IContext): Promise<IVersionInfo>
                             logger.log("   Converted version  : " + fv);
                         }
                         v.version = fv;
+                        versionInfo.version = versionInfo.version.replace(/\./g, "");
                     }
                 }
                 if (v.version !== versionInfo.version && !options.taskRevert)
@@ -75,7 +76,7 @@ async function getCurrentVersion(context: IContext): Promise<IVersionInfo>
             else {
                 versionInfo.version = v.version;
                 versionInfo.info = v.info;
-                versionInfo.system = v.system;
+                versionInfo.system = versionInfo.system ?? v.system;
             }
 
             lastType = type;
