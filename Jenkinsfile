@@ -372,7 +372,7 @@ pipeline {
                     attachLog: false,
                     mimeType: 'text/html',
                     subject: "Changelog Approval Required - App Publisher v${env.NEXTVERSION}: Build : " + env.PROJECT_BRANCH,
-                    to: "cibuild@pjats.com",
+                    to: "cirelease@pjats.com",
                     recipientProviders: [developers(), requestor()] 
             //
             // Wait for user intervention, approval of new version # and history entry
