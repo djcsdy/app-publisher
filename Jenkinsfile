@@ -45,7 +45,7 @@ pipeline {
             additionalCredentials: [],
             browser: [
                 $class: "WebSVN", 
-                url: "https://app1.development.pjats.com/svn/web/listing.php/?repname=pja&path=/app-publisher/${env.BRANCH_NAME}/"
+                url: "https://linuxapp1.pjats.com/svn/web/listing.php/?repname=pja&path=/app-publisher/${env.BRANCH_NAME}/"
             ],
             excludedCommitMessages: "\\[skip[ \\-]ci\\]",
             excludedRegions: "",
@@ -63,7 +63,7 @@ pipeline {
                 depthOption: "infinity",
                 ignoreExternalsOption: true,
                 local: ".",
-                remote: "https://svn.development.pjats.com/pja/app-publisher/${env.BRANCH_NAME}"
+                remote: "https://svn.pjats.com/pja/app-publisher/${env.BRANCH_NAME}"
             ]],
             quietOperation: true,
             workspaceUpdater: [$class: "UpdateWithRevertUpdater"]
