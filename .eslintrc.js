@@ -11,6 +11,7 @@ module.exports = {
         "sourceType": "module",
         "ecmaVersion": 2019
     },
+    "ignorePatterns": ["**/*.js", "*.json" ],
     "plugins": [
         "eslint-plugin-jsdoc",
         "eslint-plugin-no-null",
