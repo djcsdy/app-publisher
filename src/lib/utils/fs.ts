@@ -114,18 +114,26 @@ export function copyDir(src: string, dst: string, filter?: RegExp, copyWithBaseF
 
 export function createDir(dir: string)
 {
-    return new Promise<boolean>(async (resolve, reject) => {
+    return new Promise<boolean>(async (resolve, reject) =>
+    {
         try {
-            const baseDir = path.dirname(dir);
-            if (!(await pathExists(baseDir))) {
-                await createDir(baseDir);
-            }
-            fs.mkdir(path.resolve(cwd, dir), { mode: 0o777 }, (err) => {
-                if (err) {
-                    reject(err);
+            const newDir = path.resolve(cwd, dir);
+            if (!await pathExists(newDir))
+            {
+                const baseDir = path.dirname(dir);
+                if (!(await pathExists(baseDir))) {
+                    await createDir(baseDir);
                 }
-                resolve(true);
-            });
+                fs.mkdir(path.resolve(cwd, dir), { mode: 0o777 }, (err) => {
+                    if (err) {
+                        reject(err);
+                    }
+                    resolve(true);
+                });
+            }
+            else {
+                resolve(false);
+            }
         }
         catch (e) {
             reject(e);
