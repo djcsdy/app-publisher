@@ -171,7 +171,7 @@ export abstract class Changelog implements IChangelog
      * @private
      * @since 3.0.0
      * @param options options
-     * @param line commit message line containg subject
+     * @param line commit message line containing subject
      * @returns 'true' if a valid subject is found, `false` otherwise
      */
     containsValidSubject(options, line: string): boolean
@@ -211,7 +211,7 @@ export abstract class Changelog implements IChangelog
      *
      * @param context The run context object.
      * @param version The version to extract the notes from in the history/changelog file.
-     * @param useFaIcons Use font aweome icons
+     * @param useFaIcons Use font awesome icons
      * @param includeStyling include css styling
      */
     async createHtmlChangelog({ options, logger }: IContext, changeLogParts: IChangelogEntry[], useFaIcons = false, includeStyling = false)
@@ -221,7 +221,7 @@ export abstract class Changelog implements IChangelog
         logger.log("Converting changelog notes to html release notes");
         if (options.verbose) {
             logger.log("   Use icons : " + useFaIcons);
-            logger.log("   Inlcude styling : " + useFaIcons);
+            logger.log("   Include styling : " + useFaIcons);
         }
 
         if (!changeLogParts || changeLogParts.length === 0 || changeLogParts[0].message === "error") {
@@ -315,6 +315,54 @@ export abstract class Changelog implements IChangelog
         }
 
         return changeLog;
+    }
+
+
+    protected getFormattedSubject({options}: IContext, subject: string)
+    {
+        let formattedSubject = subject.toLowerCase();
+
+        switch (formattedSubject)
+        {
+            case "build"   : formattedSubject = "Build System"; break;
+            case "chore"   : formattedSubject = "Chores"; break;
+            case "ci"      : formattedSubject = "Continuous Integration"; break;
+            case "docs"    : formattedSubject = "Documentation"; break;
+            case "doc"     : formattedSubject = "Documentation"; break;
+            case "feat"    : formattedSubject = "Features"; break;
+            case "featmaj" : formattedSubject = "Features"; break;
+            case "feature" : formattedSubject = "Features"; break;
+            case "featmin" : formattedSubject = "Features"; break;
+            case "fix"     : formattedSubject = "Bug Fixes"; break;
+            case "layout"  : formattedSubject = "Project Layout"; break;
+            case "majfeat" : formattedSubject = "Features"; break;
+            case "minfeat" : formattedSubject = "Features"; break;
+            case "perf"    : formattedSubject = "Performance Enhancements"; break;
+            case "perfmin" : formattedSubject = "Performance Enhancements"; break;
+            case "minperf" : formattedSubject = "Performance Enhancements"; break;
+            case "progress": formattedSubject = "Ongoing Progress"; break;
+            case "project" : formattedSubject = "Project Structure"; break;
+            case "refactor": formattedSubject = "Refactoring"; break;
+            case "style"   : formattedSubject = "Code Styling"; break;
+            case "test"    : formattedSubject = "Tests"; break;
+            case "tests"   : formattedSubject = "Tests"; break;
+            case "tweak"   : formattedSubject = "Refactoring"; break;
+            case "visual"  : formattedSubject = "Visuals"; break;
+            default   : formattedSubject = subject; break;
+        }
+
+        if (options.commitMsgMap)
+        {
+            for (const map of options.commitMsgMap)
+            {
+                if (subject === map.type)
+                {
+                    formattedSubject = map.formatText;
+                }
+            }
+        }
+
+        return formattedSubject;
     }
 
 
@@ -412,7 +460,7 @@ export abstract class Changelog implements IChangelog
                     ++bFound;
                 }
                 //
-                // If patch level is 0, the pre-reelase version can have a minor version of one less
+                // If patch level is 0, the pre-release version can have a minor version of one less
                 //
                 if (patch === 0 && minor > 0)
                 {
@@ -426,7 +474,7 @@ export abstract class Changelog implements IChangelog
                     }
                 }
                 //
-                // If minor level is 0, the pre-reelase version can have a major version of one less
+                // If minor level is 0, the pre-release version can have a major version of one less
                 //
                 if (minor === 0 && patch === 0)
                 {

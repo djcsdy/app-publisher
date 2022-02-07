@@ -65,7 +65,7 @@ export class ChangelogTxt extends Changelog
                 //
                 msg = msg.replace(/[ ]*\[skip[\- ]+ci\]/, "").replace(/[ ]*\[ci[\- ]+skip\]/, "");
                 //
-                // Replace commitz tags with full text (non-scoped)
+                // Replace commits tags with full text (non-scoped)
                 //
                 // Commit tags should be at the start of the commit message.
                 //
@@ -73,30 +73,8 @@ export class ChangelogTxt extends Changelog
                 //
                 //     feat: add internet explorer support
                 //
-                msg = msg.replace("build: ", `Build System${EOL}${EOL}`);
-                msg = msg.replace("chore: ", `Chore${EOL}${EOL}`);
-                msg = msg.replace("ci: ", `Continuous Integration${EOL}${EOL}`);
-                msg = msg.replace("docs: ", `Documentation${EOL}${EOL}`);
-                msg = msg.replace("doc: ", `Documentation${EOL}${EOL}`);
-                msg = msg.replace("featmaj: ", `Feature${EOL}${EOL}`); // needs to come baefore base feat:
-                msg = msg.replace("featmin: ", `Feature${EOL}${EOL}`); // needs to come baefore base feat:
-                msg = msg.replace("majfeat: ", `Feature${EOL}${EOL}`); // needs to come baefore base feat:
-                msg = msg.replace("minfeat: ", `Feature${EOL}${EOL}`); // needs to come baefore base feat:
-                msg = msg.replace("feat: ", `Feature${EOL}${EOL}`);
-                msg = msg.replace("fix: ", `Bug Fix${EOL}${EOL}`);
-                msg = msg.replace("perfmin: ", `Performance${EOL}${EOL}`); // needs to come baefore base perf:
-                msg = msg.replace("minperf: ", `Performance${EOL}${EOL}`); // needs to come baefore base perf:
-                msg = msg.replace("perf: ", `Performance${EOL}${EOL}`);
-                msg = msg.replace("progress: ", `Ongoing Progress${EOL}${EOL}`);
-                msg = msg.replace("refactor: ", `Refactoring${EOL}${EOL}`);
-                msg = msg.replace("style: ", `Code Styling${EOL}${EOL}`);
-                msg = msg.replace("test: ", `Tests${EOL}${EOL}`);
-                msg = msg.replace("tests: ", `Tests${EOL}${EOL}`);
-                msg = msg.replace("tweak: ", `Refactoring${EOL}${EOL}`);
-                msg = msg.replace("project: ", `Project Structure${EOL}${EOL}`);
-                msg = msg.replace("layout: ", `Project Layout${EOL}${EOL}`);
-                msg = msg.replace("visual: ", `Visual${EOL}${EOL}`);
-                msg = msg.replace("misc: ", `Miscellaneous${EOL}${EOL}`);
+                const fmtSubject  = this.getFormattedSubject(context, commit.subject);
+                msg = msg.replace(`${commit.subject}: `, fmtSubject + EOL + EOL);
                 //
                 // Replace commit tags with full text (scoped)
                 //
@@ -104,39 +82,7 @@ export class ChangelogTxt extends Changelog
                 //
                 //     fix(footpedal): pressing multiple buttons at same time breaks audio player
                 //
-                msg = msg.replace("build(", "Build System(");
-                msg = msg.replace("chore(", "Chore(");
-                msg = msg.replace("ci(", "Continuous Integration(");
-                msg = msg.replace("docs(", "Documentation(");
-                msg = msg.replace("doc(", "Documentation(");
-                msg = msg.replace("featmaj(", "Feature("); // needs to come baefore base feat(
-                msg = msg.replace("featmin(", "Feature("); // needs to come baefore base feat(
-                msg = msg.replace("majfeat(", "Feature("); // needs to come baefore base feat(
-                msg = msg.replace("minfeat(", "Feature("); // needs to come baefore base feat(
-                msg = msg.replace("feat(", "Feature(");
-                msg = msg.replace("fix(", "Bug Fix(");
-                msg = msg.replace("perfmin(", "Performance("); // needs to come baefore base perf(
-                msg = msg.replace("minperf(", "Performance("); // needs to come baefore base perf(
-                msg = msg.replace("perf(", "Performance(");
-                msg = msg.replace("refactor(", "Refactoring(");
-                msg = msg.replace("project(", "Project Structure(");
-                msg = msg.replace("test(", "Tests(");
-                msg = msg.replace("tests(", "Tests(");
-                msg = msg.replace("tweak(", "Refactoring(");
-                msg = msg.replace("style(", "Code Styling(");
-                msg = msg.replace("layout(", "Project Layout(");
-                msg = msg.replace("visual(", "Visual(");
-                msg = msg.replace("progress(", "Ongoing Progress(");
-                msg = msg.replace("misc(", "Miscellaneous(");
-
-                if (options.commitMsgMap)
-                {
-                    for (const map of options.commitMsgMap)
-                    {
-                        msg = msg.replace(map.type + ": ", map.formatText + EOL + EOL);
-                        msg = msg.replace(map.type + "(", map.formatText + "(");
-                    }
-                }
+                msg = msg.replace(`${commit.subject}(`, fmtSubject + "(");
 
                 //
                 // Take any parenthesized scopes, remove the parenthesis and line break the message
@@ -388,7 +334,7 @@ export class ChangelogTxt extends Changelog
         regex = new RegExp(regexes.CHANGELOG_TXT_SUBJECT_SCOPE);
 
         //
-        // Process entries with a subject (sorrounded by <b></b>)
+        // Process entries with a subject (surrounded by <b></b>)
         //
         while ((match = regex.exec(contents + "###END###")) !== null)
         {
@@ -558,9 +504,9 @@ export class ChangelogTxt extends Changelog
             if (options.taskChangelog || !options.taskMode)
             {   //
                 // Main edit.  For full run or --task-changelog
-                // Check to see if this is aproduction version, and if there are pre-release sections
+                // Check to see if this is a production version, and if there are pre-release sections
                 // for this version, remove them, removePreReleaseSections() will only remove under the
-                // case where the lastRelease.version is a pre-release, and nextReleae.version is not
+                // case where the lastRelease.version is a pre-release, and next Release.version is not
                 //
                 await this.removePreReleaseSections(context, version, regexes.CHANGELOG_TXT_VERSION_SECTION(options.versionText));
                 const header = await this.getHeader(context, version);
@@ -642,14 +588,14 @@ export class ChangelogTxt extends Changelog
 
 
     /**
-     * Gets changelog txt file section using the hostory/changelog file by parsing the sepcified
+     * Gets changelog txt file section using the hostory/changelog file by parsing the specified
      * versions section.
      *
      * @param context The run context object.
      * @param version The version to extract the notes from in the changelog txt file.
-     * @param numsections # of section to extract
+     * @param numSections # of section to extract
      * @param listOnly retrieve an array of strings only, not a formatted string
-     * @returns HTML version of the requested cahngelog section(s)
+     * @returns HTML version of the requested changelog section(s)
      */
     async getSections(context: IContext, version?: string, numSections = 1, htmlFormat = true, inputFile?: string): Promise<string>
     {

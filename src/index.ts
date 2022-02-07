@@ -542,6 +542,7 @@ async function runRelease(context: IContext)
     //
     // Get the tag name for the next release
     //
+    // file deepcode ignore Ssti: execution does not flow on exception
     nextRelease.tag = template(options.tagFormat)({ version: nextRelease.version });
 
     //

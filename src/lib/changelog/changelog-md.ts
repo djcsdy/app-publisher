@@ -38,7 +38,7 @@ export class ChangelogMd extends Changelog
             scope = scope ? properCase(scope.toLowerCase().trim()) : undefined;
 
             //
-            // Ignore chores, progress, and custom specified psubjects to ignore
+            // Ignore chores, progress, and custom specified subjects to ignore
             //
             if (this.isSkippedCommitMessage(`${subject}: `)) {
                 return "";
@@ -89,7 +89,7 @@ export class ChangelogMd extends Changelog
                 fmtCommitMsg += `${commitMsg}${EOL}`;
             }
             //
-            // Record last subject, we only print the subject when it differes from previous
+            // Record last subject, we only print the subject when it differs from previous
             //
 
             //
@@ -144,7 +144,7 @@ export class ChangelogMd extends Changelog
 
 
     /**
-     * Gets anarray returning the commit types
+     * Gets an array returning the commit types
      *
      * @since 3.0.0
      * @param changeLog HTML formatted changeog / history file section
@@ -183,54 +183,6 @@ export class ChangelogMd extends Changelog
         }
 
         return changelogTypes;
-    }
-
-
-    private getFormattedSubject({options}: IContext, subject: string)
-    {
-        let formattedSubject = subject.toLowerCase();
-
-        switch (formattedSubject)
-        {
-            case "build"   : formattedSubject = "Build System"; break;
-            case "chore"   : formattedSubject = "Chores"; break;
-            case "ci"      : formattedSubject = "Continuous Integration"; break;
-            case "docs"    : formattedSubject = "Documentation"; break;
-            case "doc"     : formattedSubject = "Documentation"; break;
-            case "feat"    : formattedSubject = "Features"; break;
-            case "featmaj" : formattedSubject = "Features"; break;
-            case "feature" : formattedSubject = "Features"; break;
-            case "featmin" : formattedSubject = "Features"; break;
-            case "fix"     : formattedSubject = "Bug Fixes"; break;
-            case "layout"  : formattedSubject = "Project Layout"; break;
-            case "majfeat" : formattedSubject = "Features"; break;
-            case "minfeat" : formattedSubject = "Features"; break;
-            case "perf"    : formattedSubject = "Performance Enhancements"; break;
-            case "perfmin" : formattedSubject = "Performance Enhancements"; break;
-            case "minperf" : formattedSubject = "Performance Enhancements"; break;
-            case "progress": formattedSubject = "Ongoing Progress"; break;
-            case "project" : formattedSubject = "Project Structure"; break;
-            case "refactor": formattedSubject = "Refactoring"; break;
-            case "style"   : formattedSubject = "Code Styling"; break;
-            case "test"    : formattedSubject = "Tests"; break;
-            case "tests"   : formattedSubject = "Tests"; break;
-            case "tweak"   : formattedSubject = "Refactoring"; break;
-            case "visual"  : formattedSubject = "Visuals"; break;
-            default   : formattedSubject = subject; break;
-        }
-
-        if (options.commitMsgMap)
-        {
-            for (const map of options.commitMsgMap)
-            {
-                if (subject === map.type)
-                {
-                    formattedSubject = map.formatText;
-                }
-            }
-        }
-
-        return formattedSubject;
     }
 
 
@@ -363,9 +315,9 @@ export class ChangelogMd extends Changelog
                 }
 
                 //
-                // Check to see if this is aproduction version, and if there are pre-release sections
+                // Check to see if this is a production version, and if there are pre-release sections
                 // for this version, remove them, removePreReleaseSections() will only remove under the
-                // case where the lastRelease.version is a pre-release, and nextReleae.version is not
+                // case where the lastRelease.version is a pre-release, and next Release.version is not
                 //
                 await this.removePreReleaseSections(context, version, regexes.CHANGELOG_MD_VERSION_SECTION(options.versionText));
 
@@ -558,14 +510,14 @@ export class ChangelogMd extends Changelog
 
 
     /**
-     * Gets changelog file section using the hostory/changelog file by parsing the sepcified
+     * Gets changelog file section using the hostory/changelog file by parsing the specified
      * versions section.
      *
      * @param context The run context object.
      * @param version The version to extract the notes from in the history/changelog file.
-     * @param numsections # of section to extract
+     * @param numSections # of section to extract
      * @param listOnly retrieve an array of strings only, not a formatted string
-     * @returns HTML version of the requested cahngelog section(s)
+     * @returns HTML version of the requested changelog section(s)
      */
     async getSections(context: IContext, version?: string, numSections = 1, htmlFormat = true, inputFile?: string): Promise<string>
     {
