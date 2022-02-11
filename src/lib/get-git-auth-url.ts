@@ -1,9 +1,9 @@
 import { IContext } from "../interface";
+import { verifyAuth } from "./repo";
 
-const { parse, format } = require("url"); // eslint-disable-line node/no-deprecated-api
+const { parse, format } = require("url");
 const { isNil } = require("lodash");
-const hostedGitInfo = require('hosted-git-info');
-const { verifyAuth } = require("./repo");
+const hostedGitInfo = require("hosted-git-info");
 
 const GIT_TOKENS = {
     GIT_CREDENTIALS: undefined,
@@ -28,8 +28,10 @@ export = getGitAuthUrl;
  *
  * @return {String} The formatted Git repository URL.
  */
-async function getGitAuthUrl({ cwd, env, options: { repo, branch } }: IContext)
+async function getGitAuthUrl(context: IContext)
 {
+    let { options: { repo } } = context;
+    const { cwd, env, options: { branch } } = context;
     const info = hostedGitInfo.fromUrl(repo, { noGitPlus: true });
     const { protocol, ...parsed } = parse(repo);
 
@@ -37,7 +39,7 @@ async function getGitAuthUrl({ cwd, env, options: { repo, branch } }: IContext)
     {
         // Expand shorthand URLs (such as `owner/repo` or `gitlab:owner/repo`)
         repo = info.https();
-    } 
+    }
     else if (protocol && protocol.includes("http"))
     {
         // Replace `git+https` and `git+http` with `https` or `http`
@@ -47,7 +49,7 @@ async function getGitAuthUrl({ cwd, env, options: { repo, branch } }: IContext)
     // Test if push is allowed without transforming the URL (e.g. is ssh keys are set up)
     try
     {
-        await verifyAuth(repo, branch, { cwd, env });
+        await verifyAuth(context);
     }
     catch (error)
     {
