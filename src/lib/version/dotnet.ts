@@ -29,7 +29,7 @@ async function getDotNetFile({options, logger, cwd}: IContext)
         glob("**/assemblyinfo.cs", { nocase: true, ignore: "node_modules/**", cwd }, async (err, files) =>
         {
             if (err) {
-                logger.error("Error tring to find assemblyinfo.cs files");
+                logger.error("Error trying to find assemblyinfo.cs files");
                 reject(err);
             }
             else {
@@ -73,9 +73,9 @@ export async function getDotNetVersion(context: IContext): Promise<IVersionInfo>
         if (found)
         {
             version = found[0].replace("AssemblyVersion", "");
-            version = version.replace(" ", "");
+            version = version.replace(/ /g, "");
             version = version.replace("(", "");
-            version = version.replace("\"", "");
+            version = version.replace(/"/g, "");
         }
         if (version) { logger.log("   Found version      : " + version); }
         else { logger.warn("   Not found"); }
