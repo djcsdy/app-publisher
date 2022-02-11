@@ -1,5 +1,7 @@
 
 import * as path from "path";
+import shellescape from "escape-it";
+const execa = require("execa");
 import { pick } from "lodash";
 import { IContext } from "../../interface";
 import { addEdit, revert } from "../repo";
@@ -7,7 +9,6 @@ import { createDir, pathExists, readFile, writeFile } from "../utils/fs";
 import { checkExitCode } from "../utils/utils";
 import { getNpmFile, setNpmVersion } from "../version/npm";
 import { EOL } from "os";
-const execa = require("execa");
 
 
 export let defaultBugs: string;
@@ -31,7 +32,7 @@ export async function doNpmRelease(context: IContext)
     {
         let proc: any;
         //
-        // Pack tarball and mvoe to dist dir if specified
+        // Pack tarball and move to dist dir if specified
         //
         if (options.npmPackDist === "Y" && defaultName && defaultNameWoScope)
         {
@@ -69,11 +70,16 @@ export async function doNpmRelease(context: IContext)
             logger.log("To:");
             logger.log("   " + destPackedFile);
 
-            if (process.platform === "win32") {
-                proc = await execa.shell(`move /Y "${tmpPkgFile}" "${destPackedFile}"`, {cwd, env});
+            if (process.platform === "win32")
+            {
+                const command = `move /Y "${tmpPkgFile}" "${destPackedFile}"`,
+                      escapedCmdParts = shellescape(command.split(" "));
+                proc = await execa.shell(escapedCmdParts.join(" "), {cwd, env});
             }
             else {
-                proc = await execa.shell(`mv -f "${tmpPkgFile}" "${destPackedFile}"`, {cwd, env});
+                const command = `mv -f "${tmpPkgFile}" "${destPackedFile}"`,
+                      escapedCmdParts = shellescape(command.split(" "));
+                proc = await execa.shell(escapedCmdParts.join(" "), {cwd, env});
             }
             checkExitCode(proc.code, logger);
             //
@@ -274,7 +280,7 @@ export async function restorePackageJson(context: IContext)
     //
     // If 'restore' task, we probably need to use vcs revert and then re-update the version
     // number since the property values that were replaced won't exist in memory whe
-    // update/restore isnt donein the same run.
+    // update/restore isnt done in the same run.
     //
     if (options.taskNpmJsonRestore)
     {
