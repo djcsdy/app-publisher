@@ -22,6 +22,7 @@
         "aggregate-error": "^3.0.0",
         "chalk": "^2.4.2",
         "cosmiconfig": "^5.2.1",
+        "escape-it": "^0.3.0",
         "execa": "^1.0.0",
         "figures": "^3.0.0",
         "get-stream": "^5.1.0",
@@ -115,7 +116,7 @@
         "task-rt-version_next": "npx ./build/bin/app-publisher.js --no-ci --task-version-next",
         "test": "npx ./build/test/runTest.js",
         "webpack-watch": "webpack -w --info-verbosity verbose --mode development --config ./webpack.config.js",
-        "webpack-build": "webpack --mode production --config ./webpack.config.js",
+        "webpack-build": "webpack --mode production --stats-error-details --config ./webpack.config.js",
         "webpack-rebuild": "rimraf build && npm run webpack-build",
         "webpack-build:test": "webpack --mode production --config ./webpack.config.test.js"
     },
