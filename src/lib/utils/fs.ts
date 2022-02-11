@@ -1,3 +1,4 @@
+// file deepcode ignore WrongNumberOfArgs: the 'async' api takes 3 args. Snyk is comparing to signatures of 'sync' api.
 
 import * as fs from "fs";
 import * as path from "path";
