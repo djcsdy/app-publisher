@@ -24,6 +24,7 @@
         "mantisbtreleasepostcommand",
         "mantisbtreleaseprecommand",
         "mantisbturl",
+        "nocase",
         "noci",
         "npmpackdist",
         "npmregistry",
