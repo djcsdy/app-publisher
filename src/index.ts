@@ -70,7 +70,7 @@ async function runStart(context: IContext)
     {
         const title =
 `----------------------------------------------------------------------------
- App-Publisher Version :  ${options.appPublisherVersion}
+ App-Publisher Version :  ${options.appPublisherVersion} here
 ----------------------------------------------------------------------------
 `;
         context.stdout.write(chalk.bold(gradient("cyan", "pink").multiline(title, {interpolation: "hsv"})));
@@ -1069,6 +1069,7 @@ async function processTasksLevel2(context: IContext): Promise<string | boolean>
     if (options.taskCommit || options.taskTag)
     {
         if (options.taskTagVersion) {
+            // deepcode ignore MissingArgument: optionsal arg
             if (!util.validateVersion(options.taskTagVersion, lastRelease.versionInfo.system)) {
                 return `Invalid version provided with --task-tag-version : ${options.taskTagVersion}`;
             }
