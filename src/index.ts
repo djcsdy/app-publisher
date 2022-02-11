@@ -70,7 +70,7 @@ async function runStart(context: IContext)
     {
         const title =
 `----------------------------------------------------------------------------
- App-Publisher Version :  ${options.appPublisherVersion} here
+ App-Publisher Version :  ${options.appPublisherVersion}
 ----------------------------------------------------------------------------
 `;
         context.stdout.write(chalk.bold(gradient("cyan", "pink").multiline(title, {interpolation: "hsv"})));
