@@ -1,13 +1,14 @@
+/* eslint-disable @typescript-eslint/dot-notation */
 import { castArray, pickBy, isNil, isString, isPlainObject } from "lodash";
 import { IContext, IOptions } from "../interface";
 import { readFile } from "./utils/fs";
 import { getNpmFile } from "./version/npm";
-const PLUGINS_DEFINITIONS = require("./definitions/plugins");
-const { validatePlugin, parseConfig } = require("./plugins/utils");
-const cosmiconfig = require("cosmiconfig");
-const resolveFrom = require("resolve-from");
-const envCi = require("@spmeesseman/env-ci");
+import { validatePlugin, parseConfig } from "./plugins/utils";
+import cosmiconfig from "cosmiconfig";
+import resolveFrom from "resolve-from";
+import envCi from "@spmeesseman/env-ci";
 // const plugins = require("./plugins");
+const PLUGINS_DEFINITIONS = require("./definitions/plugins");
 
 export = getConfig;
 
@@ -54,6 +55,7 @@ async function getConfig(context: IContext, opts: IOptions)
 
     const pluginsPath = { path: undefined };
     let extendPaths;
+    // eslint-disable-next-line prefer-const
     ({ extends: extendPaths, ...options } = options);
 
     if (extendPaths)
@@ -78,8 +80,10 @@ async function getConfig(context: IContext, opts: IOptions)
                         {
                             pluginsPath[parseConfig(plugin)[0]] = extendPath;
                         }
+                        // eslint-disable-next-line dot-notation
                         else if (PLUGINS_DEFINITIONS[option] && (isString(plugin) || (isPlainObject(plugin) && isString(plugin["path"]))))
                         {
+                            // eslint-disable-next-line dot-notation
                             pluginsPath[isString(plugin) ? plugin : plugin["path"]] = extendPath;
                         }
                     });
@@ -117,7 +121,7 @@ async function getConfig(context: IContext, opts: IOptions)
     for (const key in process.env)
     {
         const envVar = "[$][{]\\b" + key + "\\b[}]";
-        optStr = optStr.replace(new RegExp(envVar, "gmi"), process.env[key].replace(/\\/, "\\\\"));
+        optStr = optStr.replace(new RegExp(envVar, "gmi"), process.env[key].replace(/\\/g, "\\\\"));
     }
     options = JSON.parse(optStr);
 
