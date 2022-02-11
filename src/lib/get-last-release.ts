@@ -86,6 +86,7 @@ async function getLastRelease(context: IContext, lastVersionInfo: IVersionInfo):
     // The `tagFormat` is compiled with space as the `version` as it's an invalid tag character,
     // so it's guaranteed to not be present in the `tagFormat`.
     //
+    // deepcode ignore GlobalReplacementRegex: only want one replacement
     const tagRegexp = `^${escapeRegExp(template(options.tagFormat)({ version: " " })).replace(" ", "(.+)")}`,
           tagsRaw = await getTags(context),
           tags = tagsRaw
