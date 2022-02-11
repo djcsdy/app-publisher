@@ -859,6 +859,7 @@ async function validateOptions({cwd, env, logger, options}: IContext, suppressAr
     // Only allow one of these commands at a time.  TODO - allow running both at same time
     //
     if (options.taskChangelogPrintVersion || options.taskChangelogViewVersion || options.taskChangelogHtmlPrintVersion) {
+        // deepcode ignore MissingArgument: not valid
         if (!validateVersion(options.taskChangelogPrintVersion || options.taskChangelogViewVersion || options.taskChangelogHtmlPrintVersion)) {
             logger.error(`Invalid version ${options.taskChangelogPrintVersion} specified for task`);
             return false;
