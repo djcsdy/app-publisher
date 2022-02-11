@@ -10,6 +10,7 @@ import { EOL } from "os";
 import { options } from "marked";
 const execa = require("execa");
 // const find = require("find-process");
+import shellescape from "escape-it";
 
 
 export function atob(str: string): string
@@ -398,13 +399,16 @@ export async function runScripts(context: IContext, scriptType: string, scripts:
             {
                 let proc: any,
                     procPromise: any;
-                const scriptParts = script.split(" ").filter(a => a !== "");
+                const scriptParts = script.split(" ").filter(a => a !== ""),
+                      escapedScriptParts = shellescape(scriptParts);
+
                 if (scriptParts.length > 1)
                 {
-                    const scriptPrg = scriptParts[0];
+                    const scriptPrg = escapedScriptParts[0];
                     scriptParts.splice(0, 1);
+                    escapedScriptParts.splice(0, 1);
                     logger.log(`   Run script: ${scriptParts.join(" ")}`);
-                    procPromise = execa(scriptPrg, scriptParts, {cwd, env});
+                    procPromise = execa(scriptPrg, escapedScriptParts, {cwd, env});
                     procPromise.stdout.pipe(context.stdout);
                     try {
                         proc = await procPromise;
