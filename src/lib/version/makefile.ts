@@ -43,7 +43,7 @@ export async function setMakefileVersion(context: IContext, recordEditOnly: bool
             rcVersion = rcVersion + ", 0";
         }
         else { //  versionsystem "semver"
-            rcVersion = nextRelease.version.replace(".", ", ") + ", 0";
+            rcVersion = nextRelease.version.replace(/\./g, ", ") + ", 0";
         }
         //
         // Replace version in defined rc file
