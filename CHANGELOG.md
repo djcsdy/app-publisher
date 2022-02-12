@@ -1,5 +1,16 @@
 # APP-PUBLISHER CHANGE LOG
 
+## Version 3.8.1 (February 12th, 2022)
+
+### Bug Fixes
+
+- **Mantis Release:** fails if the new 'changelogSkip' flag is specified for the publish run.
+- **Script Runner:** the new script sanitization feature is stripping windows style slashes from the sanitized arguments.
+
+### Refactoring
+
+- **Security:** perform sanitization pre-scan on all scripts specified in the '*Command' .publishrc options during the options validation stage on startup.
+
 ## Version 3.8.0 (February 11th, 2022)
 
 ### Bug Fixes
