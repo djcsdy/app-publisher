@@ -569,10 +569,11 @@ async function runRelease(context: IContext)
     // Edit/touch changelog / history file
     // Can be a history style TXT or a changeloge type MD
     //
-    const doChangelog = !options.versionForceCurrent && (options.taskChangelog || options.taskChangelogView ||
-                        options.taskChangelogPrint || options.taskChangelogHtmlView || options.taskChangelogFile ||
-                        options.taskChangelogPrintVersion || options.taskChangelogViewVersion ||
-                        options.taskChangelogHtmlPrint || options.taskChangelogHtmlPrintVersion || !options.taskMode);
+    const doChangelog = !options.changelogSkip && !options.versionForceCurrent &&
+                           (options.taskChangelog || options.taskChangelogView || options.taskChangelogPrint ||
+                            options.taskChangelogHtmlView || options.taskChangelogFile ||
+                            options.taskChangelogPrintVersion || options.taskChangelogViewVersion ||
+                            options.taskChangelogHtmlPrint || options.taskChangelogHtmlPrintVersion || !options.taskMode);
     if (doChangelog)
     {   //
         // We need to populate 'notes' right now for the changelog/history file edit.

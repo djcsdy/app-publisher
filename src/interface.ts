@@ -273,6 +273,10 @@ export interface IArgs
      */
     changelogLineLen: number;
     /**
+     * Ignore / skip the changelog file stage.  Will not validate changelog file version.
+     */
+    changelogSkip: boolean;
+    /**
      * A map of additional subject tags used in commits that will be used to increment the
      * version and be included in the changelog, for example:
      *

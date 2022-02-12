@@ -105,6 +105,18 @@ export const publishRcOpts =
         }
     ],
 
+    changelogSkip: [
+        true,
+        "boolean",
+        false,
+        [ "-clnt", "--changelog-skip" ],
+        {
+            help: "Ignore / skip the changelog file stage.  Will not validate changelog\n" +
+                  "file version.",
+            helpPrivate: false
+        }
+    ],
+
     commitMsgMap: [
         true,
         "ICommitMessageMap[]",

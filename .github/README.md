@@ -521,6 +521,15 @@ The location of this history header file, should be a path relative to the proje
 
 The maximum line length to use when parsing commits to populate the changelog file.
 
+### changelogSkip
+
+|**Value Type**      |*__boolean__*|
+| :----------------- | :--------- |
+|**Value Default**   |false|
+|**Command Line Arg**|*__-clnt \| --changelog-skip__*|
+
+Ignore / skip the changelog file stage.  Will not validate changelog file version.
+
 ### commitMsgMap
 
 |**Value Type**      |*__ICommitMessageMap[]__*|
