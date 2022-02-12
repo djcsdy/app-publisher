@@ -1,4 +1,4 @@
-# App Publisher - Release Automation
+# App Publisher - Continuous Integration Tool
 
 [![authors](https://img.shields.io/badge/authors-scott%20meesseman-6F02B5.svg?logo=visual%20studio%20code)](https://www.littlesm.com)
 [![app-category](https://img.shields.io/badge/category-releases%20automation%20npm-blue.svg)](https://www.spmeesseman.com)
@@ -17,7 +17,7 @@
 
 ## Table of Contents
 
-- [App Publisher - Release Automation](#app-publisher---release-automation)
+- [App Publisher - Continuous Integration Tool](#app-publisher---continuous-integration-tool)
   - [Table of Contents](#table-of-contents)
   - [Description](#description)
   - [Requirements](#requirements)
@@ -38,15 +38,21 @@
   - [Command Line and Options](#command-line-and-options)
     - [branch](#branch)
     - [buildCommand](#buildcommand)
+    - [buildPostCommand](#buildpostcommand)
+    - [buildPreCommand](#buildprecommand)
     - [bugs](#bugs)
     - [changelogFile](#changelogfile)
     - [changelogHdrFile](#changeloghdrfile)
     - [changelogLineLen](#changeloglinelen)
+    - [changelogSkip](#changelogskip)
     - [commitMsgMap](#commitmsgmap)
+    - [commitPostCommand](#commitpostcommand)
+    - [commitPreCommand](#commitprecommand)
     - [config](#config)
     - [configName](#configname)
     - [cProjectRcFile](#cprojectrcfile)
     - [deployCommand](#deploycommand)
+    - [deployPostCommand](#deploypostcommand)
     - [distAddAllToVC](#distaddalltovc)
     - [distDocPath](#distdocpath)
     - [distDocPathSrc](#distdocpathsrc)
@@ -64,6 +70,7 @@
     - [emailRecip](#emailrecip)
     - [emailSender](#emailsender)
     - [emailServer](#emailserver)
+    - [forceRelease](#forcerelease)
     - [githubAssets](#githubassets)
     - [githubChglogEdit](#githubchglogedit)
     - [githubRelease](#githubrelease)
@@ -89,11 +96,6 @@
     - [npmReleasePreCommand](#npmreleaseprecommand)
     - [npmScope](#npmscope)
     - [nugetRelease](#nugetrelease)
-    - [postBuildCommand](#postbuildcommand)
-    - [preBuildCommand](#prebuildcommand)
-    - [postCommitCommand](#postcommitcommand)
-    - [preCommitCommand](#precommitcommand)
-    - [postReleaseCommand](#postreleasecommand)
     - [promptVersion](#promptversion)
     - [projectFileDotNet](#projectfiledotnet)
     - [projectFileExtJs](#projectfileextjs)
@@ -139,6 +141,7 @@
     - [taskRevert](#taskrevert)
     - [taskTag](#tasktag)
     - [taskTagVersion](#tasktagversion)
+    - [taskTests](#tasktests)
     - [taskVersionCurrent](#taskversioncurrent)
     - [taskVersionInfo](#taskversioninfo)
     - [taskVersionNext](#taskversionnext)
@@ -146,6 +149,7 @@
     - [taskVersionUpdate](#taskversionupdate)
     - [testEmailRecip](#testemailrecip)
     - [tests](#tests)
+    - [testsCommand](#testscommand)
     - [textEditor](#texteditor)
     - [vcFiles](#vcfiles)
     - [vcRevert](#vcrevert)
@@ -166,7 +170,6 @@
     - [versionSystem](#versionsystem)
     - [versionText](#versiontext)
     - [writeLog](#writelog)
-  - [Open Source Projects](#open-source-projects)
 
 ## Description
 
