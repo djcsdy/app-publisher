@@ -1,9 +1,9 @@
 
 import * as path from "path";
 import { publishRcOpts } from "../args";
-import { isNumeric, isObject, isString, logError, validateVersion } from "./utils/utils";
-import { createDir, pathExists, readFile } from "./utils/fs";
-import { IContext, IVersionFile } from "../interface";
+import { escapeShellString, isNumeric, isObject, isString, validateVersion } from "./utils/utils";
+import { createDir, pathExists } from "./utils/fs";
+import { IContext, IOptions, IVersionFile } from "../interface";
 
 export = validateOptions;
 
@@ -47,199 +47,24 @@ async function validateOptions({cwd, env, logger, options}: IContext, suppressAr
     }
 
     //
-    //
-    // Set undefined options to defaults
-    //
-    // for (const o in options)
-    // {
-    //     if (o.startsWith("task"))
-    //     {
-    //         if (options[o] === undefined) {
-    //             options[o] = false;
-    //         }
-    //     }
-    // }
-
-    //
     // Convert array params to arrays, if specified as string on cmdline or publishrc
     //
-    if (options.deployCommand && isString(options.deployCommand))
-    {
-        options.deployCommand = [ options.deployCommand ]; // convert to array
-    }
-    if (options.deployPostCommand && isString(options.deployPostCommand))
-    {
-        options.deployPostCommand = [ options.deployPostCommand ]; // convert to array
-    }
-    if (options.buildCommand && isString(options.buildCommand))
-    {
-        options.buildCommand = [ options.buildCommand ]; // convert to array
-    }
-    if (options.buildPostCommand && isString(options.buildPostCommand))
-    {
-        options.buildPostCommand = [ options.buildPostCommand ]; // convert to array
-    }
-    if (options.buildPreCommand && isString(options.buildPreCommand))
-    {
-        options.buildPreCommand = [ options.buildPreCommand ]; // convert to array
-    }
-    if (options.commitPostCommand && isString(options.commitPostCommand))
-    {
-        options.commitPostCommand = [ options.commitPostCommand ]; // convert to array
-    }
-    if (options.commitPreCommand &&  isString(options.commitPreCommand))
-    {
-        options.commitPreCommand = [ options.commitPreCommand ]; // convert to array
-    }
-    if (options.distReleasePreCommand && isString(options.distReleasePreCommand))
-    {
-        options.distReleasePreCommand = [ options.distReleasePreCommand ]; // convert to array
-    }
-    if (options.distReleasePostCommand && isString(options.distReleasePostCommand))
-    {
-        options.distReleasePostCommand = [ options.distReleasePostCommand ]; // convert to array
-    }
-    if (options.emailHrefs && isString(options.emailHrefs))
-    {
-        options.emailHrefs = [ options.emailHrefs ]; // convert to array
-    }
-    if (options.githubAssets && isString(options.githubAssets))
-    {
-        options.githubAssets = [ options.githubAssets ]; // convert to array
-    }
-    if (options.githubReleasePreCommand && isString(options.githubReleasePreCommand))
-    {
-        options.githubReleasePreCommand = [ options.githubReleasePreCommand ]; // convert to array
-    }
-    if (options.githubReleasePostCommand && isString(options.githubReleasePostCommand))
-    {
-        options.githubReleasePostCommand = [ options.githubReleasePostCommand ]; // convert to array
-    }
-    if (options.mantisbtAssets && isString(options.mantisbtAssets))
-    {
-        options.mantisbtAssets = [ options.mantisbtAssets ]; // convert to array
-    }
-    if (options.mantisbtReleasePreCommand && isString(options.mantisbtReleasePreCommand))
-    {
-        options.mantisbtReleasePreCommand = [ options.mantisbtReleasePreCommand ]; // convert to array
-    }
-    if (options.mantisbtReleasePostCommand && isString(options.mantisbtReleasePostCommand))
-    {
-        options.mantisbtReleasePostCommand = [ options.mantisbtReleasePostCommand ]; // convert to array
-    }
-    if (options.npmReleasePreCommand && isString(options.npmReleasePreCommand))
-    {
-        options.npmReleasePreCommand = [ options.npmReleasePreCommand ]; // convert to array
-    }
-    if (options.npmReleasePostCommand && isString(options.npmReleasePostCommand))
-    {
-        options.npmReleasePostCommand = [ options.npmReleasePostCommand ]; // convert to array
-    }
-    if (options.testsCommand && isString(options.testsCommand))
-    {
-        options.testsCommand = [ options.testsCommand ]; // convert to array
-    }
-    if (options.vcFiles && isString(options.vcFiles))
-    {
-        options.vcFiles = [ options.vcFiles ]; // convert to array
-    }
-    if (options.vcRevertFiles && isString(options.vcRevertFiles))
-    {
-        options.vcRevertFiles = [ options.vcRevertFiles ]; // convert to array
-    }
-    if (options.versionFiles && !(options.versionFiles instanceof Array))
-    {
-        options.versionFiles = [ options.versionFiles ]; // convert to array
-    }
-    if (options.versionFilesEditAlways && isString(options.versionFilesEditAlways))
-    {
-        options.versionFilesEditAlways = [ options.versionFilesEditAlways ]; // convert to array
-    }
-    if (options.versionFilesScrollDown && isString(options.versionFilesScrollDown))
-    {
-        options.versionFilesScrollDown = [ options.versionFilesScrollDown ]; // convert to array
-    }
-    if (options.emailRecip && isString(options.emailRecip))
-    {
-        options.emailRecip = [ options.emailRecip ]; // convert to array
-    }
-    if (options.testEmailRecip && isString(options.testEmailRecip))
-    {
-        options.testEmailRecip = [ options.testEmailRecip ]; // convert to array
-    }
-    if (options.commitMsgMap && !(options.commitMsgMap instanceof Array))
-    {
-        options.commitMsgMap = [ options.commitMsgMap ]; // convert to array
-    }
+    convertStringsToArrays(options);
 
-    function doInvalidOpt(p: string, v: string, d: string)
-    {
-        logger.error(`Invalid value specified for '${p}' in ${path.basename(options.configFilePath)}:`);
-        logger.error(`   ${p}`);
-        logger.error(d);
+    //
+    // Check script syntax
+    //
+    if (!checkScriptsSyntax(options, logger)) {
         return false;
     }
 
     //
     // FLAGS - Verify Y/N, set to default value on empty
     //
-    for (const o in options)
-    {
-        if (publishRcOpts[o])
-        {
-            const optType = publishRcOpts[o][1];
-            if (optType === "flag")
-            {
-                if (options[o]) {
-                    if (options[o] !== "Y" && options[o] !== "N") {
-                        return doInvalidOpt(o, options[o], "Accepted values are Y|N");
-                    }
-                }
-                else {
-                    options[o] = publishRcOpts[o][2];
-                }
-            }
-            else if (optType === "string")
-            {
-                if (options[o]) {
-                    if (!isString(options[o])) {
-                        return doInvalidOpt(o, options[o], "Value must be a string");
-                    }
-                }
-            }
-            else if (optType.startsWith("string"))
-            {
-                if (options[o]) {
-                    for (const s of options[o])
-                    {
-                        if (!isString(s)) {
-                            return doInvalidOpt(o, options[o], "All values must be strings");
-                        }
-                    }
-                }
-            }
-            else if (optType === "number")
-            {
-                if (options[o]) {
-                    if (!isNumeric(options[o])) {
-                        return doInvalidOpt(o, options[o], "Value must be a number");
-                    }
-                }
-            }
-            else if (optType.startsWith("enum("))
-            {
-                if (options[o]) {
-                    const allowedValues = optType.substring(5, optType.length - 1).trim().split("|");
-                    if (!isString(options[o]) || !allowedValues.includes(options[o].toString())) {
-                        return doInvalidOpt(o, options[o], "Accepted values are " + allowedValues.join("|"));
-                    }
-                }
-                else {
-                    options[o] = publishRcOpts[o][2];
-                }
-            }
-        }
+    if (!checkOptionsTypes(options, logger)) {
+        return false;
     }
+
     //
     // Loop through all possible arguments, and set efault values if they don't
     // already exist on the options object
@@ -255,87 +80,15 @@ async function validateOptions({cwd, env, logger, options}: IContext, suppressAr
         }
     }
 
-    //
-    // Version files
-    //
-    function validateVersionFileDef(vf: IVersionFile)
-    {
-        if (path.basename(vf.path) !== "package.json")
-        {
-            if (!vf.versionInfo)
-            {
-                vf.versionInfo = { version: undefined, system: "semver", info: undefined };
-            }
-            if (!vf.regex)
-            {
-                if (vf.versionInfo.system === "semver") {
-                    vf.regex = "[0-9a-zA-Z\\.\\-]{5,}";
-                }
-                else {
-                    vf.regex = "[0-9]+";
-                }
-            }
-            if ((!vf.regexVersion || !vf.regexWrite))
-            {
-                logger.error("Invalid versionFile regex patterns found");
-                logger.error("   Path           : " + vf.path);
-                logger.error("   Regex          : " + vf.regex ?? "not set");
-                logger.error("   Version Regex  : " + vf.regexVersion ?? "not set");
-                return false;
-            }
-            if (!vf.regex.includes("VERSION") || !vf.regexWrite.includes("VERSION"))
-            {
-                logger.error("Invalid versionFile regex patterns found");
-                logger.error("   Path           : " + vf.path);
-                logger.error("   Regex          : invalid - missing '(VERSION)' capture text");
-                return false;
-            }
-        }
-    }
-
-    if (options.versionFiles)
-    {
-        for (const vf of options.versionFiles)
-        {
-            if (!isObject(vf)) {
-                logger.error("Invalid versionFiles definition, must be an array of IVersionFile");
-                return false;
-            }
-            else if (!vf.path) {
-                logger.error("Invalid versionFiles definition, must be an array of IVersionFile");
-                logger.error("   The 'path' property is not defined on one or more definitions");
-                return false;
-            }
-            validateVersionFileDef(vf);
-            if (vf.setFiles) {
-                if (vf.setFiles.length === 0)
-                {
-                    logger.error("Invalid versionFile 'setFiles' found, cannot be zero length");
-                    logger.error("   Path           : " + vf.path);
-                    return false;
-                }
-                for (const sf of options.versionFiles) {
-                    validateVersionFileDef(sf);
-                }
-            }
-        }
+    if (!checkVersionFiles(options, logger)) {
+        return false;
     }
 
     //
     // Email configuration
     //
-    if (options.taskEmail) {
-        options.emailNotification = "Y";
-    }
-    if (options.emailNotification === "Y") {
-        if (!options.emailMode) {
-            options.emailMode = "std";
-        }
-        if (!options.emailSender || !options.emailServer || (!options.emailRecip && !options.testEmailRecip)) {
-            logger.error("Email step is specified Y, but email is not configured in .publishrc");
-            logger.error("Configure related email properties in .publishrc");
-            return false;
-        }
+    if (!checkEmailConfiguration(options, logger)) {
+        return false;
     }
 
     //
@@ -382,114 +135,18 @@ async function validateOptions({cwd, env, logger, options}: IContext, suppressAr
     //
     // SVN repo path
     //
-    if (options.repoType === "svn")
-    {
-        if (options.branch === "trunk")
-        {
-            if (!options.repo.endsWith("trunk"))
-            {
-                if (options.repo.includes("branches/"))
-                {
-                    options.repo = options.repo.substring(0, options.repo.indexOf("branches/")) + "trunk";
-                }
-                else {
-                    if (!options.repo.endsWith("/")) {
-                        options.repo += "/";
-                    }
-                    options.repo = options.repo + options.branch;
-                }
-            }
-        }
-        else
-        {
-            if (options.repo.indexOf("branches/") === -1)
-            {
-                if (options.repo.endsWith("trunk"))
-                {
-                    options.repo = options.repo.replace("trunk", options.branch);
-                }
-                else {
-                    if (!options.repo.endsWith("/")) {
-                        options.repo += "/";
-                    }
-                    options.repo = options.repo + options.branch;
-                }
-            }
-        }
-    }
-
-    const setDefaultEditor = () =>
-    {
-        if (process.platform === "win32") {
-            logger.log("Text editor not found, falling back to 'notepad'");
-            options.textEditor = "notepad.exe";
-        }
-        else {
-            logger.log("Text editor not found, falling back to 'vi'");
-            options.textEditor = "vi";
-        }
-    };
+    setSvn(options);
 
     //
     // If specified editor doesnt exist, then switch to notepad or pico
     //
-    if (options.textEditor)
-    {
-        options.textEditor = options.textEditor.trim();
-        if (!options.textEditor.toLowerCase().startsWith("notepad") && !(await pathExists(options.textEditor)))
-        {
-            let found = false;
-            const paths = process.platform === "win32" ? env.Path.split(";") : env.PATH.split(";");
-            for (const p of paths)
-            {
-                let fullPath = path.join(p, options.textEditor);
-                if (await pathExists(fullPath)) {
-                    found = true;
-                    break;
-                }
-                fullPath = path.join(p, options.textEditor + ".exe");
-                if (await pathExists(fullPath)) {
-                    found = true;
-                    break;
-                }
-            }
-            if (!found) { setDefaultEditor(); }
-        }
-        else { setDefaultEditor(); }
-    }
-    else { setDefaultEditor(); }
-
-    if (process.platform === "win32" && !options.textEditor.endsWith(".exe")) {
-        options.textEditor += ".exe";
-    }
+    await setEditor(options, logger, env);
 
     //
     // NPM
     //
-    if (options.taskNpmRelease) {
-        options.npmRelease = "Y";
-    }
-    if (options.npmRelease === "Y")
-    {
-        if (options.npmPackDist === "Y")
-        {
-            if (!options.distReleasePathSrc) {
-                logger.error("You must specify 'distReleasePathSrc' if 'npmPackDist' flag is set to Y");
-                return false;
-            }
-        }
-        //
-        // Set a default NPM registry
-        //
-        if (!options.npmRegistry) {
-            options.npmRegistry = "https://registry.npmjs.org";
-        }
-        //
-        // npmRegistry strip trailing '/'
-        //
-        else if (options.npmRegistry && options.npmRegistry.endsWith("/")) {
-            options.npmRegistry = options.npmRegistry.substring(0, options.npmRegistry.length - 1);
-        }
+    if (!checkNpm(options, logger)) {
+        return false;
     }
 
     //
@@ -776,29 +433,14 @@ async function validateOptions({cwd, env, logger, options}: IContext, suppressAr
         }
     }
 
-    const enforceingleTask = (task: string) =>
-    {
-        if (options[task]) {
-            for (const o in options) {
-                if (o.startsWith("task") && options[o] === true && o !== "taskMode" && o !== "taskModeStdOut" && o !== task)
-                {
-                    logger.error("Invalid options specified:");
-                    logger.error(`   The '${task}' option cannot be used together with other task options`);
-                    return false;
-                }
-            }
-        }
-        return true;
-    };
-
-    if (!enforceingleTask("taskChangelogView"))             { return false; };
-    if (!enforceingleTask("taskChangelogViewVersion"))      { return false; };
-    if (!enforceingleTask("taskChangelogPrint"))            { return false; };
-    if (!enforceingleTask("taskChangelogPrintVersion"))     { return false; };
-    if (!enforceingleTask("taskChangelogHtmlPrint"))        { return false; };
-    if (!enforceingleTask("taskChangelogHtmlPrintVersion")) { return false; };
-    if (!enforceingleTask("taskChangelogHdrPrint"))         { return false; };
-    if (!enforceingleTask("taskChangelogHdrPrintVersion"))  { return false; };
+    if (!enforceSingleTask(options, "taskChangelogView", logger))             { return false; };
+    if (!enforceSingleTask(options, "taskChangelogViewVersion", logger))      { return false; };
+    if (!enforceSingleTask(options, "taskChangelogPrint", logger))            { return false; };
+    if (!enforceSingleTask(options, "taskChangelogPrintVersion", logger))     { return false; };
+    if (!enforceSingleTask(options, "taskChangelogHtmlPrint", logger))        { return false; };
+    if (!enforceSingleTask(options, "taskChangelogHtmlPrintVersion", logger)) { return false; };
+    if (!enforceSingleTask(options, "taskChangelogHdrPrint", logger))         { return false; };
+    if (!enforceSingleTask(options, "taskChangelogHdrPrintVersion", logger))  { return false; };
 
     //
     // Only certain tasks are allowed with --version-force-current.  e.g. re-send a notification
@@ -871,4 +513,410 @@ async function validateOptions({cwd, env, logger, options}: IContext, suppressAr
     //
     logger.log("Options validated");
     return true;
+}
+
+
+function checkEmailConfiguration(options: IOptions, logger: any)
+{
+    if (options.taskEmail) {
+        options.emailNotification = "Y";
+    }
+    if (options.emailNotification === "Y") {
+        if (!options.emailMode) {
+            options.emailMode = "std";
+        }
+        if (!options.emailSender || !options.emailServer || (!options.emailRecip && !options.testEmailRecip)) {
+            logger.error("Email step is specified Y, but email is not configured in .publishrc");
+            logger.error("Configure related email properties in .publishrc");
+            return false;
+        }
+    }
+    return true;
+}
+
+
+function checkScriptsSyntax(options: IOptions, logger: any)
+{
+    const check = (scripts: string[], scriptGroup: string) =>
+    {
+        for (const s in scripts)
+        {
+            const script = scripts[s];
+            let parsed = escapeShellString(false, script);
+            for (const a of parsed)
+            {
+                if (!isString(a))
+                {
+                    logger.error(`Invalid script syntax in '${scriptGroup}:'`);
+                    logger.error("   " + script);
+                    logger.error("Ensure proper quoting around any paths");
+                    logger.error("Ensure proper quoting around wildcards that may be interpreted as glob patterns");
+                    logger.error("Sanitization error info:");
+                    Object.entries(a).forEach((p) =>
+                    {
+                        logger.error(`   ${p[0]}: ${p[1]}`);
+                    });
+                    return false;
+                }
+            }
+            if (script.includes("\\"))
+            {
+                parsed = escapeShellString(true, script);
+                if (!parsed.includes("\\"))
+                {
+                    logger.warn("Windows style paths need to be quoted or escaped");
+                    logger.warn(`Script syntax auto-corrected in '${scriptGroup}':`);
+                    logger.warn("   " + scripts[s]);
+                    scripts[s] = scripts[s].replace(/\\/g, "\\\\");
+                    logger.warn("   " + scripts[s]);
+                }
+            }
+        }
+        return true;
+    };
+
+    for (const o in options)
+    {
+        if (o.endsWith("Command") && !check(options[o], o)) {
+            return false;
+        }
+    }
+
+    return true;
+}
+
+
+function checkNpm(options: IOptions, logger: any)
+{
+    if (options.taskNpmRelease) {
+        options.npmRelease = "Y";
+    }
+    if (options.npmRelease === "Y")
+    {
+        if (options.npmPackDist === "Y")
+        {
+            if (!options.distReleasePathSrc) {
+                logger.error("You must specify 'distReleasePathSrc' if 'npmPackDist' flag is set to Y");
+                return false;
+            }
+        }
+        //
+        // Set a default NPM registry
+        //
+        if (!options.npmRegistry) {
+            options.npmRegistry = "https://registry.npmjs.org";
+        }
+        //
+        // npmRegistry strip trailing '/'
+        //
+        else if (options.npmRegistry && options.npmRegistry.endsWith("/")) {
+            options.npmRegistry = options.npmRegistry.substring(0, options.npmRegistry.length - 1);
+        }
+    }
+    return true;
+}
+
+
+function checkOptionsTypes(options: IOptions, logger: any)
+{
+    for (const o in options)
+    {
+        if (publishRcOpts[o])
+        {
+            const optType = publishRcOpts[o][1];
+            if (optType === "flag")
+            {
+                if (options[o]) {
+                    if (options[o] !== "Y" && options[o] !== "N") {
+                        return doInvalidOpt(o, "Accepted values are Y|N", options, logger);
+                    }
+                }
+                else {
+                    options[o] = publishRcOpts[o][2];
+                }
+            }
+            else if (optType === "string")
+            {
+                if (options[o]) {
+                    if (!isString(options[o])) {
+                        return doInvalidOpt(o, "Value must be a string", options, logger);
+                    }
+                }
+            }
+            else if (optType.startsWith("string"))
+            {
+                if (options[o]) {
+                    for (const s of options[o])
+                    {
+                        if (!isString(s)) {
+                            return doInvalidOpt(o, "All values must be strings", options, logger);
+                        }
+                    }
+                }
+            }
+            else if (optType === "number")
+            {
+                if (options[o]) {
+                    if (!isNumeric(options[o])) {
+                        return doInvalidOpt(o, "Value must be a number", options, logger);
+                    }
+                }
+            }
+            else if (optType.startsWith("enum("))
+            {
+                if (options[o]) {
+                    const allowedValues = optType.substring(5, optType.length - 1).trim().split("|");
+                    if (!isString(options[o]) || !allowedValues.includes(options[o].toString())) {
+                        return doInvalidOpt(o, "Accepted values are " + allowedValues.join("|"), options, logger);
+                    }
+                }
+                else {
+                    options[o] = publishRcOpts[o][2];
+                }
+            }
+        }
+    }
+    return true;
+}
+
+
+function checkVersionFiles(options: IOptions, logger: any)
+{
+    //
+    // Version files
+    //
+    function validateVersionFileDef(vf: IVersionFile)
+    {
+        if (path.basename(vf.path) !== "package.json")
+        {
+            if (!vf.versionInfo)
+            {
+                vf.versionInfo = { version: undefined, system: "semver", info: undefined };
+            }
+            if (!vf.regex)
+            {
+                if (vf.versionInfo.system === "semver") {
+                    vf.regex = "[0-9a-zA-Z\\.\\-]{5,}";
+                }
+                else {
+                    vf.regex = "[0-9]+";
+                }
+            }
+            if ((!vf.regexVersion || !vf.regexWrite))
+            {
+                logger.error("Invalid versionFile regex patterns found");
+                logger.error("   Path           : " + vf.path);
+                logger.error("   Regex          : " + vf.regex ?? "not set");
+                logger.error("   Version Regex  : " + vf.regexVersion ?? "not set");
+                return false;
+            }
+            if (!vf.regex.includes("VERSION") || !vf.regexWrite.includes("VERSION"))
+            {
+                logger.error("Invalid versionFile regex patterns found");
+                logger.error("   Path           : " + vf.path);
+                logger.error("   Regex          : invalid - missing '(VERSION)' capture text");
+                return false;
+            }
+        }
+    }
+
+    if (options.versionFiles)
+    {
+        for (const vf of options.versionFiles)
+        {
+            if (!isObject(vf)) {
+                logger.error("Invalid versionFiles definition, must be an array of IVersionFile");
+                return false;
+            }
+            else if (!vf.path) {
+                logger.error("Invalid versionFiles definition, must be an array of IVersionFile");
+                logger.error("   The 'path' property is not defined on one or more definitions");
+                return false;
+            }
+            validateVersionFileDef(vf);
+            if (vf.setFiles) {
+                if (vf.setFiles.length === 0)
+                {
+                    logger.error("Invalid versionFile 'setFiles' found, cannot be zero length");
+                    logger.error("   Path           : " + vf.path);
+                    return false;
+                }
+                for (const sf of options.versionFiles) {
+                    validateVersionFileDef(sf);
+                }
+            }
+        }
+    }
+    return true;
+}
+
+
+function convertStringsToArrays(options: IOptions)
+{
+    Object.entries(options).forEach((p) =>
+    {
+        if (p[0].endsWith("Command") && isString(p[1])) {
+            options[p[0]] = [ p[1] ]; // convert to array
+        }
+    });
+
+    if (options.emailHrefs && isString(options.emailHrefs))
+    {
+        options.emailHrefs = [ options.emailHrefs ]; // convert to array
+    }
+    if (options.githubAssets && isString(options.githubAssets))
+    {
+        options.githubAssets = [ options.githubAssets ]; // convert to array
+    }
+    if (options.mantisbtAssets && isString(options.mantisbtAssets))
+    {
+        options.mantisbtAssets = [ options.mantisbtAssets ]; // convert to array
+    }
+    if (options.vcFiles && isString(options.vcFiles))
+    {
+        options.vcFiles = [ options.vcFiles ]; // convert to array
+    }
+    if (options.vcRevertFiles && isString(options.vcRevertFiles))
+    {
+        options.vcRevertFiles = [ options.vcRevertFiles ]; // convert to array
+    }
+    if (options.versionFiles && !(options.versionFiles instanceof Array))
+    {
+        options.versionFiles = [ options.versionFiles ]; // convert to array
+    }
+    if (options.versionFilesEditAlways && isString(options.versionFilesEditAlways))
+    {
+        options.versionFilesEditAlways = [ options.versionFilesEditAlways ]; // convert to array
+    }
+    if (options.versionFilesScrollDown && isString(options.versionFilesScrollDown))
+    {
+        options.versionFilesScrollDown = [ options.versionFilesScrollDown ]; // convert to array
+    }
+    if (options.emailRecip && isString(options.emailRecip))
+    {
+        options.emailRecip = [ options.emailRecip ]; // convert to array
+    }
+    if (options.testEmailRecip && isString(options.testEmailRecip))
+    {
+        options.testEmailRecip = [ options.testEmailRecip ]; // convert to array
+    }
+    if (options.commitMsgMap && !(options.commitMsgMap instanceof Array))
+    {
+        options.commitMsgMap = [ options.commitMsgMap ]; // convert to array
+    }
+}
+
+
+
+
+function doInvalidOpt(p: string, d: string, options: IOptions, logger: any)
+{
+    logger.error(`Invalid value specified for '${p}' in ${path.basename(options.configFilePath)}:`);
+    logger.error(`   ${p}`);
+    logger.error(d);
+    return false;
+}
+
+
+function enforceSingleTask(options: IOptions, task: string, logger: any)
+{
+    if (options[task]) {
+        for (const o in options) {
+            if (o.startsWith("task") && options[o] === true && o !== "taskMode" && o !== "taskModeStdOut" && o !== task)
+            {
+                logger.error("Invalid options specified:");
+                logger.error(`   The '${task}' option cannot be used together with other task options`);
+                return false;
+            }
+        }
+    }
+    return true;
+}
+
+
+function setDefaultEditor(options: IOptions, logger: any)
+{
+    if (process.platform === "win32") {
+        logger.log("Text editor not found, falling back to 'notepad'");
+        options.textEditor = "notepad.exe";
+    }
+    else {
+        logger.log("Text editor not found, falling back to 'vi'");
+        options.textEditor = "vi";
+    }
+}
+
+
+async function setEditor(options: IOptions, logger: any, env: any)
+{
+    if (options.textEditor)
+    {
+        options.textEditor = options.textEditor.trim();
+        if (!options.textEditor.toLowerCase().startsWith("notepad") && !(await pathExists(options.textEditor)))
+        {
+            let found = false;
+            const paths = process.platform === "win32" ? env.Path.split(";") : env.PATH.split(";");
+            for (const p of paths)
+            {
+                let fullPath = path.join(p, options.textEditor);
+                if (await pathExists(fullPath)) {
+                    found = true;
+                    break;
+                }
+                fullPath = path.join(p, options.textEditor + ".exe");
+                if (await pathExists(fullPath)) {
+                    found = true;
+                    break;
+                }
+            }
+            if (!found) { setDefaultEditor(options, logger); }
+        }
+        else { setDefaultEditor(options, logger); }
+    }
+    else {
+        setDefaultEditor(options, logger);
+    }
+
+    if (process.platform === "win32" && !options.textEditor.endsWith(".exe")) {
+        options.textEditor += ".exe";
+    }
+}
+
+function setSvn(options: IOptions)
+{
+    if (options.repoType === "svn")
+    {
+        if (options.branch === "trunk")
+        {
+            if (!options.repo.endsWith("trunk"))
+            {
+                if (options.repo.includes("branches/"))
+                {
+                    options.repo = options.repo.substring(0, options.repo.indexOf("branches/")) + "trunk";
+                }
+                else {
+                    if (!options.repo.endsWith("/")) {
+                        options.repo += "/";
+                    }
+                    options.repo = options.repo + options.branch;
+                }
+            }
+        }
+        else
+        {
+            if (options.repo.indexOf("branches/") === -1)
+            {
+                if (options.repo.endsWith("trunk"))
+                {
+                    options.repo = options.repo.replace("trunk", options.branch);
+                }
+                else {
+                    if (!options.repo.endsWith("/")) {
+                        options.repo += "/";
+                    }
+                    options.repo = options.repo + options.branch;
+                }
+            }
+        }
+    }
 }

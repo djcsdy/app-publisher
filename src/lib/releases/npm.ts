@@ -5,7 +5,7 @@ import { pick } from "lodash";
 import { IContext } from "../../interface";
 import { addEdit, revert } from "../repo";
 import { createDir, pathExists, readFile, writeFile } from "../utils/fs";
-import { checkExitCode, escapeShellArgs, escapeShellString } from "../utils/utils";
+import { checkExitCode, escapeShellString } from "../utils/utils";
 import { getNpmFile, setNpmVersion } from "../version/npm";
 import { EOL } from "os";
 

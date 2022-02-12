@@ -2,7 +2,7 @@
 // import * as path from "path";
 // import * as semver from "semver";
 import { IContext } from "./interface";
-import { escapeShellString } from "./lib/utils/utils";
+// import { escapeShellString } from "./lib/utils/utils";
 // import { setNpmVersion } from "./lib/version/npm";
 
 export = runDevCodeTests;
@@ -13,13 +13,17 @@ export = runDevCodeTests;
 function runDevCodeTests(context: IContext)
 {
     // console.log("1");
-    // const cmd = context.options.deployPostCommand as string;
+    // const cmd = context.options.commitPostCommand as string[];
     // console.log("cmd: " + cmd[0]);
     // const cmd2 = escapeShellString(false, cmd[0]) as string[];
     // console.log(cmd2.length);
     // console.log("cmd2: " + cmd2.join(" , "));
     // const cmd3 = escapeShellString(true, cmd[0]) as string;
     // console.log("3: " + cmd3);
+    // Object.entries(cmd2[2]).forEach((p, v) =>
+    // {
+    //     console.log("    " + p + " : " + v);
+    // });
 
     // console.log(semver.prerelease("2.0.2-pre.0"));
     // setNpmVersion(context);

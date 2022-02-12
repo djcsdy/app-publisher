@@ -245,7 +245,7 @@ export function escapeShellArgs(asString: boolean, ...args: string[])
 export function escapeShellString(asString: boolean, shellCmd: string)
 {
     const shellCmdParse = require("shell-quote").parse,
-          args = shellCmdParse(shellCmd.replace(/\\/g, "\\\\"));
+          args = shellCmdParse(shellCmd);
     if (asString) {
         return escapeShellArgs(asString, ...args);
     }
