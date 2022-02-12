@@ -153,6 +153,104 @@ export function escapeRegExp(text: string)
 
 
 /**
+ * Credit to the 'escape-it' npm module for this function.  Re-implemented here so I can
+ * get an array back and not the concatenated string.  And in-call argument splitting with
+ * the escapeShellString function..
+ *
+ * @param asString `true` to return as concatenated string command.  `false` to return the
+ * command as an array.
+ * @param args Array of arguments that make up the command.  The first argument should be
+ * the script command or program itself.
+ */
+export function escapeShellArgs(asString: boolean, ...args: string[])
+{
+    const ret: string[] = [];
+
+    const repeat = function(s: string, n: number)
+    {
+        let result = "";
+        while (n) {
+        if (n % 2 === 1) {
+            result += s;
+        }
+        if (n > 1) {
+            s += s;
+        }
+        n >>= 1;
+        }
+        return result;
+    };
+
+    if (process.platform === "win32")
+    {
+        args.forEach(function (s: string)
+        {
+            if (/[\s\\"]/.test(s))
+            {
+                let backslashes = 0,
+                    c: string,
+                    rep = "\"";
+
+                const flushBackslashes = function fbs (n: number)
+                {
+                    rep = rep + repeat("\\", n * backslashes);
+                    backslashes = 0;
+                };
+
+                for (let i = 0, sLen = s.length; i < sLen; i++)
+                {
+                    c = s.charAt(i);
+                    if (c === "\\")
+                    {
+                        backslashes++;
+                    }
+                    else if (c === "\"")
+                    {
+                        flushBackslashes(2);
+                        rep = rep + "\\\"";
+                    }
+                    else
+                    {
+                        flushBackslashes(1);
+                        rep = rep + c;
+                    }
+                }
+
+                flushBackslashes(2);
+                rep = rep + "\"";
+                s = rep;
+            }
+
+            ret.push(s);
+        });
+    }
+    else
+    {
+        args.forEach(function (s)
+        {
+            if (/[^A-Za-z0-9_/:=-]/.test(s))
+            {
+                s = "'" + s.replace(/'/g, "'\\''") + "'";
+                s = s.replace(/^(?:'')+/g, "") // un-duplicate single-quote at the beginning
+                .replace(/\\'''/g, "\\'"); // remove non-escaped single-quote if there are enclosed between 2 escaped
+            }
+            ret.push(s);
+        });
+    }
+
+    return asString ? ret.join(" ") : ret;
+}
+
+
+export function escapeShellString(asString: boolean, shellCmd: string)
+{
+    const shellCmdParse = require("shell-quote").parse,
+          args = shellCmdParse(shellCmd);
+    return escapeShellArgs(asString, ...args);
+}
+
+
+/**
  * Executes a script/program with execa and pipes the external program's stdout
  * this the current process stdout.
  *
@@ -400,15 +498,14 @@ export async function runScripts(context: IContext, scriptType: string, scripts:
             {
                 let proc: any,
                     procPromise: any;
-                const scriptParts = script.split(" ").filter(a => a !== "");
+                const scriptParts = escapeShellString(false, script) as string[];
 
                 if (scriptParts.length > 1)
                 {
-                    const escapedCmdArgs = escapeShellArgs(false, ...scriptParts) as string[],
-                          scriptPrg = escapedCmdArgs[0];
-                    logger.log(`   Run script: ${escapedCmdArgs.join(" ")}`);
-                    escapedCmdArgs.splice(0, 1);
-                    procPromise = execa(scriptPrg, escapedCmdArgs, {cwd, env});
+                    const scriptPrg = scriptParts[0];
+                    logger.log(`   Run script: ${scriptParts.join(" ")}`);
+                    scriptParts.splice(0, 1);
+                    procPromise = execa(scriptPrg, scriptParts, {cwd, env});
                     procPromise.stdout.pipe(context.stdout);
                     try {
                         proc = await procPromise;
@@ -467,94 +564,4 @@ export function validateVersion(version: string, system?: "auto" | "incremental"
         return semver.valid(version) && (!lastVersion || semver.gt(version, lastVersion));
     }
     return isNumeric(version) && (!lastVersion || !isNumeric(lastVersion) || parseInt(version, 10) > parseInt(lastVersion));
-}
-
-
-/**
- * Credit to escape-it npm module.  Re-implemented here so I can get an array back and not
- * the concatenated string.
- *
- * @param asString `true` to return as concatenated string command.  `false` to return the
- * command as an array.
- * @param args Array of arguments that make up the command.  The first argument should be
- * the script command or program itself.
- */
-export function escapeShellArgs(asString: boolean, ...args: string[])
-{
-    const ret: string[] = [];
-
-    if (process.platform === "win32")
-    {
-        args.forEach(function (s: string)
-        {
-            if (/[\s\\"]/.test(s))
-            {
-                let backslashes = 0,
-                    c: string,
-                    rep = "\"";
-
-                const flushBackslashes = function fbs (n: number)
-                {
-                    rep = rep + repeat("\\", n * backslashes);
-                    backslashes = 0;
-                };
-
-                for (let i = 0, sLen = s.length; i < sLen; i++)
-                {
-                    c = s.charAt(i);
-                    if (c === "\\")
-                    {
-                        backslashes++;
-                    }
-                    else if (c === "\"")
-                    {
-                        flushBackslashes(2);
-                        rep = rep + "\\\"";
-                    }
-                    else
-                    {
-                        flushBackslashes(1);
-                        rep = rep + c;
-                    }
-                }
-
-                flushBackslashes(2);
-                rep = rep + "\"";
-                s = rep;
-            }
-
-            ret.push(s);
-        });
-    }
-    else
-    {
-        args.forEach(function (s)
-        {
-            if (/[^A-Za-z0-9_/:=-]/.test(s))
-            {
-                s = "'" + s.replace(/'/g, "'\\''") + "'";
-                s = s.replace(/^(?:'')+/g, "") // un-duplicate single-quote at the beginning
-                .replace(/\\'''/g, "\\'"); // remove non-escaped single-quote if there are enclosed between 2 escaped
-            }
-            ret.push(s);
-        });
-    }
-
-    return asString ? ret.join(" ") : ret;
-}
-
-
-function repeat (s: string, n: number)
-{
-    let result = "";
-    while (n) {
-      if (n % 2 === 1) {
-        result += s;
-      }
-      if (n > 1) {
-        s += s;
-      }
-      n >>= 1;
-    }
-    return result;
 }
