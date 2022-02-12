@@ -92,9 +92,9 @@ export async function commit(context: IContext)
     {
         for (let vcFile of options.vcFiles)
         {
-            vcFile = vcFile.replace("$(VERSION)", nextRelease.version)
-                           .replace("$(NEXTVERSION)", nextRelease.version)
-                           .replace("$(LASTVERSION)", lastRelease.version);
+            vcFile = vcFile.replace(/\$\(VERSION\)/g, nextRelease.version)
+                           .replace(/\$\(NEXTVERSION\)/g, nextRelease.version)
+                           .replace(/\$\(LASTVERSION\)/g, lastRelease.version);
             if (await pathExists(vcFile))
             {
                 if (await isVersioned(context, vcFile)) {
@@ -804,9 +804,9 @@ export async function revert(context: IContext, files?: IEdit[])
     {
         for (let vcFile of options.vcRevertFiles)
         {
-            vcFile = vcFile.replace("$(VERSION)", nextRelease.version)
-                           .replace("$(NEXTVERSION)", nextRelease.version)
-                           .replace("$(LASTVERSION)", lastRelease.version);
+            vcFile = vcFile.replace(/\$\(VERSION\)/g, nextRelease.version)
+                           .replace(/\$\(NEXTVERSION\)/g, nextRelease.version)
+                           .replace(/\$\(LASTVERSION\)/g, lastRelease.version);
             if (await pathExists(vcFile))
             {
                 if (await isVersioned(context, vcFile)) {
