@@ -369,7 +369,7 @@ export function timeout(ms: number)
 
 export async function runScripts(context: IContext, scriptType: string, scripts: string | string[], forceRun = false, throwOnError = false)
 {
-    const {options, logger, cwd, env} = context;
+    const {options, logger, cwd, env, lastRelease, nextRelease} = context;
 
     if (!forceRun && options.taskMode) {
         logger.log(`Running custom ${scriptType} script(s) skipped in task mode`);
@@ -393,21 +393,22 @@ export async function runScripts(context: IContext, scriptType: string, scripts:
     {
         for (let script of scripts)
         {
-            script = script.trim();
+            script = script.trim().replace(/\$\(VERSION\)/g, nextRelease.version)
+                                  .replace(/\$\(NEXTVERSION\)/g, nextRelease.version)
+                                  .replace(/\$\(LASTVERSION\)/g, lastRelease.version);
             if (script)
             {
                 let proc: any,
                     procPromise: any;
-                const scriptParts = script.split(" ").filter(a => a !== ""),
-                      escapedCmdParts = escapeShellArgs(false, ...scriptParts) as string[];
+                const scriptParts = script.split(" ").filter(a => a !== "");
 
                 if (scriptParts.length > 1)
                 {
-                    const scriptPrg = escapedCmdParts[0];
-                    scriptParts.splice(0, 1);
-                    escapedCmdParts.splice(0, 1);
-                    logger.log(`   Run script: ${scriptParts.join(" ")}`);
-                    procPromise = execa(scriptPrg, escapedCmdParts, {cwd, env});
+                    const escapedCmdArgs = escapeShellArgs(false, ...scriptParts) as string[],
+                          scriptPrg = escapedCmdArgs[0];
+                    logger.log(`   Run script: ${escapedCmdArgs.join(" ")}`);
+                    escapedCmdArgs.splice(0, 1);
+                    procPromise = execa(scriptPrg, escapedCmdArgs, {cwd, env});
                     procPromise.stdout.pipe(context.stdout);
                     try {
                         proc = await procPromise;

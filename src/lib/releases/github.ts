@@ -175,9 +175,9 @@ async function doGithubRelease(context: IContext): Promise<IReturnStatus>
                 }
 
                 // eslint-disable-next-line no-template-curly-in-string
-                asset = asset.replace("$(VERSION)", nextRelease.version)
-                             .replace("$(NEXTVERSION)", nextRelease.version)
-                             .replace("$(LASTVERSION)", lastRelease.version);
+                asset = asset.replace(/\$\(VERSION\)/g, nextRelease.version)
+                             .replace(/\$\(NEXTVERSION\)/g, nextRelease.version)
+                             .replace(/\$\(LASTVERSION\)/g, lastRelease.version);
 
                 if (await pathExists(asset))
                 {

@@ -128,9 +128,9 @@ async function setVersionFiles(context: IContext, recordEditOnly: boolean): Prom
     {
         let tvFile = versionFileDef.path;
 
-        tvFile = tvFile.replace("$(VERSION)", nextRelease.version)
-                       .replace("$(NEXTVERSION)", nextRelease.version)
-                       .replace("$(LASTVERSION)", lastRelease.version);
+        tvFile = tvFile.replace(/\$\(VERSION\)/g, nextRelease.version)
+                        .replace(/\$\(NEXTVERSION\)/g, nextRelease.version)
+                        .replace(/\$\(LASTVERSION\)/g, lastRelease.version);
 
         if (await pathExists(tvFile))
         {
