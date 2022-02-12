@@ -1,5 +1,29 @@
 # APP-PUBLISHER CHANGE LOG
 
+## Version 3.8.0 (February 11th, 2022)
+
+### Bug Fixes
+
+- **General:** the $(VERSION) and $(LASTVERSION) dynamic variables are not acknowledged/used by the script runner.  They should be replaced with the respective version numbers prior to execution, as are the assets in Mantis / Github releases and strings used in the 'versionFiles' publishrc config.
+- **Git:** authentication prompt fails if current token has expired.
+- **General:** If there are more than one '\' characters in an environment variable value, the replacement fails in the .publishrc file when using the ${ENV_VAR_NAME} tag.
+- **Makefile Project:** the new version is written the the rc file incorrectly as "1, 0.0.0" instead of "1, 0, 0, 0".
+- **Versioning:** The changelog task mode still fails when building a .NET based project that uses non-semantic versioning.
+- **Versioning:** Certain task modes fail when building a .NET based project that uses non-semantic versioning.
+
+### Features
+
+- add new publishing option 'forceRelease' to instruct the publish run to perform a release even if there are no relevant commits.  Minor version will be bumped.
+- add new publishing option 'changelogSkip' to instruct the publish run to skip the changelog stage and it's version validation.  Note that the version to be released must exist in the changelog already if this option is used.
+
+### Refactoring
+
+- **Security:** run all strings through escaping algorithm before passing to 'execa' when executing scripts specified in the .publishrc.json file.
+- **Security:** run all strings through escaping algorithm before passing to 'execa' when executing scripts specified in the .publishrc.json file.
+- **Security:** run all strings through escaping algorithm before passing to exec.shell when moving the package.json file.
+- **.NET Project:** handle the case where there are more than one space characters in the AssemblyInfo.cs version string.
+- **Security:** Use secure Number.isNAN over isNAN
+
 ## Version 3.7.6 (September 17th, 2021)
 
 ### Bug Fixes

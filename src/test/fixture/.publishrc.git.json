@@ -1,6 +1,6 @@
 {
     "projectName":       "app-publisher",
-    "projectVersion":    "3.7.11",
+    "projectVersion":    "3.8.0",
     "branch":            "master",
     "bugs":              "https://github.com/spmeesseman/app-publisher/issues",
     "buildCommand":      [
