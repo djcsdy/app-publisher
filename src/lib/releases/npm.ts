@@ -5,7 +5,7 @@ import { pick } from "lodash";
 import { IContext } from "../../interface";
 import { addEdit, revert } from "../repo";
 import { createDir, pathExists, readFile, writeFile } from "../utils/fs";
-import { checkExitCode, escapeShellArgs } from "../utils/utils";
+import { checkExitCode, escapeShellArgs, escapeShellString } from "../utils/utils";
 import { getNpmFile, setNpmVersion } from "../version/npm";
 import { EOL } from "os";
 
@@ -71,12 +71,12 @@ export async function doNpmRelease(context: IContext)
 
             if (process.platform === "win32")
             {
-                const command = [ "move", "/Y", tmpPkgFile, destPackedFile ];
-                proc = await execa.shell(escapeShellArgs(true, ...command), {cwd, env});
+                const command = `move /Y "${tmpPkgFile}" "${destPackedFile}"`;
+                proc = await execa.shell(escapeShellString(true, command), {cwd, env});
             }
             else {
-                const command =  [" mv", "-f", tmpPkgFile, destPackedFile ];
-                proc = await execa.shell(escapeShellArgs(true, ...command), {cwd, env});
+                const command =  `mv -f "${tmpPkgFile}" "${destPackedFile}"`;
+                proc = await execa.shell(escapeShellString(true, command), {cwd, env});
             }
             checkExitCode(proc.code, logger);
             //
