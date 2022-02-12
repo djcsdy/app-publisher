@@ -541,34 +541,37 @@ function checkScriptsSyntax(options: IOptions, logger: any)
     {
         for (const s in scripts)
         {
-            const script = scripts[s];
-            let parsed = escapeShellString(false, script);
-            for (const a of parsed)
+            if ([].hasOwnProperty.call(scripts, s))
             {
-                if (!isString(a))
+                const script = scripts[s];
+                let parsed = escapeShellString(false, script);
+                for (const a of parsed)
                 {
-                    logger.error(`Invalid script syntax in '${scriptGroup}:'`);
-                    logger.error("   " + script);
-                    logger.error("Ensure proper quoting around any paths");
-                    logger.error("Ensure proper quoting around wildcards that may be interpreted as glob patterns");
-                    logger.error("Sanitization error info:");
-                    Object.entries(a).forEach((p) =>
+                    if (!isString(a))
                     {
-                        logger.error(`   ${p[0]}: ${p[1]}`);
-                    });
-                    return false;
+                        logger.error(`Invalid script syntax in '${scriptGroup}:'`);
+                        logger.error("   " + script);
+                        logger.error("Ensure proper quoting around any paths");
+                        logger.error("Ensure proper quoting around wildcards that may be interpreted as glob patterns");
+                        logger.error("Sanitization error info:");
+                        Object.entries(a).forEach((p) =>
+                        {
+                            logger.error(`   ${p[0]}: ${p[1]}`);
+                        });
+                        return false;
+                    }
                 }
-            }
-            if (script.includes("\\"))
-            {
-                parsed = escapeShellString(true, script);
-                if (!parsed.includes("\\"))
+                if (script.includes("\\"))
                 {
-                    logger.warn("Windows style paths need to be quoted or escaped");
-                    logger.warn(`Script syntax auto-corrected in '${scriptGroup}':`);
-                    logger.warn("   " + scripts[s]);
-                    scripts[s] = scripts[s].replace(/\\/g, "\\\\");
-                    logger.warn("   " + scripts[s]);
+                    parsed = escapeShellString(true, script);
+                    if (!parsed.includes("\\"))
+                    {
+                        logger.warn("Windows style paths need to be quoted or escaped");
+                        logger.warn(`Script syntax auto-corrected in '${scriptGroup}':`);
+                        logger.warn("   " + scripts[s]);
+                        scripts[s] = scripts[s].replace(/\\/g, "\\\\");
+                        logger.warn("   " + scripts[s]);
+                    }
                 }
             }
         }
