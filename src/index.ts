@@ -376,6 +376,8 @@ async function runRelease(context: IContext)
         {
             logger.warn("There was no remote version tag found, this is a first release");
             logger.warn("   Continuing");
+            lastRelease.version = lastVersionInfo.version;
+            lastRelease.versionInfo = lastVersionInfo;
             firstRelease = true;
         }
         else if (!options.taskMode && !options.republish)
@@ -455,7 +457,7 @@ async function runRelease(context: IContext)
         // pass the --version-force-current switch on the command line.
         // validateOptions() willhave made sure that only certain tasks are run with this switch
         //
-        if (!tasksCanPass && !options.versionForceCurrent && !options.versionForceNext)
+        if (!tasksCanPass && !options.versionForceCurrent && !options.versionForceNext && !options.forceRelease)
         {
             if (options.taskVersionNext) {
                 context.stdout.write(lastRelease.version);
@@ -469,7 +471,7 @@ async function runRelease(context: IContext)
             return false;
         }
         else if (options.verbose) {
-            logger.log("Skip no relevant commit constraint, versionForceCurrent||tasksCanPass");
+            logger.log("Skip no relevant commit constraint, versionForceCurrent||tasksCanPass||forceRelease");
         }
     }
 
@@ -517,7 +519,7 @@ async function runRelease(context: IContext)
         }
     }
     else {
-        if ((options.versionForceCurrent || options.versionForceNext) && firstRelease) {
+        if (options.versionForceCurrent && firstRelease) {
             logger.error("Cannot use the --version-force-current switch for a first release");
             return false;
         }
@@ -910,7 +912,7 @@ async function commitAndTag(context: IContext, githubReleaseId: string)
         }
         catch (e) {
             logger.warn(`Failed to commit changes for v${nextRelease.version}`);
-            util.logWarning(context, "Manually commit the changes using the commit message format 'chore: vX.X.X'", e);
+            util.logWarning(context.logger, "Manually commit the changes using the commit message format 'chore: vX.X.X'", e);
         }
         //
         // Post-commit scripts
@@ -928,7 +930,7 @@ async function commitAndTag(context: IContext, githubReleaseId: string)
         }
         catch (e) {
             logger.warn(`Failed to tag v${nextRelease.version}`);
-            util.logWarning(context, `Manually tag the repository using the tag '${nextRelease.tag}'`, e);
+            util.logWarning(context.logger, `Manually tag the repository using the tag '${nextRelease.tag}'`, e);
         }
         //
         // If there was a Github release made, then publish it and re-tag
@@ -943,7 +945,7 @@ async function commitAndTag(context: IContext, githubReleaseId: string)
             }
             catch (e) {
                 logger.warn(`Failed to tag v${nextRelease.version}`);
-                util.logWarning(context, "Manually publish the release using the GitHub website", e);
+                util.logWarning(context.logger, "Manually publish the release using the GitHub website", e);
             }
         }
     }
@@ -985,29 +987,6 @@ async function processTasksLevel1(context: IContext): Promise<string | boolean>
     {
         const hdr = await context.changelog.getHeader(context, options.taskChangelogHdrPrintVersion);
         context.stdout.write(hdr ?? "error_cannot_retrieve_header");
-        return true;
-    }
-
-    //
-    // Task - Run build scripts
-    //
-    if (options.taskBuild)
-    {
-        if (options.buildCommand && options.buildCommand.length > 0)
-        {   //
-            // Pre-build scripts (.publishrc).  THis would happen prior to the version file
-            // updates if this wasn't a task distributed run.
-            //
-            await util.runScripts(context, "preBuild", options.buildPreCommand, true, true);
-            //
-            // Build scripts
-            //
-            await util.runScripts(context, "build", options.buildCommand, true, true);
-            //
-            // Post-build scripts (.publishrc)
-            //
-            await util.runScripts(context, "postBuild", options.buildPostCommand, true);
-        }
         return true;
     }
 
@@ -1081,6 +1060,31 @@ async function processTasksLevel2(context: IContext): Promise<string | boolean>
         await setVersions(context, true);
         await commitAndTag(context, undefined);
         await revertChanges(context); // only reverts if dry run, and configured to do so
+        return true;
+    }
+
+    //
+    // Task - Run build scripts
+    //
+    if (options.taskBuild)
+    {
+        if (options.buildCommand && options.buildCommand.length > 0)
+        {
+            nextRelease.version = lastRelease.version || lastRelease.versionInfo.version;
+            //
+            // Pre-build scripts (.publishrc).  THis would happen prior to the version file
+            // updates if this wasn't a task distributed run.
+            //
+            await util.runScripts(context, "preBuild", options.buildPreCommand, true, true);
+            //
+            // Build scripts
+            //
+            await util.runScripts(context, "build", options.buildCommand, true, true);
+            //
+            // Post-build scripts (.publishrc)
+            //
+            await util.runScripts(context, "postBuild", options.buildPostCommand, true);
+        }
         return true;
     }
 

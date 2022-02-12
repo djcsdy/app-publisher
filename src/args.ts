@@ -470,6 +470,18 @@ export const publishRcOpts =
         }
     ],
 
+    forceRelease: [
+        true,
+        "boolean",
+        false,
+        [ "-fr", "--force-release" ],
+        {
+            help: "Force a release / publish run even if no relevant commits are found.\n" +
+                  "The minor version will be bumped.",
+            helpPrivate: false
+        }
+    ],
+
     githubAssets: [
         true,
         "string | string[]",

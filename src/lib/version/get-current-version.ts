@@ -223,10 +223,20 @@ async function getCurrentVersion(context: IContext): Promise<IVersionInfo>
     if (!versionInfo.version)
     {
         logger.warn("The current version cannot be determined from the local files");
-        logger.warn(`   Setting to initial version ${FIRST_RELEASE}`);
-        versionInfo.version = FIRST_RELEASE;
+        if (options.changelogSkip && versionInfo.system) {
+            logger.warn("   Version found in changelog but option changelogSkip is specified");
+        }
+        if (!options.versionForceNext) {
+            logger.warn(`   Setting to initial version ${FIRST_RELEASE}`);
+            versionInfo.version = FIRST_RELEASE;
+        }
+        else {
+            logger.warn(`   Setting to version specified by option versionForceNext ${options.versionForceNext}`);
+            versionInfo.version = options.versionForceNext;
+        }
     }
-    else {
+    else
+    {
         logger.log("Retrieved local file version info");
         logger.log(`   Version   : ${versionInfo.version}`);
         logger.log(`   System    : ${versionInfo.system}`);

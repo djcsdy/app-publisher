@@ -113,8 +113,13 @@ async function getReleaseLevel(context: IContext)
     // For incremental versioning, the dc doesnt uses subject tags, so increment the version
     // to patch as long as we found a commit message with no subject
     //
-    if (!level && foundNoSubject && lastRelease.versionInfo.system === "incremental") {
-        logger.warn("Incremental versioning, forcing to 'patch' with 0 release level commits found");
+    if (!level && foundNoSubject) {
+        if (lastRelease.versionInfo.system === "incremental") {
+            logger.warn("Incremental versioning, forcing to 'patch' with 0 release level commits found");
+        }
+        else if (options.forceRelease) {
+            logger.warn("Specified option forceRelease, forcing to 'patch' with 0 release level commits found");
+        }
         level = "patch";
     }
 

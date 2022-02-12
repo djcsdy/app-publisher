@@ -806,6 +806,15 @@ The email address to use as the 'From' address when sending an email notificatio
 
 The SMTP server to use when sending an email notification.
 
+### forceRelease
+
+|**Value Type**      |*__boolean__*|
+| :----------------- | :--------- |
+|**Value Default**   |false|
+|**Command Line Arg**|*__-fr \| --force-release__*|
+
+Force a release / publish run even if no relevant commits are found.  The minor version will be bumped.
+
 ### githubAssets
 
 |**Value Type**      |*__string \| string[]__*|

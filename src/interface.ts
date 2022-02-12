@@ -445,6 +445,11 @@ export interface IArgs
      */
     emailServer: string;
     /**
+     * Force a release / publish run even if no relevant commits are found.  The minor version
+     * will be bumped.
+     */
+    forceRelease: boolean;
+    /**
      * A path to a file resource or list of file resource paths to upload as assets of the
      * Github release.
      *

@@ -42,6 +42,7 @@
         "prompt": "^1.1.0",
         "resolve-from": "^5.0.0",
         "semver": "^6.3.0",
+        "shell-quote": "^1.7.3",
         "signale": "^1.4.0",
         "xml2js": "^0.4.23"
     },
