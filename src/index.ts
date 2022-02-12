@@ -571,7 +571,7 @@ async function runRelease(context: IContext)
     // Edit/touch changelog / history file
     // Can be a history style TXT or a changeloge type MD
     //
-    const doChangelog = !options.changelogSkip && !options.versionForceCurrent &&
+    const doChangelog = !options.versionForceCurrent &&
                            (options.taskChangelog || options.taskChangelogView || options.taskChangelogPrint ||
                             options.taskChangelogHtmlView || options.taskChangelogFile ||
                             options.taskChangelogPrintVersion || options.taskChangelogViewVersion ||
@@ -587,7 +587,9 @@ async function runRelease(context: IContext)
         //
         // Do edit/view
         //
-        await context.changelog.doEdit(context);
+        if (!options.changelogSkip) {
+            await context.changelog.doEdit(context);
+        }
         //
         // If this is task mode, we're done maybe
         //
