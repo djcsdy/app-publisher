@@ -10,7 +10,6 @@ import { EOL } from "os";
 import { options } from "marked";
 const execa = require("execa");
 // const find = require("find-process");
-import shellescape from "escape-it";
 
 
 export function atob(str: string): string
@@ -400,15 +399,15 @@ export async function runScripts(context: IContext, scriptType: string, scripts:
                 let proc: any,
                     procPromise: any;
                 const scriptParts = script.split(" ").filter(a => a !== ""),
-                      escapedScriptParts = shellescape(scriptParts);
+                      escapedCmdParts = escapeShellArgs(false, ...scriptParts) as string[];
 
                 if (scriptParts.length > 1)
                 {
-                    const scriptPrg = escapedScriptParts[0];
+                    const scriptPrg = escapedCmdParts[0];
                     scriptParts.splice(0, 1);
-                    escapedScriptParts.splice(0, 1);
+                    escapedCmdParts.splice(0, 1);
                     logger.log(`   Run script: ${scriptParts.join(" ")}`);
-                    procPromise = execa(scriptPrg, escapedScriptParts, {cwd, env});
+                    procPromise = execa(scriptPrg, escapedCmdParts, {cwd, env});
                     procPromise.stdout.pipe(context.stdout);
                     try {
                         proc = await procPromise;
@@ -467,4 +466,94 @@ export function validateVersion(version: string, system?: "auto" | "incremental"
         return semver.valid(version) && (!lastVersion || semver.gt(version, lastVersion));
     }
     return isNumeric(version) && (!lastVersion || !isNumeric(lastVersion) || parseInt(version, 10) > parseInt(lastVersion));
+}
+
+
+/**
+ * Credit to escape-it npm module.  Re-implemented here so I can get an array back and not
+ * the concatenated string.
+ *
+ * @param asString `true` to return as concatenated string command.  `false` to return the
+ * command as an array.
+ * @param args Array of arguments that make up the command.  The first argument should be
+ * the script command or program itself.
+ */
+export function escapeShellArgs(asString: boolean, ...args: string[])
+{
+    const ret: string[] = [];
+
+    if (process.platform === "win32")
+    {
+        args.forEach(function (s: string)
+        {
+            if (/[\s\\"]/.test(s))
+            {
+                let backslashes = 0,
+                    c: string,
+                    rep = "\"";
+
+                const flushBackslashes = function fbs (n: number)
+                {
+                    rep = rep + repeat("\\", n * backslashes);
+                    backslashes = 0;
+                };
+
+                for (let i = 0, sLen = s.length; i < sLen; i++)
+                {
+                    c = s.charAt(i);
+                    if (c === "\\")
+                    {
+                        backslashes++;
+                    }
+                    else if (c === "\"")
+                    {
+                        flushBackslashes(2);
+                        rep = rep + "\\\"";
+                    }
+                    else
+                    {
+                        flushBackslashes(1);
+                        rep = rep + c;
+                    }
+                }
+
+                flushBackslashes(2);
+                rep = rep + "\"";
+                s = rep;
+            }
+
+            ret.push(s);
+        });
+    }
+    else
+    {
+        args.forEach(function (s)
+        {
+            if (/[^A-Za-z0-9_/:=-]/.test(s))
+            {
+                s = "'" + s.replace(/'/g, "'\\''") + "'";
+                s = s.replace(/^(?:'')+/g, "") // un-duplicate single-quote at the beginning
+                .replace(/\\'''/g, "\\'"); // remove non-escaped single-quote if there are enclosed between 2 escaped
+            }
+            ret.push(s);
+        });
+    }
+
+    return asString ? ret.join(" ") : ret;
+}
+
+
+function repeat (s: string, n: number)
+{
+    let result = "";
+    while (n) {
+      if (n % 2 === 1) {
+        result += s;
+      }
+      if (n > 1) {
+        s += s;
+      }
+      n >>= 1;
+    }
+    return result;
 }

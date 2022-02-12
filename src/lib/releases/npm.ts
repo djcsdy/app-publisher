@@ -1,12 +1,11 @@
 
 import * as path from "path";
-import shellescape from "escape-it";
 const execa = require("execa");
 import { pick } from "lodash";
 import { IContext } from "../../interface";
 import { addEdit, revert } from "../repo";
 import { createDir, pathExists, readFile, writeFile } from "../utils/fs";
-import { checkExitCode } from "../utils/utils";
+import { checkExitCode, escapeShellArgs } from "../utils/utils";
 import { getNpmFile, setNpmVersion } from "../version/npm";
 import { EOL } from "os";
 
@@ -72,14 +71,12 @@ export async function doNpmRelease(context: IContext)
 
             if (process.platform === "win32")
             {
-                const command = `move /Y "${tmpPkgFile}" "${destPackedFile}"`,
-                      escapedCmdParts = shellescape(command.split(" "));
-                proc = await execa.shell(escapedCmdParts.join(" "), {cwd, env});
+                const command = [ "move", "/Y", tmpPkgFile, destPackedFile ];
+                proc = await execa.shell(escapeShellArgs(true, ...command), {cwd, env});
             }
             else {
-                const command = `mv -f "${tmpPkgFile}" "${destPackedFile}"`,
-                      escapedCmdParts = shellescape(command.split(" "));
-                proc = await execa.shell(escapedCmdParts.join(" "), {cwd, env});
+                const command =  [" mv", "-f", tmpPkgFile, destPackedFile ];
+                proc = await execa.shell(escapeShellArgs(true, ...command), {cwd, env});
             }
             checkExitCode(proc.code, logger);
             //
