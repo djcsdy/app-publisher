@@ -1,7 +1,7 @@
 
 import * as path from "path";
 import semver from "semver";
-import { btoa } from "../utils/utils";
+import { btoa, replaceVersionTag } from "../utils/utils";
 import { pathExists, readFile } from "../utils/fs";
 import { contentTypeMap } from "./content-type-map";
 import { isString } from "lodash";
@@ -100,10 +100,8 @@ async function doMantisRelease(context: IContext): Promise<IReturnStatus>
             if (await pathExists(asset))
             {
                 const extension = path.extname(assetName).toLowerCase();
-                // eslint-disable-next-line no-template-curly-in-string
-                asset = asset.replace(/\$\(VERSION\)/g, nextRelease.version)
-                             .replace(/\$\(NEXTVERSION\)/g, nextRelease.version)
-                             .replace(/\$\(LASTVERSION\)/g, lastRelease.version);
+
+                asset = replaceVersionTag(context, asset);
                 //
                 // The format to upload an asset is the base64 encoded binary file data
                 //

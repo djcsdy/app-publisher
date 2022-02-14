@@ -1,6 +1,6 @@
 
 import * as path from "path";
-import { execaEx, isString } from "./utils/utils";
+import { execaEx, isString, replaceVersionTag } from "./utils/utils";
 import { deleteFile, pathExists } from "./utils/fs";
 import { IContext, IEdit } from "../interface";
 const execa = require("execa");
@@ -92,9 +92,7 @@ export async function commit(context: IContext)
     {
         for (let vcFile of options.vcFiles)
         {
-            vcFile = vcFile.replace(/\$\(VERSION\)/g, nextRelease.version)
-                           .replace(/\$\(NEXTVERSION\)/g, nextRelease.version)
-                           .replace(/\$\(LASTVERSION\)/g, lastRelease.version);
+            vcFile = replaceVersionTag(context, vcFile);
             if (await pathExists(vcFile))
             {
                 if (await isVersioned(context, vcFile)) {
@@ -804,9 +802,7 @@ export async function revert(context: IContext, files?: IEdit[])
     {
         for (let vcFile of options.vcRevertFiles)
         {
-            vcFile = vcFile.replace(/\$\(VERSION\)/g, nextRelease.version)
-                           .replace(/\$\(NEXTVERSION\)/g, nextRelease.version)
-                           .replace(/\$\(LASTVERSION\)/g, lastRelease.version);
+            vcFile = replaceVersionTag(context, vcFile);
             if (await pathExists(vcFile))
             {
                 if (await isVersioned(context, vcFile)) {

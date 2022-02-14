@@ -468,6 +468,14 @@ export function timeout(ms: number)
 }
 
 
+export function replaceVersionTag(context: IContext, vcFile: string)
+{
+    return vcFile.replace(/(?:\-\-\-|\$\()VERSION(?:\-\-\-|\))/g, context.nextRelease.version)
+                 .replace(/(?:\-\-\-|\$\()NEXTVERSION(?:\-\-\-|\))/g, context.nextRelease.version)
+                 .replace(/(?:\-\-\-|\$\()LASTVERSION(?:\-\-\-|\))/g, context.lastRelease.version);
+}
+
+
 export async function runScripts(context: IContext, scriptType: string, scripts: string | string[], forceRun = false, throwOnError = false)
 {
     const {options, logger, cwd, env, lastRelease, nextRelease} = context;
@@ -494,9 +502,7 @@ export async function runScripts(context: IContext, scriptType: string, scripts:
     {
         for (let script of scripts)
         {
-            script = script.trim().replace(/\$\(VERSION\)/g, nextRelease.version)
-                                  .replace(/\$\(NEXTVERSION\)/g, nextRelease.version)
-                                  .replace(/\$\(LASTVERSION\)/g, lastRelease.version);
+            script = replaceVersionTag(context, script.trim());
             if (script)
             {
                 let proc: any,

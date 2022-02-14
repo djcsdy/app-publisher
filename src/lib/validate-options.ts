@@ -294,7 +294,7 @@ async function validateOptions({cwd, env, logger, options}: IContext, suppressAr
     // have been replaced by the nodejs config parser if they exist in the env.  Provide a warning
     // if any of the variables are not found in the environment.
     //
-    Object.entries(options).forEach(([property, value]) =>
+    Object.entries(options).forEach(([ property, value ]) =>
     {
         if (!property || !value) {
             return; // continue forEach()
@@ -542,7 +542,16 @@ function checkScriptsSyntax(options: IOptions, logger: any)
         for (const s in scripts)
         {
             if ([].hasOwnProperty.call(scripts, s))
-            {
+            {   //
+                // Replace the $(VERSION) tag with some different text since our script sanitization
+                // will flag the parenthesis
+                //
+                scripts[s] = scripts[s].replace(/\$\(VERSION\)/g, "---VERSION---")
+                                       .replace(/\$\(CURRENTVERSION\)/g, "---CURRENTVERSION---")
+                                       .replace(/\$\(NEXTVERSION\)/g, "---NEXTVERSION---");
+                //
+                // Check windows style paths
+                //
                 const script = scripts[s];
                 let parsed = escapeShellString(false, script);
                 for (const a of parsed)
@@ -561,6 +570,9 @@ function checkScriptsSyntax(options: IOptions, logger: any)
                         return false;
                     }
                 }
+                //
+                // Check arguments
+                //
                 if (script.includes("\\"))
                 {
                     parsed = escapeShellString(true, script);

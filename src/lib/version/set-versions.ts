@@ -1,7 +1,7 @@
 
 import * as path from "path";
 import { pathExists, readFile, replaceInFile, writeFile } from "../utils/fs";
-import { editFile, isString } from "../utils/utils";
+import { editFile, isString, replaceVersionTag } from "../utils/utils";
 import { setAppPublisherVersion } from "./app-publisher";
 import { setDotNetVersion } from "./dotnet";
 import { setExtJsVersion } from "./extjs";
@@ -128,9 +128,7 @@ async function setVersionFiles(context: IContext, recordEditOnly: boolean): Prom
     {
         let tvFile = versionFileDef.path;
 
-        tvFile = tvFile.replace(/\$\(VERSION\)/g, nextRelease.version)
-                        .replace(/\$\(NEXTVERSION\)/g, nextRelease.version)
-                        .replace(/\$\(LASTVERSION\)/g, lastRelease.version);
+        tvFile = replaceVersionTag(context, tvFile);
 
         if (await pathExists(tvFile))
         {

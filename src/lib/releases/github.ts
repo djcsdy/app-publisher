@@ -5,6 +5,7 @@ import { contentTypeMap } from "./content-type-map";
 import { APP_NAME } from "../definitions/constants";
 import { IContext, IReturnStatus } from "../../interface";
 import { doesTagExist, push, tag } from "../repo";
+import { replaceVersionTag } from "../utils/utils";
 const got = require("got");
 
 export { doGithubRelease, publishGithubRelease };
@@ -174,10 +175,7 @@ async function doGithubRelease(context: IContext): Promise<IReturnStatus>
                     asset = ghAsset.split("|")[0];
                 }
 
-                // eslint-disable-next-line no-template-curly-in-string
-                asset = asset.replace(/\$\(VERSION\)/g, nextRelease.version)
-                             .replace(/\$\(NEXTVERSION\)/g, nextRelease.version)
-                             .replace(/\$\(LASTVERSION\)/g, lastRelease.version);
+                asset = replaceVersionTag(context, asset);
 
                 if (await pathExists(asset))
                 {
