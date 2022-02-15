@@ -38,7 +38,7 @@ export async function doNpmRelease(context: IContext)
             let tmpPkgFile: string, destPackedFile: string, doAddEdit = true;
 
             logger.log("Performing NPM pack, npmPackDist=Y");
-            let proc = await execa("npm", ["pack"], {cwd, env});
+            let proc = await execa("npm", [ "pack" ], {cwd, env});
             checkExitCode(proc.code, logger);
 
             if (!(await pathExists(options.distReleasePathSrc)))
@@ -96,7 +96,7 @@ export async function doNpmRelease(context: IContext)
         {
             if (options.npmRegistry) {
                 logger.log("Publishing npm package to " + options.npmRegistry);
-                proc = await execa("npm", [ "publish", "--registry", options.npmRegistry]);
+                proc = await execa("npm", [ "publish", "--registry", options.npmRegistry ]);
             }
             else {
                 logger.log("Publishing npm package to default registry");
@@ -107,11 +107,11 @@ export async function doNpmRelease(context: IContext)
         {
             if (options.npmRegistry) {
                 logger.log("Dry Run - Publishing npm package to " + options.npmRegistry);
-                proc = await execa("npm", [ "publish", "--registry", options.npmRegistry, "--dry-run"]);
+                proc = await execa("npm", [ "publish", "--registry", options.npmRegistry, "--dry-run" ]);
             }
             else {
                 logger.log("Dry Run - Publishing npm package to default registry");
-                proc = await execa("npm", [ "publish", "--dry-run"]);
+                proc = await execa("npm", [ "publish", "--dry-run" ]);
             }
         }
         checkExitCode(proc.code, logger, true);

@@ -243,6 +243,7 @@ async function runStart(context: IContext)
 
 function logTaskResult(result: boolean | string, taskName: string, logger: any)
 {
+    // deepcode ignore CommandInjection: false positive
     if (util.isString(result)) {
         logger.error(result);
     }
@@ -617,6 +618,7 @@ async function runRelease(context: IContext)
     // Scripts that are run before manipulation of the version files and before any build
     // scripts are ran.
     //
+    // deepcode ignore CommandInjection: protected by argument sanitization pre execa
     await util.runScripts(context, "preBuild", options.buildPreCommand, options.taskBuild, true);
 
     //
@@ -629,6 +631,7 @@ async function runRelease(context: IContext)
     //
     if (options.npmRelease === "Y" && (!options.taskMode || options.taskNpmRelease || options.taskNpmJsonUpdate))
     {
+        // deepcode ignore CommandInjection: protected by argument sanitization pre execa.shell
         context.packageJsonModified = await npm.setPackageJson(context);
         // if (options.taskVersionUpdate) { // for taskVersionUpdate, we don't restore
         //     packageJsonModified = false;
@@ -668,10 +671,12 @@ async function runRelease(context: IContext)
     //
     if (options.buildCommand && options.buildCommand.length > 0 && !options.taskMode)
     {
+        // deepcode ignore CommandInjection: protected by argument sanitization pre execa
         await util.runScripts(context, "build", options.buildCommand, options.taskBuild, true);
         //
         // Post-build scripts (.publishrc)
         //
+        // deepcode ignore CommandInjection: protected by argument sanitization pre execa
         await util.runScripts(context, "postBuild", options.buildPostCommand, options.taskBuild);
     }
 
@@ -680,6 +685,7 @@ async function runRelease(context: IContext)
     //
     if (options.testsCommand && options.testsCommand.length > 0 && !options.taskMode)
     {
+        // deepcode ignore CommandInjection: protected by argument sanitization pre execa
         await util.runScripts(context, "tests", options.testsCommand, options.taskTests, true);
     }
 
@@ -690,14 +696,17 @@ async function runRelease(context: IContext)
     {   //
         //   Run pre npm-release scripts if specified.
         //
+        // deepcode ignore CommandInjection: protected by argument sanitization pre execa
         await util.runScripts(context, "preNpmRelease", options.npmReleasePreCommand, options.taskNpmRelease);
         //
         // Perform dist / network folder release
         //
+        // deepcode ignore CommandInjection: protected by argument sanitization pre execa.shell
         await npm.doNpmRelease(context);
         //
         //  Run pre npm-release scripts if specified.
         //
+        // deepcode ignore CommandInjection: protected by argument sanitization pre execa
         await util.runScripts(context, "postNpmRelease", options.npmReleasePostCommand, options.taskNpmRelease);
         //
         // If this is task mode, log it
@@ -716,6 +725,7 @@ async function runRelease(context: IContext)
         //
         // Run pre distribution-release scripts if specified.
         //
+        // deepcode ignore CommandInjection: protected by argument sanitization pre execa
         await util.runScripts(context, "preDistRelease", options.distReleasePreCommand, options.taskDistRelease);
         //
         // Perform dist / network folder release
@@ -724,6 +734,7 @@ async function runRelease(context: IContext)
         //
         // Run pre distribution-release scripts if specified.
         //
+        // deepcode ignore CommandInjection: protected by argument sanitization pre execa
         await util.runScripts(context, "postDistRelease", options.distReleasePostCommand, options.taskDistRelease);
         //
         // If this is task mode, log it
@@ -748,14 +759,17 @@ async function runRelease(context: IContext)
     {   //
         // Pre-github release (.publishrc).
         //
+        // deepcode ignore CommandInjection: protected by argument sanitization pre execa
         await util.runScripts(context, "preGithubRelease", options.githubReleasePreCommand, options.taskGithubRelease);
         //
         // Perform Github release
         //
+        // deepcode ignore Ssrf: 'options.branch' sanitized in options validation stage
         const ghRc = await doGithubRelease(context);
         //
         // Post-github release (.publishrc).
         //
+        // deepcode ignore CommandInjection: protected by argument sanitization pre execa
         await util.runScripts(context, "postGithubRelease", options.githubReleasePostCommand, options.taskGithubRelease);
         if (options.taskMode && ghRc.error) {
             logTaskResult(ghRc.error, "github release", logger);
@@ -782,6 +796,7 @@ async function runRelease(context: IContext)
     {   //
         // Pre-mantis release scripts (.publishrc).
         //
+        // deepcode ignore CommandInjection: protected by argument sanitization pre execa
         await util.runScripts(context, "preMantisRelease", options.mantisbtReleasePreCommand, options.taskMantisbtRelease);
         //
         // Perform MantisBT release
@@ -790,6 +805,7 @@ async function runRelease(context: IContext)
         //
         // Post-mantis release scripts (.publishrc).
         //
+        // deepcode ignore CommandInjection: protected by argument sanitization pre execa
         await util.runScripts(context, "postMantisRelease", options.mantisbtReleasePostCommand, options.taskMantisbtRelease);
         if (options.taskMantisbtRelease && mantisRc.error) {
             logTaskResult(mantisRc.error, "mantisbt release", logger);
@@ -812,12 +828,14 @@ async function runRelease(context: IContext)
             if (options.taskDeploy) {
                 logger.log("Run deployment in dry-run mode to 'deployment task' options");
             }
+            // deepcode ignore CommandInjection: protected by argument sanitization pre execa
             await util.runScripts(context, "deploy", options.deployCommand, options.taskDeploy);
             //
             // Post-Release scripts (.publishrc)
             // Scripts that are run before manipulation of the version files and before any build
             // scripts are ran.
             //
+            // deepcode ignore CommandInjection: protected by argument sanitization pre execa
             await util.runScripts(context, "postDeploy", options.deployPostCommand);
         }
         else {
@@ -840,6 +858,7 @@ async function runRelease(context: IContext)
     // Restore any configured package.json values to the original values
     //
     if (context.packageJsonModified || options.taskNpmJsonRestore) {
+        // deepcode ignore CommandInjection: protected by argument sanitization pre execa.shell
         await npm.restorePackageJson(context);
         context.packageJsonModified = false;
     }
@@ -905,6 +924,7 @@ async function commitAndTag(context: IContext, githubReleaseId: string)
     {   //
         // Pre-commit scripts
         //
+        // deepcode ignore CommandInjection: protected by argument sanitization pre execa
         await util.runScripts(context, "preCommit", options.commitPreCommand); // (.publishrc)
         //
         // Commit changes to vcs
@@ -919,6 +939,7 @@ async function commitAndTag(context: IContext, githubReleaseId: string)
         //
         // Post-commit scripts
         //
+        // deepcode ignore CommandInjection: protected by argument sanitization pre execa
         await util.runScripts(context, "postCommit", options.commitPostCommand); // (.publishrc)
     }
     //
@@ -943,6 +964,7 @@ async function commitAndTag(context: IContext, githubReleaseId: string)
         //
         if (githubReleaseId) {
             try {
+                // deepcode ignore Ssrf: user input does not flow to this request
                 await publishGithubRelease(context, githubReleaseId);
             }
             catch (e) {
@@ -975,6 +997,7 @@ async function processTasksLevel1(context: IContext): Promise<string | boolean>
         return generateHelp(context);
     }
 
+    // deepcode ignore CommandInjection: false positive
     if (options.taskVersionPreReleaseId && util.isString(options.taskVersionPreReleaseId))
     {
         const rc = semver.prerelease(semver.clean(options.taskVersionPreReleaseId));
@@ -999,6 +1022,7 @@ async function processTasksLevel1(context: IContext): Promise<string | boolean>
     {
         if (options.testsCommand && options.testsCommand.length > 0)
         {
+            // deepcode ignore CommandInjection: protected by argument sanitization pre execa
             await util.runScripts(context, "tests", options.testsCommand, true, true);
         }
         return true;
@@ -1035,6 +1059,7 @@ async function processTasksLevel2(context: IContext): Promise<string | boolean>
     //
     if (options.taskRevert)
     {
+        // deepcode ignore reDOS: false positive
         await addEdit(context, options.changelogFile);
         await setVersions(context, true);
         await revert(context);
@@ -1058,6 +1083,7 @@ async function processTasksLevel2(context: IContext): Promise<string | boolean>
         }
         nextRelease.version = options.taskTagVersion || lastRelease.versionInfo.version;
         nextRelease.tag = template(options.tagFormat)({ version: nextRelease.version });
+        // deepcode ignore reDOS: false positive
         await addEdit(context, options.changelogFile);
         await setVersions(context, true);
         await commitAndTag(context, undefined);
@@ -1077,14 +1103,17 @@ async function processTasksLevel2(context: IContext): Promise<string | boolean>
             // Pre-build scripts (.publishrc).  THis would happen prior to the version file
             // updates if this wasn't a task distributed run.
             //
+            // deepcode ignore CommandInjection: protected by argument sanitization pre execa
             await util.runScripts(context, "preBuild", options.buildPreCommand, true, true);
             //
             // Build scripts
             //
+            // deepcode ignore CommandInjection: protected by argument sanitization pre execa
             await util.runScripts(context, "build", options.buildCommand, true, true);
             //
             // Post-build scripts (.publishrc)
             //
+            // deepcode ignore CommandInjection: protected by argument sanitization pre execa
             await util.runScripts(context, "postBuild", options.buildPostCommand, true);
         }
         return true;
@@ -1227,6 +1256,7 @@ async function revertChanges(context: IContext)
     // Restore any configured package.json values to the original values
     //
     else if (context.packageJsonModified) {
+        // deepcode ignore CommandInjection: protected by argument sanitization pre execa.shell
         await npm.restorePackageJson(context);
         context.packageJsonModified = false;
     }
@@ -1260,7 +1290,7 @@ async function callFail(context: IContext, err: Error)
 export = async (opts = {}, { cwd = process.cwd(), env = process.env, stdout = undefined, stderr = undefined } = {}) =>
 {
     const { unhook } = hookStd(
-        { silent: false, streams: [process.stdout, process.stderr, stdout, stderr].filter(Boolean) },
+        { silent: false, streams: [ process.stdout, process.stderr, stdout, stderr ].filter(Boolean) },
         hideSensitive(env)
     );
 

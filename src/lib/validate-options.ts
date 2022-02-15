@@ -131,11 +131,21 @@ async function validateOptions({cwd, env, logger, options}: IContext, suppressAr
     if (options.branch.startsWith("/")) {
         options.branch = options.branch.substring(1);
     }
+    if (!enforceCharString("branch", options.branch, /a-z0-9\-_\//i, logger)) {
+        return false;
+    }
 
     //
     // SVN repo path
     //
     setSvn(options);
+
+    //
+    // Check valid repo url
+    //
+    if (!enforceCharString("repo", options.repo, /a-z0-9\:\/\./i, logger)) {
+        return false;
+    }
 
     //
     // If specified editor doesnt exist, then switch to notepad or pico
@@ -822,8 +832,6 @@ function convertStringsToArrays(options: IOptions)
 }
 
 
-
-
 function doInvalidOpt(p: string, d: string, options: IOptions, logger: any)
 {
     logger.error(`Invalid value specified for '${p}' in ${path.basename(options.configFilePath)}:`);
@@ -844,6 +852,18 @@ function enforceSingleTask(options: IOptions, task: string, logger: any)
                 return false;
             }
         }
+    }
+    return true;
+}
+
+
+function enforceCharString(option: string, value: string, rgx: RegExp, logger: any)
+{
+    if (value && !rgx.test(value))
+    {
+        logger.error("Invalid options specified:");
+        logger.error(`   The value for '${option}' is not allowed, must be one of 'a-z', '0-9', '-' or '_'`);
+        return false;
     }
     return true;
 }

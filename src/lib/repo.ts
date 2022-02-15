@@ -182,7 +182,7 @@ export async function commit(context: IContext)
         if (changeListAdd.length > 0)
         {
             const chgListPathsAdded = changeListAdd.map((e: any) => e.path);
-            logger.info("Adding unversioned touched files to svn version control");
+            logger.info("Adding un-versioned touched files to svn version control");
             if (options.verbose) {
                 context.stdout.write("   " + chgListPathsAdded.join(EOL + "   ") + EOL);
             }
@@ -190,7 +190,7 @@ export async function commit(context: IContext)
                 await execSvn(context, [ "add", ...chgListPathsAdded ]);
             }
             else {
-                await execSvn(context, ["merge", "--dry-run", "-r", "BASE:HEAD", "." ]);
+                await execSvn(context, [ "merge", "--dry-run", "-r", "BASE:HEAD", "." ]);
             }
         }
         if (changeList.length > 0)
@@ -201,10 +201,10 @@ export async function commit(context: IContext)
                 context.stdout.write("   " + chgListPaths.join(EOL + "   ") + EOL);
             }
             if (!options.dryRun) {
-                await execSvn(context, ["commit", ...chgListPaths, "-m", `chore: v${nextRelease.version} [skip ci]` ]);
+                await execSvn(context, [ "commit", ...chgListPaths, "-m", `chore: v${nextRelease.version} [skip ci]` ]);
             }
             else {
-                await execSvn(context, ["merge", "--dry-run", "-r", "BASE:HEAD", "." ]);
+                await execSvn(context, [ "merge", "--dry-run", "-r", "BASE:HEAD", "." ]);
             }
         }
     }
@@ -233,7 +233,7 @@ export async function doesTagExist(context: IContext, tag: string): Promise<bool
 
     if (options.repoType === "git")
     {
-        return (await execa.stdout("git", ["tag"], { cwd, env }))
+        return (await execa.stdout("git", [ "tag" ], { cwd, env }))
                            .split("\n")
                            .map((tag: { trim: () => void }) => tag.trim())
                            .filter((f: string) => f === tag)
@@ -300,11 +300,11 @@ async function execSvn(context: IContext, svnArgs: string[], stdout = false)
 
     if (svnUser && svnToken) {
         if (!stdout) {
-             proc = await execaEx(context, "svn", [...svnArgs, "--non-interactive", "--no-auth-cache", "--username", svnUser, "--password", svnToken ]);
+             proc = await execaEx(context, "svn", [ ...svnArgs, "--non-interactive", "--no-auth-cache", "--username", svnUser, "--password", svnToken ]);
         }
         else {
             try {
-                proc = await execa.stdout("svn", [...svnArgs, "--non-interactive", "--no-auth-cache", "--username", svnUser, "--password", svnToken ], {cwd, env});
+                proc = await execa.stdout("svn", [ ...svnArgs, "--non-interactive", "--no-auth-cache", "--username", svnUser, "--password", svnToken ], {cwd, env});
             }
             catch (e) {
                 return e.toString();
@@ -313,11 +313,11 @@ async function execSvn(context: IContext, svnArgs: string[], stdout = false)
     }
     else {
         if (!stdout) {
-            proc = await execaEx(context, "svn", [...svnArgs, "--non-interactive" ]);
+            proc = await execaEx(context, "svn", [ ...svnArgs, "--non-interactive" ]);
         }
         else {
             try {
-                proc = await execa.stdout("svn", [...svnArgs, "--non-interactive" ], {cwd, env});
+                proc = await execa.stdout("svn", [ ...svnArgs, "--non-interactive" ], {cwd, env});
             }
             catch (e) {
                 return e.toString();
@@ -341,10 +341,10 @@ export async function fetch(context: IContext)
     if (options.repoType === "git")
     {
         try {
-            await execaEx(context, "git", ["fetch", "--unshallow", "--tags", options.repo]);
+            await execaEx(context, "git", [ "fetch", "--unshallow", "--tags", options.repo ]);
         }
         catch (error) {
-            await execaEx(context, "git", ["fetch", "--tags", options.repo]);
+            await execaEx(context, "git", [ "fetch", "--tags", options.repo ]);
         }
     }
     else if (options.repoType === "svn")
@@ -369,11 +369,11 @@ export async function getHead(context: IContext)
     const {options, logger, cwd, env} = context;
     try {
         if (options.repoType === "git") {
-            return await execa.stdout("git", ["rev-parse", "HEAD"], { cwd, env });
+            return await execa.stdout("git", [ "rev-parse", "HEAD" ], { cwd, env });
         }
         else if (options.repoType === "svn")
         {
-            const head = await execSvn(context, ["info", "-r", "HEAD"], true);
+            const head = await execSvn(context, [ "info", "-r", "HEAD" ], true);
             let match: RegExpExecArray;
             if ((match = /^Revision: ([0-9]+)$/m.exec(head)) !== null)
             {
@@ -415,12 +415,12 @@ export async function getTagHead(context: IContext, tagName: any): Promise<strin
     try {
         if (options.repoType === "git")
         {
-            return await execa.stdout("git", ["rev-list", "-1", tagName], { cwd, env });
+            return await execa.stdout("git", [ "rev-list", "-1", tagName ], { cwd, env });
         }
         else if (options.repoType === "svn")
         {
             const tagLocation = options.repo.replace(options.branch, "tags"),
-                  head = await execSvn(context, ["log", tagLocation + "/" + tagName, "-v", "--stop-on-copy"], true);
+                  head = await execSvn(context, [ "log", tagLocation + "/" + tagName, "-v", "--stop-on-copy" ], true);
             let match: RegExpExecArray;
             if ((match = /^r([0-9]+) \|/m.exec(head)) !== null)
             {
@@ -454,7 +454,7 @@ export async function getTags(context: IContext)
 
     if (options.repoType === "git")
     {
-        return (await execa.stdout("git", ["tag"], { cwd, env })).split("\n").map((tag: { trim: () => void }) => tag.trim()).filter(Boolean);
+        return (await execa.stdout("git", [ "tag" ], { cwd, env })).split("\n").map((tag: { trim: () => void }) => tag.trim()).filter(Boolean);
     }
     else if (options.repoType === "svn")
     {
@@ -522,7 +522,7 @@ export async function isBranchUpToDate(context: IContext, branch: any)
     try
     {
         if (options.repoType === "git") {
-            const remoteHead = await execa.stdout("git", ["ls-remote", "--heads", "origin", branch], execaOpts);
+            const remoteHead = await execa.stdout("git", [ "ls-remote", "--heads", "origin", branch ], execaOpts);
             return await isRefInHistory(context, remoteHead.match(/^(\w+)?/)[1]);
         }
         else if (options.repoType === "svn") {
@@ -556,7 +556,7 @@ export async function isGitRepo(context: IContext)
     const { logger, cwd, env } = context;
     try
     {
-        return (await execaEx(context, "git", ["rev-parse", "--git-dir"])).code === 0;
+        return (await execaEx(context, "git", [ "rev-parse", "--git-dir" ])).code === 0;
     }
     catch (error) {
         logger.error("Exception in isGitRepo: " + error.toString());
@@ -575,7 +575,7 @@ export async function isIgnored(context: IContext, objectPath: string)
     if (options.repoType === "svn")
     {
         try {
-            const stdout = await execSvn(context, ["propget", "svn:ignore", path.dirname(objectPath) ], true);
+            const stdout = await execSvn(context, [ "propget", "svn:ignore", path.dirname(objectPath) ], true);
             if (new RegExp(`^${objectPath}$`, "gm").test(stdout)) {
                 logger.info("   This file is being ignored from version control");
                 return true;
@@ -593,7 +593,7 @@ export async function isIgnored(context: IContext, objectPath: string)
         if (await pathExists(".gitignore"))
         {
             try {
-                const proc = await execaEx(context, "git", ["check-ignore", "--quiet", objectPath ]);
+                const proc = await execaEx(context, "git", [ "check-ignore", "--quiet", objectPath ]);
                 if (proc.code === 0) {
                     logger.info("   This file is being ignored from version control");
                     return true;
@@ -629,11 +629,11 @@ export async function isRefInHistory(context: IContext, ref: any, isTags = false
     try
     {
         if (repoType === "git") {
-            await execaEx(context, "git", ["merge-base", "--is-ancestor", ref, "HEAD"]);
+            await execaEx(context, "git", [ "merge-base", "--is-ancestor", ref, "HEAD" ]);
         }
         else if (repoType === "svn") {
             const tagLoc = !isTags ? repo : repo.replace(branch, "tags");
-            await execSvn(context, ["ls", tagLoc + "/" + ref]);
+            await execSvn(context, [ "ls", tagLoc + "/" + ref ]);
         }
         else {
             throw new Error("Invalid repository type");
@@ -664,7 +664,7 @@ export async function isSvnRepo(context: IContext)
     const {logger} = context;
     try
     {
-        return (await execSvn(context, ["info"])).code === 0;
+        return (await execSvn(context, [ "info" ])).code === 0;
     }
     catch (error) {
         logger.error("Exception in isSvnRepo: " + error.toString());
@@ -695,7 +695,7 @@ export async function isVersioned(context: IContext, objectPath: string)
             //     svn: warning: W155010: The node '...' was not found.
             //     svn: E200009: Could not display info for all targets because some targets don't exist
             //
-            stdout = await execSvn(context, ["info", objectPath], true);
+            stdout = await execSvn(context, [ "info", objectPath ], true);
             isVersioned = !stdout.includes("W155010") && !stdout.includes("E200009");
         }
         else if (options.repoType === "git")
@@ -703,7 +703,7 @@ export async function isVersioned(context: IContext, objectPath: string)
             // If not versioned, the error message shouldbe:
             //     error: pathspec 'test.txt' did not match any file(s) known to git
             //
-            stdout = await execa.stdout("git", ["ls-files", "--error-unmatch", objectPath ], { cwd, env });
+            stdout = await execa.stdout("git", [ "ls-files", "--error-unmatch", objectPath ], { cwd, env });
             isVersioned = !stdout.includes("E200009");
         }
         else {
@@ -727,10 +727,10 @@ export async function push(context: IContext)
     const {options, logger} = context;
     if (options.repoType === "git") {
         if (!options.dryRun) {
-            await execaEx(context, "git", ["push", "--tags", options.repo]);
+            await execaEx(context, "git", [ "push", "--tags", options.repo ]);
         }
         else {
-            await execaEx(context, "git", ["push", "--dry-run", "--tags", options.repo]);
+            await execaEx(context, "git", [ "push", "--dry-run", "--tags", options.repo ]);
         }
     }
     else if (options.repoType === "svn") {
@@ -755,13 +755,13 @@ export async function repoUrl({options, logger, cwd, env}: IContext)
     try
     {
         if (options.repoType === "git") {
-            return await execa.stdout("git", ["config", "--get", "remote.origin.url"], execaOpts);
+            return await execa.stdout("git", [ "config", "--get", "remote.origin.url" ], execaOpts);
         }
         else if (options.repoType === "svn") {
             //
             // TODO
             //
-            return await execa.stdout("svn", ["config", "--get", "remote.origin.url"], execaOpts);
+            return await execa.stdout("svn", [ "config", "--get", "remote.origin.url" ], execaOpts);
         }
         else {
             throwVcsError(`Invalid repository type: ${options.repoType}`, logger);
@@ -894,10 +894,10 @@ export async function tag(context: IContext)
 
         if (options.githubRelease !== "Y" || options.taskGithubRelease) {
             if (!options.dryRun) {
-                await execaEx(context, "git", ["tag", "-a", tagLocation, "-m", tagMessage]);
+                await execaEx(context, "git", [ "tag", "-a", tagLocation, "-m", tagMessage ]);
             }
             else {
-                await execaEx(context, "git", ["tag", "--dry-run",  "-a", tagLocation, "-m", tagMessage]);
+                await execaEx(context, "git", [ "tag", "--dry-run",  "-a", tagLocation, "-m", tagMessage ]);
             }
         }
         else { //
@@ -907,7 +907,7 @@ export async function tag(context: IContext)
             if (!options.dryRun) {
                 const proc = await execaEx(context, "git", [ "push", "origin", ":refs/tags/" + tagLocation ]);
                 if (proc.code === 0) {
-                    await execaEx(context, "git", ["tag", "-fa", tagLocation, "-m", tagMessage]);
+                    await execaEx(context, "git", [ "tag", "-fa", tagLocation, "-m", tagMessage ]);
                 }
             }
             else {
@@ -933,7 +933,7 @@ export async function tag(context: IContext)
         }
         logger.info(`Tagging SVN version at ${tagLocation}`);
         if (!options.dryRun) {
-            await execSvn(context, ["copy", options.repo, tagLocation, "-m", tagMessage]);
+            await execSvn(context, [ "copy", options.repo, tagLocation, "-m", tagMessage ]);
         }
         else {
             logger.info("   Dry-run emulate tag, success");
@@ -977,7 +977,7 @@ export async function verifyAuth(context: IContext)
     {
         if (options.repoType === "git") {
             try {
-                await execaEx(context, "git", ["push", "--dry-run", options.repo, `HEAD:${options.branch}`]);
+                await execaEx(context, "git", [ "push", "--dry-run", options.repo, `HEAD:${options.branch}` ]);
             }
             catch (error) {
                 if (!(await isBranchUpToDate(context, options.branch)))
@@ -995,7 +995,7 @@ export async function verifyAuth(context: IContext)
         else if (options.repoType === "svn")
         {
             try {
-                await execSvn(context, ["merge", "--dry-run", "-r", "BASE:HEAD", "." ]);
+                await execSvn(context, [ "merge", "--dry-run", "-r", "BASE:HEAD", "." ]);
             }
             catch (error) {
                 if (!error.toString().includes("E195020")) { // Cannot merge into mixed-revision working copy
@@ -1040,7 +1040,7 @@ export async function verifyTagName(context: IContext, tagName: string)
     try
     {
         if (options.repoType === "git") {
-            return (await execaEx(context, "git", ["check-ref-format", `refs/tags/${tagName}`])).code === 0;
+            return (await execaEx(context, "git", [ "check-ref-format", `refs/tags/${tagName}` ])).code === 0;
         }
         else if (options.repoType === "svn") {
             //
