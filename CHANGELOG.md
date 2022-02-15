@@ -1,5 +1,11 @@
 # APP-PUBLISHER CHANGE LOG
 
+## Version 3.8.2 (February 14th, 2022)
+
+### Bug Fixes
+
+- **General:** script sanitization is flagging scripts that contain the $(VERSION) tag, and options validation fails.
+
 ## Version 3.8.1 (February 12th, 2022)
 
 ### Bug Fixes
