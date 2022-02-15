@@ -5,6 +5,7 @@
 **/target
 **/lib-cov
 **/coverage
+**/.coverage
 *.lcov
 **/bower_components
 **/.nyc_output
@@ -26,3 +27,6 @@
 **/upload
 **/certs
 **/dep
+**/.vscode
+**/.vscode-test
+**/res
