@@ -5,9 +5,9 @@ import * as npm from "./lib/releases/npm";
 import semver from "semver";
 import gradient from "gradient-string";
 import chalk from "chalk";
-import marked from "marked";
-import TerminalRenderer from "marked-terminal";
 import hookStd from "hook-std";
+import marked = require("marked");
+import TerminalRenderer = require("marked-terminal");
 import hideSensitive = require("./lib/hide-sensitive");
 import getReleaseLevel = require("./lib/commit-analyzer");
 import verify = require("./lib/verify");
@@ -1293,9 +1293,7 @@ export = async (opts = {}, { cwd = process.cwd(), env = process.env, stdout = un
         { silent: false, streams: [ process.stdout, process.stderr, stdout, stderr ].filter(Boolean) },
         hideSensitive(env)
     );
-
     const context = await getContext(opts as IOptions, cwd, env, stdout, stderr);
-
     try {
         try {
             const result = await runStart(context);
