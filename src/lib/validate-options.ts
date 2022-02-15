@@ -131,7 +131,7 @@ async function validateOptions({cwd, env, logger, options}: IContext, suppressAr
     if (options.branch.startsWith("/")) {
         options.branch = options.branch.substring(1);
     }
-    if (!enforceCharString("branch", options.branch, /a-z0-9\-_\//i, logger)) {
+    if (!enforceCharString("branch", options.branch, /a-z0-9\-_\//i, 32, logger)) {
         return false;
     }
 
@@ -143,7 +143,7 @@ async function validateOptions({cwd, env, logger, options}: IContext, suppressAr
     //
     // Check valid repo url
     //
-    if (!enforceCharString("repo", options.repo, /a-z0-9\:\/\./i, logger)) {
+    if (!enforceCharString("repo", options.repo, /a-z0-9\:\/\./i, 64, logger)) {
         return false;
     }
 
@@ -179,7 +179,8 @@ async function validateOptions({cwd, env, logger, options}: IContext, suppressAr
     if (options.taskGithubRelease) {
         options.githubRelease = "Y";
     }
-    if (options.githubRelease === "Y") {
+    if (options.githubRelease === "Y")
+    {
         if (!options.githubUser) {
             logger.error("You must specify githubUser for a GitHub release type");
             return false;
@@ -187,6 +188,9 @@ async function validateOptions({cwd, env, logger, options}: IContext, suppressAr
         if (!env.GITHUB_TOKEN) {
             logger.error("You must have GITHUB_TOKEN defined in the environment for a GitHub release type");
             logger.error("Set the environment variable GITHUB_TOKEN using the token value created on the GitHub website");
+            return false;
+        }
+        if (!enforceCharString("githubUser", options.githubUser, /a-z0-9\-_\./i, 64, logger)) {
             return false;
         }
     }
@@ -203,11 +207,17 @@ async function validateOptions({cwd, env, logger, options}: IContext, suppressAr
             logger.error("You must specify mantisbtUrl for a MantisBT release type");
             return false;
         }
+        if (!enforceCharString("mantisbtUrl", options.mantisbtUrl, /a-z0-9\:\/\./i, 64, logger)) {
+            return false;
+        }
         if (!options.mantisbtApiToken) {
             logger.error("You must have MANTISBT_API_TOKEN defined for a MantisBT release type");
             logger.error("-or- you must have mantisbtApiToken defined in publishrc");
             logger.error("Set the env var MANTISBT_API_TOKEN or the config mantisApiToken with the token value created on the MantisBT website");
             logger.error("To create a token, see the \"Tokens\" section of your Mantis User Preferences page");
+            return false;
+        }
+        if (!enforceCharString("mantisbtApiToken", options.mantisbtApiToken, /a-z0-9\=\-_/i, 32, logger)) {
             return false;
         }
     }
@@ -638,7 +648,7 @@ function checkNpm(options: IOptions, logger: any)
             options.npmRegistry = options.npmRegistry.substring(0, options.npmRegistry.length - 1);
         }
     }
-    return true;
+    return enforceCharString("npmRegistry", options.npmRegistry, /a-z0-9\:\/\./i, 64, logger);
 }
 
 
@@ -857,13 +867,22 @@ function enforceSingleTask(options: IOptions, task: string, logger: any)
 }
 
 
-function enforceCharString(option: string, value: string, rgx: RegExp, logger: any)
+function enforceCharString(option: string, value: string, rgx: RegExp, maxLen: number, logger: any)
 {
-    if (value && !rgx.test(value))
+    if (value)
     {
-        logger.error("Invalid options specified:");
-        logger.error(`   The value for '${option}' is not allowed, must be one of 'a-z', '0-9', '-' or '_'`);
-        return false;
+        if (!rgx.test(value))
+        {
+            logger.error("Invalid options specified:");
+            logger.error(`   The value for '${option}' is not allowed, must be one of 'a-z', '0-9', '-' or '_'`);
+            return false;
+        }
+        else if (value.length > maxLen)
+        {
+            logger.error("Invalid options specified:");
+            logger.error(`   The value for '${option}' must be less than or equal to ${maxLen} characters`);
+            return false;
+        }
     }
     return true;
 }
