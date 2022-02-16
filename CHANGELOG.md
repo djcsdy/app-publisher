@@ -1,5 +1,11 @@
 # APP-PUBLISHER CHANGE LOG
 
+## Version 3.8.4 (February 15th, 2022)
+
+### Bug Fixes
+
+- options validation is failing if a branch property is specified in the .publishrc options file.
+
 ## Version 3.8.3 (February 15th, 2022)
 
 ### Bug Fixes
