@@ -1,5 +1,15 @@
 # APP-PUBLISHER CHANGE LOG
 
+## Version 3.8.3 (February 15th, 2022)
+
+### Bug Fixes
+
+- **General:** node16 build fails to start
+
+### Refactoring
+
+- **Security:** add options validation for URL values and repository related values.
+
 ## Version 3.8.2 (February 14th, 2022)
 
 ### Bug Fixes
