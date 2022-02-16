@@ -26,7 +26,7 @@ export function btoa(str: string): string
 
 export function extractErrors(err)
 {
-    return err && isFunction(err[Symbol.iterator]) ? [...err] : [err];
+    return err && isFunction(err[Symbol.iterator]) ? [ ...err ] : [ err ];
 }
 
 
@@ -116,7 +116,7 @@ export async function editFile(context: IContext, editFile: string, isChangelog 
                 if (ps1Script) {
                     await execa.sync("powershell.exe",
                         [ ps1Script, "-f", editFile, "-e", options.textEditor, "-s", seekToEnd, "-a", options.taskMode ],
-                        { stdio: ["pipe", "pipe", "pipe"], env: process.env}
+                        { stdio: [ "pipe", "pipe", "pipe" ], env: process.env}
                     );
                 }
                 else {

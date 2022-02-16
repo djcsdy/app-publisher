@@ -131,7 +131,7 @@ async function validateOptions({cwd, env, logger, options}: IContext, suppressAr
     if (options.branch.startsWith("/")) {
         options.branch = options.branch.substring(1);
     }
-    if (!enforceCharString("branch", options.branch, /a-z0-9\-_\//i, 32, logger)) {
+    if (!enforceCharString("branch", options.branch, /[a-z0-9\-_\/]+/i, 32, logger)) {
         return false;
     }
 
@@ -143,7 +143,7 @@ async function validateOptions({cwd, env, logger, options}: IContext, suppressAr
     //
     // Check valid repo url
     //
-    if (!enforceCharString("repo", options.repo, /a-z0-9\:\/\.\-_/i, 64, logger)) {
+    if (!enforceCharString("repo", options.repo, /[a-z0-9\:\/\.\-_]+/i, 64, logger)) {
         return false;
     }
 
@@ -190,7 +190,7 @@ async function validateOptions({cwd, env, logger, options}: IContext, suppressAr
             logger.error("Set the environment variable GITHUB_TOKEN using the token value created on the GitHub website");
             return false;
         }
-        if (!enforceCharString("githubUser", options.githubUser, /a-z0-9\-_\./i, 64, logger)) {
+        if (!enforceCharString("githubUser", options.githubUser, /[a-z0-9\-_\.]+/i, 64, logger)) {
             return false;
         }
     }
@@ -207,7 +207,7 @@ async function validateOptions({cwd, env, logger, options}: IContext, suppressAr
             logger.error("You must specify mantisbtUrl for a MantisBT release type");
             return false;
         }
-        if (!enforceCharString("mantisbtUrl", options.mantisbtUrl, /a-z0-9\:\/\.\-_/i, 64, logger)) {
+        if (!enforceCharString("mantisbtUrl", options.mantisbtUrl, /[a-z0-9\:\/\.\-_]+/i, 64, logger)) {
             return false;
         }
         if (!options.mantisbtApiToken) {
@@ -217,7 +217,7 @@ async function validateOptions({cwd, env, logger, options}: IContext, suppressAr
             logger.error("To create a token, see the \"Tokens\" section of your Mantis User Preferences page");
             return false;
         }
-        if (!enforceCharString("mantisbtApiToken", options.mantisbtApiToken, /a-z0-9\=\-_/i, 32, logger)) {
+        if (!enforceCharString("mantisbtApiToken", options.mantisbtApiToken, /[a-z0-9\=\-_]+/i, 32, logger)) {
             return false;
         }
     }
@@ -308,7 +308,7 @@ async function validateOptions({cwd, env, logger, options}: IContext, suppressAr
     if (options.vcWebPath && options.vcWebPath.endsWith("/")) {
         options.vcWebPath = options.vcWebPath.substring(0, options.vcWebPath.length - 1);
     }
-    if (!enforceCharString("vcWebPath", options.vcWebPath, /a-z0-9\:\/\.\-_/i, 64, logger)) {
+    if (!enforceCharString("vcWebPath", options.vcWebPath, /[a-z0-9\:\/\.\-_]+/i, 64, logger)) {
         return false;
     }
 
@@ -651,7 +651,7 @@ function checkNpm(options: IOptions, logger: any)
             options.npmRegistry = options.npmRegistry.substring(0, options.npmRegistry.length - 1);
         }
     }
-    return enforceCharString("npmRegistry", options.npmRegistry, /a-z0-9\:\/\.\-_/i, 64, logger);
+    return enforceCharString("npmRegistry", options.npmRegistry, /[a-z0-9\:\/\.\-_]+/i, 64, logger);
 }
 
 
@@ -938,6 +938,7 @@ async function setEditor(options: IOptions, logger: any, env: any)
         options.textEditor += ".exe";
     }
 }
+
 
 function setSvn(options: IOptions)
 {
