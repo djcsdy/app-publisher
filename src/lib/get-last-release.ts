@@ -5,6 +5,7 @@ import { getTags, isRefInHistory, getTagHead } from "./repo";
 import { IContext, IRelease, IVersionInfo } from "../interface";
 import { EOL } from "os";
 import { isNumeric } from "./utils/utils";
+import { version } from "webpack";
 
 export = getLastRelease;
 
@@ -30,17 +31,21 @@ export = getLastRelease;
  */
 async function getLastRelease(context: IContext, lastVersionInfo: IVersionInfo): Promise<IRelease>
 {
-    let lastProdVersion: string | undefined;
+    let lastProdVersion: string | undefined,
+        isProd: boolean;
     const { options, logger } = context;
 
-    const isValid = (v: string) =>
+    const isValid = (tag: any) =>
     {
-        if (!v) { return false; }
+        if (!tag || !tag.version) { return false; }
+
+        const v = tag.version;
+        tag.pre = false;
 
         if (lastVersionInfo.system !== "incremental")
         {
-            const cv = semver.clean(v),
-                  isProd = !semver.prerelease(cv);
+            const cv = semver.clean(v);
+            isProd = !semver.prerelease(cv);
             if (isProd)
             {
                 if (!lastProdVersion)
@@ -53,9 +58,10 @@ async function getLastRelease(context: IContext, lastVersionInfo: IVersionInfo):
                     }
                 }
             }
+            tag.pre = !isProd;
             return semver.valid(cv) && (options.versionPreReleaseId || isProd);
         }
-        if (isNumeric(v))
+        if (isNumeric(v)) // incremental versioning
         {
             if (!lastProdVersion)
             {
@@ -91,14 +97,14 @@ async function getLastRelease(context: IContext, lastVersionInfo: IVersionInfo):
           tagsRaw = await getTags(context),
           tags = tagsRaw
                  .map((tag: any) => ({ tag, version: (tag.match(tagRegexp) || new Array(2))[1] }))
-                 .filter((tag: any) => isValid(tag.version))
+                 .filter((tag: any) => isValid(tag))
                  .sort(doSort);
 
     if (options.verbose) {
         context.stdout.write("Tags:" + EOL + JSON.stringify(tags, undefined, 2) + EOL);
     }
 
-    const tag: any = await pLocate(tags, (tag: any) => isRefInHistory(context, tag.tag, true), { preserveOrder: true });
+    const tag: any = await pLocate(tags, async (tag: any) => isRefInHistory(context, tag.tag, true, tag.pre), { preserveOrder: true });
 
     if (tag) {
         logger.info(`Found ${options.repoType} tag ${tag.tag} associated with version ${tag.version}`);

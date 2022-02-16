@@ -480,11 +480,6 @@ export async function getTags(context: IContext)
                               match = regex.exec(pathObj._);
                         if (pathObj.$ && pathObj.$.action === "A" && pathObj.$.kind === "dir" && match)
                         {
-                            // logger.info("Found version tag:");
-                            // logger.info(`   Tag     : ${match[1]}`);
-                            // logger.info(`   Rev     : ${logEntry.$.revision}`);
-                            // logger.info(`   Path    : ${pathObj._}`);
-                            // logger.info(`   Date    : ${logEntry.date[0]}`);
                             tags.push(match[1]);
                         }
                     }
@@ -526,11 +521,7 @@ export async function isBranchUpToDate(context: IContext, branch: any)
             return await isRefInHistory(context, remoteHead.match(/^(\w+)?/)[1]);
         }
         else if (options.repoType === "svn") {
-            //
-            // TODO
-            //
             return true;
-            // return await isRefInHistory(context, remoteHead.match(/^(\w+)?/)[1]);
         }
         else {
             throwVcsError(`Invalid repository type: ${options.repoType}`, logger);
@@ -623,7 +614,7 @@ export async function isIgnored(context: IContext, objectPath: string)
  *
  * @returns `true` if the reference is in the history of the current branch, falsy otherwise.
  */
-export async function isRefInHistory(context: IContext, ref: any, isTags = false)
+export async function isRefInHistory(context: IContext, ref: any, isTags = false, isPreBase = false)
 {
     const { options: {repo, branch, repoType}, logger } = context;
     try
@@ -636,12 +627,12 @@ export async function isRefInHistory(context: IContext, ref: any, isTags = false
             await execSvn(context, [ "ls", tagLoc + "/" + ref ]);
         }
         else {
-            throw new Error("Invalid repository type");
+            throwVcsError(`Invalid repository type: ${repoType}`, logger);
         }
         return true;
     }
     catch (error) {
-        if (!context.options.taskModeStdOut) {
+        if (!context.options.taskModeStdOut && isPreBase !== true) {
             logger.error("Exception in isRefInHistory: " + error.toString());
         }
     }
