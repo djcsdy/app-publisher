@@ -131,7 +131,7 @@ async function validateOptions({cwd, env, logger, options}: IContext, suppressAr
     if (options.branch.startsWith("/")) {
         options.branch = options.branch.substring(1);
     }
-    if (!enforceCharString("branch", options.branch, /[a-z0-9\-_\/]+/i, 32, logger)) {
+    if (!enforceCharString("branch", options.branch, /[a-z0-9\-_\/]+/i, 64, logger)) {
         return false;
     }
 
@@ -143,7 +143,7 @@ async function validateOptions({cwd, env, logger, options}: IContext, suppressAr
     //
     // Check valid repo url
     //
-    if (!enforceCharString("repo", options.repo, /[a-z0-9\:\/\.\-_]+/i, 64, logger)) {
+    if (!enforceCharString("repo", options.repo, /[a-z0-9\:\/\.\-_]+/i, 128, logger)) {
         return false;
     }
 
@@ -207,7 +207,7 @@ async function validateOptions({cwd, env, logger, options}: IContext, suppressAr
             logger.error("You must specify mantisbtUrl for a MantisBT release type");
             return false;
         }
-        if (!enforceCharString("mantisbtUrl", options.mantisbtUrl, /[a-z0-9\:\/\.\-_]+/i, 64, logger)) {
+        if (!enforceCharString("mantisbtUrl", options.mantisbtUrl, /[a-z0-9\:\/\.\-_]+/i, 128, logger)) {
             return false;
         }
         if (!options.mantisbtApiToken) {
@@ -308,7 +308,7 @@ async function validateOptions({cwd, env, logger, options}: IContext, suppressAr
     if (options.vcWebPath && options.vcWebPath.endsWith("/")) {
         options.vcWebPath = options.vcWebPath.substring(0, options.vcWebPath.length - 1);
     }
-    if (!enforceCharString("vcWebPath", options.vcWebPath, /[a-z0-9\:\/\.\-_]+/i, 64, logger)) {
+    if (!enforceCharString("vcWebPath", options.vcWebPath, /[a-z0-9\:\/\.\-_]+/i, 128, logger)) {
         return false;
     }
 
