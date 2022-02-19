@@ -204,7 +204,7 @@ pipeline {
         //
         // If the [skip ci] tag is found in the last commit, then exit
         //
-        nodejs("Node 12") {
+        nodejs("Node 14") {
           script {
             env.NEXTVERSION  = ""
             env.CURRENTVERSION  = ""
@@ -286,7 +286,7 @@ pipeline {
         expression { env.SKIP_CI == "false" }
       }
       steps {
-        nodejs("Node 12") {
+        nodejs("Node 14") {
           echo "Build project"
           bat "npm run clean-build"
           bat "npm run webpack-build"
@@ -306,7 +306,7 @@ pipeline {
       // }
       steps {
         echo "Run tests"
-        // nodejs("Node 12") {
+        // nodejs("Node 14") {
         //   bat "npm run clean-build"
         //   bat "npm run build"
         //   bat "npm run test"
@@ -335,7 +335,7 @@ pipeline {
           //
           // Populate and open history.txt in Notepad, then will wait for user intervention
           //
-          nodejs("Node 12") {
+          nodejs("Node 14") {
             echo "Write history file"
             bat "app-publisher --config-name pja --task-changelog --version-force-next ${env.NEXTVERSION}" 
             echo "Retrieve new history file section"
@@ -406,7 +406,7 @@ pipeline {
             env.NEXTVERSION = inputVersion
             if (inputAppend == "Yes") {
               bat "svn revert doc\\history.txt"
-              nodejs("Node 12") {
+              nodejs("Node 14") {
                 historyHeader = bat(returnStdout: true,
                                       script: """
                                       @echo off
@@ -417,7 +417,7 @@ pipeline {
               bat "echo Version ${historyEntry} >> .\\doc\\history.txt"
             }
             echo "Retrieve edited history file section"
-            nodejs("Node 12") {
+            nodejs("Node 14") {
               historyEntry = bat(returnStdout: true,
                                   script: """
                                   @echo off
@@ -454,7 +454,7 @@ pipeline {
           //
           // Production or nightly release, or not
           //
-          nodejs("Node 12") {
+          nodejs("Node 14") {
             echo "Publish production release"
             //
             // NPM and MantisBT Release
@@ -483,7 +483,7 @@ pipeline {
       }
       steps {
         echo "Commit modified files and tag version ${env.NEXTVERSION} in SVN."
-        nodejs("Node 12") {
+        nodejs("Node 14") {
           bat "app-publisher --config-name pja --task-commit --task-tag --version-force-next ${env.NEXTVERSION}"
         }
       }
