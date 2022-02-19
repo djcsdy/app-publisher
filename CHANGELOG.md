@@ -1,5 +1,13 @@
 # APP-PUBLISHER CHANGE LOG
 
+## Version 3.8.5 (February 19th, 2022)
+
+### Bug Fixes
+
+- **General:** when checking ref history, an error is output to the log if pre-release tags exist but no corresponding base tag.  This should be ignored in these cases.
+
+This could be the case when pre-releases pacthes are being made but then is bumped to a minor version update, so the base version tag ends up being only the one with the minorversion increament, the path incremented base version will not exist.
+
 ## Version 3.8.4 (February 15th, 2022)
 
 ### Bug Fixes
