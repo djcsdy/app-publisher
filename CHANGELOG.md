@@ -1,5 +1,16 @@
 # APP-PUBLISHER CHANGE LOG
 
+## Version 3.8.6 (February 19th, 2022)
+
+### Bug Fixes
+
+- **General:** if ran outside of a project directory containing a .publishrc configuration file, an unhandled exception occurrs.
+- **General:** publish run fails to start when built on Node14, exits immediately with multiple 'missing module' errors - downgrade marked-terminal package to v4.2.0.
+
+### Build System
+
+- **Webpack:** change output library target to 'commonjs' from 'commonjs2'.
+
 ## Version 3.8.5 (February 19th, 2022)
 
 ### Bug Fixes
