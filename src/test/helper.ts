@@ -89,9 +89,8 @@ export async function getApOptions(cmdOpts?: string[])
     else {
         try {
             const argOptions = getOptions(false);
-            const { options, plugins } = await getConfig(context, argOptions);
+            const options = await getConfig(context, argOptions);
             context.options = options;
-            context.plugins = plugins;
         }
         catch (e) {
             throw e;

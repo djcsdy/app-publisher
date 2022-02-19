@@ -343,11 +343,6 @@ async function runRelease(context: IContext)
     }
 
     //
-    // TODO - Plugins maybe?
-    //
-    // await plugins.verifyConditions(context);
-
-    //
     // Fetch tags (git only)
     //
     await fetch(context);
@@ -559,15 +554,6 @@ async function runRelease(context: IContext)
     }
 
     //
-    // TODO - Plugins maybe?
-    //
-    // await plugins.verifyRelease(context);
-    //
-    // TODO - Plugins maybe?
-    //
-    // await plugins.prepare(context);
-
-    //
     // Edit/touch changelog / history file
     // Can be a history style TXT or a changeloge type MD
     //
@@ -603,9 +589,6 @@ async function runRelease(context: IContext)
 
     //
     // Create release notes / changelog
-    // TODO - Plugins maybe?
-    //
-    // context.changelog.notes = await plugins.generateNotes(context);
     //
     // TODO - can probably do some more options checking in populateChangelog so that they
     // aren't built under certain task mode conditions
@@ -875,12 +858,6 @@ async function runRelease(context: IContext)
     // The call to revertChanges() only reverts if dry run, and configured to do so
     //
     await revertChanges(context);
-
-    //
-    // TODO - Plugins maybe?
-    //
-    // context.releases = await plugins.publish(context);
-    // await plugins.success(context);
 
     //
     // Display changelog notes if this is a dry run
@@ -1272,17 +1249,6 @@ async function callFail(context: IContext, err: Error)
     if (err.stack) {
         logger.error(err.stack.replace(/\n/g, "\n                                 "));
     }
-    // const errors = util.extractErrors(err).filter(err => err.appPublisher);
-    // logErrors(context, error);
-    // if (errors.length > 0)
-    // {
-    //     try {
-    //         await context.plugins.fail({ ...context, errors });
-    //     }
-    //     catch (error) {
-    //         logErrors(context, error);
-    //     }
-    // }
 }
 
 

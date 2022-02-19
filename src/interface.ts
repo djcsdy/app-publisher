@@ -83,7 +83,6 @@ export interface IContext
     nextRelease: INextRelease;
     options: IOptions;
     packageJsonModified: boolean;
-    plugins: IPlugin[];
     stdout: any;
     stderr: any;
 }
@@ -499,7 +498,7 @@ export interface IArgs
     /**
      * The MantisBT token or list of tokens to make a MantisBT release with.  Represents the
      * user that the release is made under on the 'Releases' page - Releases Plugin
-     * (https://github.com/mantisbt-plugins/Releases) required.
+     * (https://github.com/mantisbt-s/Releases) required.
      */
     mantisbtApiToken: string;
     /**
