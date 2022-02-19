@@ -53,7 +53,7 @@
         "@types/lodash": "^4.14.136",
         "@types/marked-terminal": "^3.1.1",
         "@types/mocha": "^5.2.7",
-        "@types/node": "^12.6.8",
+        "@types/node": "^14.17.3",
         "@types/semver": "^6.2.2",
         "@types/signale": "^1.2.1",
         "@types/terser-webpack-plugin": "^5.0.4",
