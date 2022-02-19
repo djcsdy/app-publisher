@@ -34,7 +34,7 @@
         "json5": "^2.2.0",
         "lodash": "^4.17.21",
         "marked": "^4.0.12",
-        "marked-terminal": "^5.1.1",
+        "marked-terminal": "^4.2.0",
         "nodemailer": "^6.6.1",
         "p-locate": "^4.1.0",
         "p-reduce": "^2.1.0",

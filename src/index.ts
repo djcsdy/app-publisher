@@ -6,8 +6,6 @@ import semver from "semver";
 import gradient from "gradient-string";
 import chalk from "chalk";
 import hookStd from "hook-std";
-import marked = require("marked");
-import TerminalRenderer = require("marked-terminal");
 import hideSensitive = require("./lib/hide-sensitive");
 import getReleaseLevel = require("./lib/commit-analyzer");
 import verify = require("./lib/verify");
@@ -36,7 +34,8 @@ import { ChangelogTxt } from "./lib/changelog/changelog-txt";
 import generateHelp = require("./help/generate-help");
 const displayHelp = require("@spmeesseman/arg-parser").displayHelp;
 
-
+const marked = require("marked");
+const TerminalRenderer = require("marked-terminal");
 marked.setOptions({ renderer: new TerminalRenderer() });
 
 
