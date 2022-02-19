@@ -13,12 +13,9 @@ const nodeExternals = require("webpack-node-externals");
  * @type {import('webpack').Configuration}
  */
 const config =
-{   //
-	// vscode extensions run in a Node.js-context -> https://webpack.js.org/configuration/node/
-	//
+{   
 	target: 'node', 
-	//
-	// the entry point of this extension, -> https://webpack.js.org/configuration/entry-context/
+	// externalsPresets: { node: true }, // in order to ignore built-in modules like path, fs, etc.
 	//
 	// entry: './src/bin/app-publisher.ts',
 	entry: {
@@ -33,14 +30,17 @@ const config =
 		path: path.resolve(__dirname, 'build'),
 		// filename: 'app-publisher.js',
 		filename: '[name].js',
-		libraryTarget: 'commonjs2',
+		libraryTarget: 'commonjs',
 		devtoolModuleFilenameTemplate: '../[resource-path]'
 	},
 	devtool: 'source-map',
-	// externalsPresets: { node: true }, // in order to ignore built-in modules like path, fs, etc.
 	externals: [
+		// @ts-ignore
 		nodeExternals()
 	],
+	// externals: [nodeExternals({
+    //     allowlist: ['jquery', 'webpack/hot/dev-server', /^lodash/]
+    // })],
 	resolve:
 	{   //
 		// support reading TypeScript and JavaScript files, -> https://github.com/TypeStrong/ts-loader
