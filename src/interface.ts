@@ -498,7 +498,7 @@ export interface IArgs
     /**
      * The MantisBT token or list of tokens to make a MantisBT release with.  Represents the
      * user that the release is made under on the 'Releases' page - Releases Plugin
-     * (https://github.com/mantisbt-s/Releases) required.
+     * (https://github.com/mantisbt-plugins/Releases) required.
      */
     mantisbtApiToken: string;
     /**
@@ -666,6 +666,11 @@ export interface IArgs
      * stage).
      */
     skipTag: string;
+    /**
+     * A tag name or list of tag names that will be ignored when evaluating remote tags for
+     * versioning.  CAn be used when a tag has been accidentally created, or deleted.
+     */
+    skipTags: string | string[];
     /**
      * Skip all version edits in version files.
      */

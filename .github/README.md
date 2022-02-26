@@ -1199,6 +1199,15 @@ Skip committing changes to version control when the final release stage is finis
 
 Skip tagging version in version control when the final release stage is finished (commit stage).
 
+### skipTags
+
+|**Value Type**      |*__string \| string[]__*|
+| :----------------- | :--------- |
+|**Value Default**   ||
+|**Command Line Arg**|*__n/a__*|
+
+A tag name or list of tag names that will be ignored when evaluating remote tags for versioning.  CAn be used when a tag has been accidentally created, or deleted.
+
 ### skipVersionEdits
 
 |**Value Type**      |*__flag__*|

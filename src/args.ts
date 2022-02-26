@@ -970,6 +970,19 @@ export const publishRcOpts =
         }
     ],
 
+    skipTags: [
+        true,
+        "string | string[]",
+        "",
+        [],
+        {
+            help: "A tag name or list of tag names that will be ignored when evaluating\n" +
+                  "remote tags for versioning.  CAn be used when a tag has been\n" +
+                  "accidentally created, or deleted.",
+            helpPrivate: false
+        }
+    ],
+
     skipVersionEdits: [
         true,
         "flag",

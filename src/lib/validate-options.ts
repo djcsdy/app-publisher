@@ -842,6 +842,10 @@ function convertStringsToArrays(options: IOptions)
     {
         options.commitMsgMap = [ options.commitMsgMap ]; // convert to array
     }
+    if (options.skipTags && !(options.skipTags instanceof Array))
+    {
+        options.skipTags = [ options.skipTags ]; // convert to array
+    }
 }
 
 

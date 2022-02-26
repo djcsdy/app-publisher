@@ -476,11 +476,14 @@ export async function getTags(context: IContext)
                     {
                         const pathObj = p.path[0],
                               regex = !options.versionPreReleaseId ? new RegExp(".*/tags/(v[0-9\.]+$)") :
-                                            new RegExp(`.*/tags/(v[0-9\.]+(?:\-${options.versionPreReleaseId}\.[0-9]+)*)`),
+                                            // new RegExp(`.*/tags/(v[0-9\.]+(?:\-${options.versionPreReleaseId}\.[0-9]+)*)`),
+                                            new RegExp(".*/tags/(v[0-9\.]+(?:\-[a-z]+\.[0-9]+)*)"),
                               match = regex.exec(pathObj._);
                         if (pathObj.$ && pathObj.$.action === "A" && pathObj.$.kind === "dir" && match)
                         {
-                            tags.push(match[1]);
+                            if (!options.skipTags.includes(match[1])) {
+                                tags.push(match[1]);
+                            }
                         }
                     }
                 }

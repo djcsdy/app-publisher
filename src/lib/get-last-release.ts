@@ -61,7 +61,7 @@ async function getLastRelease(context: IContext, lastVersionInfo: IVersionInfo):
             tag.pre = !isProd;
             return semver.valid(cv) && (options.versionPreReleaseId || isProd);
         }
-        if (isNumeric(v)) // incremental versioning
+        else if (isNumeric(v)) // incremental versioning
         {
             if (!lastProdVersion)
             {
