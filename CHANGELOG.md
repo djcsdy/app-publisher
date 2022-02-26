@@ -1,8 +1,14 @@
 # APP-PUBLISHER CHANGE LOG
 
+## Version 3.9.0 (February 26th, 2022)
+
+### Feature
+
+- add new .publishrc option to specify tag names that should not be considered when determining the next version, even if they match the version tag pattern.  Can be used when tags were accidentally created, ordeleted (svn only).
+
 ## Version 3.8.6 (February 19th, 2022)
 
-### Bug Fixes
+### Bug Fix
 
 - **General:** if ran outside of a project directory containing a .publishrc configuration file, an unhandled exception occurrs.
 - **General:** publish run fails to start when built on Node14, exits immediately with multiple 'missing module' errors - downgrade marked-terminal package to v4.2.0.
@@ -13,7 +19,7 @@
 
 ## Version 3.8.5 (February 19th, 2022)
 
-### Bug Fixes
+### Bug Fix
 
 - **General:** when checking ref history, an error is output to the log if pre-release tags exist but no corresponding base tag.  This should be ignored in these cases.
 
@@ -21,13 +27,13 @@ This could be the case when pre-releases pacthes are being made but then is bump
 
 ## Version 3.8.4 (February 15th, 2022)
 
-### Bug Fixes
+### Bug Fix
 
 - options validation is failing if a branch property is specified in the .publishrc options file.
 
 ## Version 3.8.3 (February 15th, 2022)
 
-### Bug Fixes
+### Bug Fix
 
 - **General:** node16 build fails to start
 
