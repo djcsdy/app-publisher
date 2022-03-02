@@ -461,6 +461,26 @@ export function properCase(name: string)
 }
 
 
+/**
+ * @since 3.9.1
+ * @param version Version # string to trim
+ */
+ export function shortVersion(version: string)
+{
+    if (!version) {
+        return "";
+    }
+    if (version.lastIndexOf(".") === -1) {
+        return version;
+    }
+    const splitVersion = version.split(".");
+    if (splitVersion.length <= 3) {
+        return version;
+    }
+    return splitVersion[0] + "." + splitVersion[1] + "." + splitVersion[2];
+}
+
+
 export function timeout(ms: number)
 {
     // eslint-disable-next-line @typescript-eslint/tslint/config

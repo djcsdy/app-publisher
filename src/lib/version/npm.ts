@@ -5,7 +5,7 @@ import * as path from "path";
 import { IContext, IVersionInfo } from "../../interface";
 import { addEdit } from "../repo";
 import { pathExists, readFile, writeFile } from "../utils/fs";
-import { editFile } from "../utils/utils";
+import { editFile, shortVersion } from "../utils/utils";
 
 
 export async function getNpmFile({logger, options, cwd})
@@ -106,6 +106,23 @@ export async function setNpmVersion(context: IContext, recordEditOnly: boolean)
         }
         else {
             logger.warn(`Version ${nextRelease.version} already set in ${file}`);
+        }
+
+        if (packageJson.sencha && packageJson.sencha.version)
+        {
+            const extjsVersion = shortVersion(packageJson.sencha.version);
+            if (nextRelease.version !== extjsVersion)
+            {
+                logger.log(`Setting version ${nextRelease.version} of sencha object in ${file}`);
+                packageJson.sencha.version = extjsVersion + ".0";
+                if (packageJson.sencha.compatVersion) {
+                    packageJson.sencha.compatVersion = packageJson.sencha.version;
+                }
+                modified = true;
+            }
+            else {
+                logger.warn(`Version ${nextRelease.version} of sencha object already set in ${file}`);
+            }
         }
 
         //
