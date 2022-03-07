@@ -11,3 +11,4 @@ install/dist/app-publisher-pja.tgz
 .nyc_output
 .coverage
 target
+Jenkinsfile
