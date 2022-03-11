@@ -114,7 +114,7 @@ export async function setNpmVersion(context: IContext, recordEditOnly: boolean)
             if (nextRelease.version !== extjsVersion)
             {
                 logger.log(`Setting version ${nextRelease.version} of sencha object in ${file}`);
-                packageJson.sencha.version = extjsVersion + ".0";
+                packageJson.sencha.version = nextRelease.version + ".0";
                 if (packageJson.sencha.compatVersion) {
                     packageJson.sencha.compatVersion = packageJson.sencha.version;
                 }
