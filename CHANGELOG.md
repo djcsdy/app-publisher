@@ -1,5 +1,11 @@
 # APP-PUBLISHER CHANGE LOG
 
+## Version 3.9.2 (March 11th, 2022)
+
+### Bug Fixes
+
+- **General:** regression - the new .publishrc option 'skipTags' that was added in v3.9 causes the release to fail when there is an 'added' resources in any of the commits.
+
 ## Version 3.9.1 (March 3rd, 2022)
 
 ### Bug Fixes
