@@ -1,5 +1,11 @@
 # APP-PUBLISHER CHANGE LOG
 
+## Version 3.9.3 (March 11th, 2022)
+
+### Bug Fixes
+
+- **Versioning:** for ExtJs projects, the sencha.version property in package.json is being updated now as of v3.9.1, but the minor release number is incorrect.
+
 ## Version 3.9.2 (March 11th, 2022)
 
 ### Bug Fixes
