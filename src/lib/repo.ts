@@ -481,7 +481,7 @@ export async function getTags(context: IContext)
                               match = regex.exec(pathObj._);
                         if (pathObj.$ && pathObj.$.action === "A" && pathObj.$.kind === "dir" && match)
                         {
-                            if (!options.skipTags.includes(match[1])) {
+                            if (!options.skipTags || !options.skipTags.includes(match[1])) {
                                 tags.push(match[1]);
                             }
                         }
