@@ -569,9 +569,11 @@ function checkScriptsSyntax(options: IOptions, logger: any)
                 // Replace the $(VERSION) tag with some different text since our script sanitization
                 // will flag the parenthesis
                 //
-                scripts[s] = scripts[s].replace(/\$\(VERSION\)/g, "---VERSION---")
-                                       .replace(/\$\(CURRENTVERSION\)/g, "---CURRENTVERSION---")
-                                       .replace(/\$\(NEXTVERSION\)/g, "---NEXTVERSION---");
+                scripts[s] = scripts[s]
+                            .replace(/\$\(VERSION_SEMVER\)/g, "---VERSION_SEMVER---")
+                            .replace(/\$\(VERSION\)/g, "---VERSION---")
+                            .replace(/\$\(CURRENTVERSION\)/g, "---CURRENTVERSION---")
+                            .replace(/\$\(NEXTVERSION\)/g, "---NEXTVERSION---");
                 //
                 // Check windows style paths
                 //

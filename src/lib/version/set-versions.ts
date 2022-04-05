@@ -212,10 +212,21 @@ async function setVersionFiles(context: IContext, recordEditOnly: boolean): Prom
                     matched = true;
                 }
                 else {
-                    const regexWrite = versionFileDef.regexWrite.replace(new RegExp("\\$\\(VERSION\\)", "g"), nextRelease.version),
+                    let semVersion = nextRelease.version;
+                    if (lastRelease.versionInfo.system === "incremental" || !nextRelease.version.includes("."))
+                    {
+                        semVersion = "";
+                        for (const c of nextRelease.version) {
+                            semVersion = `${semVersion}${c}.`;
+                        }
+                        semVersion = semVersion.substring(0, semVersion.length - 1);
+                    }
+
+                    const regexWrite = versionFileDef.regexWrite.replace(new RegExp("\\$\\(VERSION\\)", "g"), nextRelease.version)
+                                                                .replace(new RegExp("\\$\\(VERSION_SEMVER\\)", "g"), semVersion),
                           regexPattern = versionFileDef.regex.replace(new RegExp("\\$\\(VERSION\\)", "g"), `(${versionFileDef.regexVersion})`)
-                                                              .replace(new RegExp(`\\(\\(${versionFileDef.regexVersion.replace(/\./g, "\\.")}\\)\\)`, "g"),
-                                                                       `(${versionFileDef.regexVersion})`),
+                                                             .replace(new RegExp(`\\(\\(${versionFileDef.regexVersion.replace(/\./g, "\\.")}\\)\\)`, "g"),
+                                                                      `(${versionFileDef.regexVersion})`),
                           content = await readFile(tvFile),
                           regex = new RegExp(regexPattern, "gm");
                     if (regex.test(content))
