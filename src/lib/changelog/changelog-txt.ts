@@ -73,16 +73,19 @@ export class ChangelogTxt extends Changelog
                 //
                 //     feat: add internet explorer support
                 //
-                const fmtSubject  = this.getFormattedSubject(context, commit.subject);
-                msg = msg.replace(`${commit.subject}: `, fmtSubject + EOL + EOL);
-                //
-                // Replace commit tags with full text (scoped)
-                //
-                // A tag can be scoped, for example:
-                //
-                //     fix(footpedal): pressing multiple buttons at same time breaks audio player
-                //
-                msg = msg.replace(`${commit.subject}(`, fmtSubject + "(");
+                if (commit.subject)
+                {
+                    const fmtSubject  = this.getFormattedSubject(context, commit.subject);
+                    msg = msg.replace(`${commit.subject}: `, fmtSubject + EOL + EOL);
+                    //
+                    // Replace commit tags with full text (scoped)
+                    //
+                    // A tag can be scoped, for example:
+                    //
+                    //     fix(footpedal): pressing multiple buttons at same time breaks audio player
+                    //
+                    msg = msg.replace(`${commit.subject}(`, fmtSubject + "(");
+                }
 
                 //
                 // Take any parenthesized scopes, remove the parenthesis and line break the message
