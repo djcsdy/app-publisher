@@ -6,10 +6,7 @@ import { isFunction } from "lodash";
 import { pathExists } from "./fs";
 import { addEdit } from "../repo";
 import { IContext } from "../../interface";
-import { EOL } from "os";
-import { options } from "marked";
 const execa = require("execa");
-// const find = require("find-process");
 
 
 export function atob(str: string): string

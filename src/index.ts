@@ -34,10 +34,6 @@ import { ChangelogTxt } from "./lib/changelog/changelog-txt";
 import generateHelp = require("./help/generate-help");
 const displayHelp = require("@spmeesseman/arg-parser").displayHelp;
 
-const marked = require("marked");
-const TerminalRenderer = require("marked-terminal");
-marked.setOptions({ renderer: new TerminalRenderer() });
-
 
 async function runStart(context: IContext)
 {
@@ -867,12 +863,7 @@ async function runRelease(context: IContext)
         logger.log(`Release notes for version ${nextRelease.version}:`);
         if (context.changelog.notes)
         {
-            if (options.changelogFile) {
-                context.stdout.write(marked(context.changelog.notes));
-            }
-            else {
-                context.stdout.write(context.changelog.notes.replace(/\r\n/g, "\n"));
-            }
+            context.stdout.write(context.changelog.notes.replace(/\r\n/g, "\n"));
         }
     }
 
@@ -1209,7 +1200,7 @@ function logErrors({ logger, stderr }, err)
             logger.error(`${error.code} ${error.message}`);
             if (error.details)
             {
-                stderr.write(marked(error.details));
+                stderr.write(error.details);
             }
         }
         else {
