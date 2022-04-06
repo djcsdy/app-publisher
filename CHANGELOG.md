@@ -1,5 +1,15 @@
 # APP-PUBLISHER CHANGE LOG
 
+## Version 3.10.0 (April 5th, 2022)
+
+### Bug Fixes
+
+- **Changelog:** commits without a subject cause publish run to fail since v3.9.0.
+
+### Features
+
+- add support for incremental/semver style version swapping in the  version file update stage, for use with WXS WIndows Installer version files.  Accomplished using the $(VERSION_SEMVER) variable in the 'versionFiles' configuration parameter array.
+
 ## Version 3.9.3 (March 11th, 2022)
 
 ### Bug Fixes
