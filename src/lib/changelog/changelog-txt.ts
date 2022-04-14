@@ -75,7 +75,7 @@ export class ChangelogTxt extends Changelog
                 //
                 if (commit.subject)
                 {
-                    const fmtSubject  = this.getFormattedSubject(context, commit.subject);
+                    const fmtSubject  = this.getFormattedSubject(context, commit.subject, false);
                     msg = msg.replace(`${commit.subject}: `, fmtSubject + EOL + EOL);
                     //
                     // Replace commit tags with full text (scoped)

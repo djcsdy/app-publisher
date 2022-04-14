@@ -97,7 +97,7 @@ export class ChangelogMd extends Changelog
             // title.  Comments are alphabetized.
             //
             if (subject !== lastSubject) {
-                const tmpSection = this.getFormattedSubject(context, subject);
+                const tmpSection = this.getFormattedSubject(context, subject, true);
                 fmtCommitMsg = `${EOL}### ${tmpSection}${EOL}${EOL}${fmtCommitMsg}`;
             }
             lastSubject = subject;

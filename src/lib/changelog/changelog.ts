@@ -318,28 +318,28 @@ export abstract class Changelog implements IChangelog
     }
 
 
-    protected getFormattedSubject({options}: IContext, subject: string)
+    protected getFormattedSubject({options}: IContext, subject: string, plural: boolean)
     {
         let formattedSubject = subject.toLowerCase();
 
         switch (formattedSubject)
         {
             case "build"   : formattedSubject = "Build System"; break;
-            case "chore"   : formattedSubject = "Chores"; break;
+            case "chore"   : formattedSubject = !plural ? "Chore" : "Chores"; break;
             case "ci"      : formattedSubject = "Continuous Integration"; break;
             case "docs"    : formattedSubject = "Documentation"; break;
             case "doc"     : formattedSubject = "Documentation"; break;
-            case "feat"    : formattedSubject = "Features"; break;
-            case "featmaj" : formattedSubject = "Features"; break;
-            case "feature" : formattedSubject = "Features"; break;
-            case "featmin" : formattedSubject = "Features"; break;
-            case "fix"     : formattedSubject = "Bug Fixes"; break;
+            case "feat"    : formattedSubject = !plural ? "Feature" : "Features"; break;
+            case "featmaj" : formattedSubject = !plural ? "Feature" : "Features"; break;
+            case "feature" : formattedSubject = !plural ? "Feature" : "Features"; break;
+            case "featmin" : formattedSubject = !plural ? "Feature" : "Features"; break;
+            case "fix"     : formattedSubject = !plural ? "Bug Fix" : "Bug Fixes"; break;
             case "layout"  : formattedSubject = "Project Layout"; break;
-            case "majfeat" : formattedSubject = "Features"; break;
-            case "minfeat" : formattedSubject = "Features"; break;
-            case "perf"    : formattedSubject = "Performance Enhancements"; break;
-            case "perfmin" : formattedSubject = "Performance Enhancements"; break;
-            case "minperf" : formattedSubject = "Performance Enhancements"; break;
+            case "majfeat" : formattedSubject = !plural ? "Feature" : "Features"; break;
+            case "minfeat" : formattedSubject = !plural ? "Feature" : "Features"; break;
+            case "perf"    : formattedSubject = !plural ? "Performance Enhancement" : "Performance Enhancements"; break;
+            case "perfmin" : formattedSubject = !plural ? "Performance Enhancement" : "Performance Enhancements"; break;
+            case "minperf" : formattedSubject = !plural ? "Performance Enhancement" : "Performance Enhancements"; break;
             case "progress": formattedSubject = "Ongoing Progress"; break;
             case "project" : formattedSubject = "Project Structure"; break;
             case "refactor": formattedSubject = "Refactoring"; break;
@@ -347,7 +347,7 @@ export abstract class Changelog implements IChangelog
             case "test"    : formattedSubject = "Tests"; break;
             case "tests"   : formattedSubject = "Tests"; break;
             case "tweak"   : formattedSubject = "Refactoring"; break;
-            case "visual"  : formattedSubject = "Visuals"; break;
+            case "visual"  : formattedSubject = !plural ? "Visual" : "Visuals"; break;
             default   : formattedSubject = subject; break;
         }
 
