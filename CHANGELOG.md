@@ -1,5 +1,11 @@
 # APP-PUBLISHER CHANGE LOG
 
+## Version 3.10.1 (April 14th, 2022)
+
+### Bug Fixes
+
+- **Changelogs:** regression - the subject line is ouput in plural form for history file entries.
+
 ## Version 3.10.0 (April 5th, 2022)
 
 ### Bug Fixes
