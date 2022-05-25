@@ -253,7 +253,7 @@ Tip: A publishing mode dry run can be performed with the --dry-run option:
 
     app-publisher --no-ci --dry-run
 
-All steps are configured via the [.publishrc configuration file](#usage---configuration-file-and-parameters)
+All steps are configured via the [.publishrc configuration file](#usage---configuration-file)
 
 ## Task Mode
 
