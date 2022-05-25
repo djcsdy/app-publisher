@@ -235,7 +235,7 @@ Publishing mode is similar to how *semantic-release* works.  The entire set of p
 
 The steps performed during an app-publisher run are:
 
-- Automatically determine next version from commit messages since last version. See the section on determining the next version [here](#Determining-the-Next-Version).
+- Automatically determine next version from commit messages since last version. See the section on determining the next version [here](#How-The-Next-Version-is-Determined).
 - Auto-populate history text file and/or changelog markdown with commit messages since last version
 - Update all versioned files with new version
 - Run application specific build scripts
